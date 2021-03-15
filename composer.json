@@ -1,0 +1,17 @@
+{
+    "name": "yakimun/json-schema-validator",
+    "description": "The JSON Schema validator.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergey Yakimov",
+            "email": "yakimun@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3 || ^8.0"
+    },
+    "autoload": {
+        "psr-4": { "Yakimun\\JsonSchemaValidator\\": "src/" }
+    }
+}
