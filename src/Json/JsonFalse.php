@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Json;
 
+/**
+ * @psalm-immutable
+ */
 final class JsonFalse implements JsonValue
 {
     /**

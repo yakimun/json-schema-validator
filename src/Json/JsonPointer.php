@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Json;
 
+/**
+ * @psalm-immutable
+ */
 final class JsonPointer
 {
     /**
-     * @var string[]
+     * @var list<string>
      */
     private $tokens;
 

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Json;
 
+/**
+ * @psalm-immutable
+ */
 final class JsonArray implements JsonValue
 {
     /**
-     * @var JsonValue[]
+     * @var list<JsonValue>
      */
     private $items;
 
@@ -17,7 +20,7 @@ final class JsonArray implements JsonValue
     private $path;
 
     /**
-     * @param JsonValue[] $items
+     * @param list<JsonValue> $items
      * @param JsonPointer $path
      */
     public function __construct(array $items, JsonPointer $path)
@@ -27,7 +30,7 @@ final class JsonArray implements JsonValue
     }
 
     /**
-     * @return JsonValue[]
+     * @return list<JsonValue>
      */
     public function getItems(): array
     {
