@@ -33,4 +33,9 @@ jobs:
       run: composer run-script psalm
 
     - name: Run test suite
-      run: composer run-script test
+      run: composer run-script test -- --coverage-clover coverage.xml
+      env:
+        XDEBUG_MODE: coverage
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v1
