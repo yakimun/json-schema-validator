@@ -29,6 +29,9 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
+    - name: Run PHP_CodeSniffer
+      run: composer run-script phpcs
+
     - name: Run Psalm
       run: composer run-script psalm -- --shepherd
 
