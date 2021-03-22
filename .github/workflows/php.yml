@@ -30,7 +30,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run Psalm
-      run: composer run-script psalm
+      run: composer run-script psalm -- --shepherd
 
     - name: Run test suite
       run: composer run-script test -- --coverage-clover coverage.xml
