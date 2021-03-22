@@ -45,7 +45,7 @@ final class JsonValueConverterTest extends TestCase
     }
 
     /**
-     * @return list<array{0: null|scalar|object|list<mixed>, 1: JsonValue}>
+     * @return list<array{null|scalar|object|list<mixed>, JsonValue}>
      */
     public function valueProvider(): array
     {

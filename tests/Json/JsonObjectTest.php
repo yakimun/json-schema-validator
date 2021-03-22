@@ -57,7 +57,7 @@ final class JsonObjectTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return list<array{JsonValue, bool}>
      */
     public function valueProvider(): array
     {

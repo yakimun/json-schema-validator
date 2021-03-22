@@ -13,7 +13,7 @@ use Yakimun\JsonSchemaValidator\Json\JsonPointer;
 final class JsonPointerTest extends TestCase
 {
     /**
-     * @param string[] $tokens
+     * @param list<string> $tokens
      * @param string $expected
      *
      * @dataProvider tokenProvider
@@ -24,7 +24,7 @@ final class JsonPointerTest extends TestCase
     }
 
     /**
-     * @param string[] $tokens
+     * @param list<string> $tokens
      * @param string $expected
      *
      * @dataProvider tokenProvider
@@ -43,7 +43,7 @@ final class JsonPointerTest extends TestCase
     }
 
     /**
-     * @param string[] $tokens
+     * @param list<string> $tokens
      * @param string $expected
      *
      * @dataProvider tokenProvider
@@ -57,7 +57,7 @@ final class JsonPointerTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return list<array{list<string>, string}>
      */
     public function tokenProvider(): array
     {
