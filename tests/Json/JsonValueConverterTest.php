@@ -56,7 +56,18 @@ final class JsonValueConverterTest extends TestCase
             [true, new JsonTrue($path)],
             [false, new JsonFalse($path)],
             [(object)['a' => null], new JsonObject(['a' => new JsonNull($path->addToken('a'))], $path)],
+            [
+                (object)['a' => null, 'b' => true],
+                new JsonObject(
+                    ['a' => new JsonNull($path->addToken('a')), 'b' => new JsonTrue($path->addToken('b'))],
+                    $path,
+                ),
+            ],
             [[null], new JsonArray([new JsonNull($path->addToken('0'))], $path)],
+            [
+                [null, true],
+                new JsonArray([new JsonNull($path->addToken('0')), new JsonTrue($path->addToken('1'))], $path),
+            ],
             [1, new JsonInteger(1, $path)],
             [1.5, new JsonFloat(1.5, $path)],
             ['foo', new JsonString('foo', $path)],
