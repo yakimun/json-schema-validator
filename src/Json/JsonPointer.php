@@ -16,6 +16,7 @@ final class JsonPointer
 
     /**
      * @param string ...$tokens
+     * @no-named-arguments
      */
     public function __construct(string ...$tokens)
     {

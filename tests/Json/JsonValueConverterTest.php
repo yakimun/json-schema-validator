@@ -125,6 +125,10 @@ final class JsonValueConverterTest extends TestCase
     public function testConvertArrayWithInvalidKeys(array $value): void
     {
         $this->expectException(InvalidValueException::class);
+
+        /**
+         * @psalm-suppress UnusedMethodCall
+         */
         $this->jsonValueConverter->convert($value);
     }
 
@@ -161,6 +165,10 @@ final class JsonValueConverterTest extends TestCase
     public function testConvertInvalidValue(): void
     {
         $this->expectException(InvalidValueException::class);
+
+        /**
+         * @psalm-suppress UnusedMethodCall
+         */
         $this->jsonValueConverter->convert(fopen('php://memory', 'rb'));
     }
 }
