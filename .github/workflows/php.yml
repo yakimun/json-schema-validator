@@ -33,7 +33,7 @@ jobs:
       run: composer run-script phpcs
 
     - name: Run Psalm
-      run: composer run-script psalm -- --shepherd
+      run: composer run-script psalm -- --output-format=github --shepherd
 
     - name: Run test suite
       run: composer run-script test -- --coverage-clover coverage.xml
