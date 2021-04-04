@@ -33,15 +33,6 @@ final class JsonPointer
     }
 
     /**
-     * @param self $pointer
-     * @return self
-     */
-    public function addPointer(self $pointer): self
-    {
-        return new self(...$this->tokens, ...$pointer->tokens);
-    }
-
-    /**
      * @return string
      */
     public function __toString(): string

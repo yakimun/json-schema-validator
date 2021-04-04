@@ -18,17 +18,6 @@ final class JsonPointerTest extends TestCase
      *
      * @dataProvider tokenProvider
      */
-    public function testConstructor(array $tokens, string $expected): void
-    {
-        $this->assertEquals($expected, new JsonPointer(...$tokens));
-    }
-
-    /**
-     * @param list<string> $tokens
-     * @param string $expected
-     *
-     * @dataProvider tokenProvider
-     */
     public function testAddToken(array $tokens, string $expected): void
     {
         $jsonPointer = new JsonPointer();
@@ -39,20 +28,6 @@ final class JsonPointerTest extends TestCase
         }
 
         $this->assertEquals($expected, $modifiedJsonPointer);
-        $this->assertEquals('', $jsonPointer);
-    }
-
-    /**
-     * @param list<string> $tokens
-     * @param string $expected
-     *
-     * @dataProvider tokenProvider
-     */
-    public function testAddPointer(array $tokens, string $expected): void
-    {
-        $jsonPointer = new JsonPointer();
-
-        $this->assertEquals($expected, $jsonPointer->addPointer(new JsonPointer(...$tokens)));
         $this->assertEquals('', $jsonPointer);
     }
 
