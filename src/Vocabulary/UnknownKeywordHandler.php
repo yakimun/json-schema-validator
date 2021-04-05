@@ -6,6 +6,9 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary;
 
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 
+/**
+ * @psalm-immutable
+ */
 final class UnknownKeywordHandler implements KeywordHandler
 {
     /**

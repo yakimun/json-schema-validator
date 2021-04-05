@@ -58,6 +58,10 @@ final class ObjectSchema implements Schema
      */
     public function process(): array
     {
+        if (!$this->properties) {
+            return [new ProcessedSchema(new ObjectSchemaValidator([], $this->identifier), $this->identifier, [], [])];
+        }
+
         $context = new SchemaContext($this->factory, $this->identifier);
 
         foreach (array_intersect_key($this->keywords, $this->properties) as $keyword) {

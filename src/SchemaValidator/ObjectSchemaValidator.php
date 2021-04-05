@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Schema\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
+/**
+ * @psalm-immutable
+ */
 final class ObjectSchemaValidator implements SchemaValidator
 {
     /**

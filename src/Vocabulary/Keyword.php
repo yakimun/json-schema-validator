@@ -11,11 +11,12 @@ interface Keyword
 {
     /**
      * @return string
+     * @psalm-mutation-free
      */
     public function getName(): string;
 
     /**
-     * @param array<string, JsonValue> $properties
+     * @param non-empty-array<string, JsonValue> $properties
      * @param SchemaContext $context
      */
     public function process(array $properties, SchemaContext $context): void;
