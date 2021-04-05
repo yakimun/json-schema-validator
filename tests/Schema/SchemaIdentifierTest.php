@@ -24,25 +24,28 @@ final class SchemaIdentifierTest extends TestCase
     /**
      * @var JsonPointer
      */
-    private $jsonPointer;
+    private $path;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->jsonPointer = new JsonPointer();
+
+        $jsonPointer = new JsonPointer();
+
+        $this->path = $jsonPointer->addToken('a');
     }
 
     public function testGetUri(): void
     {
-        $schemaIdentifier = new SchemaIdentifier($this->uri, $this->jsonPointer);
+        $schemaIdentifier = new SchemaIdentifier($this->uri, $this->path);
 
         $this->assertEquals($this->uri, $schemaIdentifier->getUri());
     }
 
     public function testGetFragment(): void
     {
-        $schemaIdentifier = new SchemaIdentifier($this->uri, $this->jsonPointer);
+        $schemaIdentifier = new SchemaIdentifier($this->uri, $this->path);
 
-        $this->assertEquals($this->jsonPointer, $schemaIdentifier->getFragment());
+        $this->assertEquals($this->path, $schemaIdentifier->getFragment());
     }
 }

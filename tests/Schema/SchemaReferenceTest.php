@@ -24,25 +24,28 @@ final class SchemaReferenceTest extends TestCase
     /**
      * @var JsonPointer
      */
-    private $jsonPointer;
+    private $path;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->jsonPointer = new JsonPointer();
+
+        $jsonPointer = new JsonPointer();
+
+        $this->path = $jsonPointer->addToken('a');
     }
 
     public function testGetUri(): void
     {
-        $schemaReference = new SchemaReference($this->uri, $this->jsonPointer);
+        $schemaReference = new SchemaReference($this->uri, $this->path);
 
         $this->assertEquals($this->uri, $schemaReference->getUri());
     }
 
     public function testGetFragment(): void
     {
-        $schemaReference = new SchemaReference($this->uri, $this->jsonPointer);
+        $schemaReference = new SchemaReference($this->uri, $this->path);
 
-        $this->assertEquals($this->jsonPointer, $schemaReference->getPath());
+        $this->assertEquals($this->path, $schemaReference->getPath());
     }
 }
