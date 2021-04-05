@@ -23,7 +23,9 @@ final class JsonFloatTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->jsonFloat = new JsonFloat(1.5, new JsonPointer('a'));
+        $jsonPointer = new JsonPointer();
+
+        $this->jsonFloat = new JsonFloat(1.5, $jsonPointer->addToken('a'));
     }
 
     public function testGetValue(): void
@@ -33,12 +35,15 @@ final class JsonFloatTest extends TestCase
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonFloat->getPath());
+        $jsonPointer = new JsonPointer();
+
+        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonFloat->getPath());
     }
 
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('b');
 
         $this->assertTrue($this->jsonFloat->equals(new JsonFloat(1.5, $path)));
         $this->assertFalse($this->jsonFloat->equals(new JsonFloat(2.5, $path)));

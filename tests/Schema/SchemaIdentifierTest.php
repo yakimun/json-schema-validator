@@ -29,7 +29,7 @@ final class SchemaIdentifierTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->jsonPointer = new JsonPointer('a');
+        $this->jsonPointer = new JsonPointer();
     }
 
     public function testGetUri(): void

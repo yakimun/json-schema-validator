@@ -26,23 +26,27 @@ final class JsonObjectTest extends TestCase
 
     protected function setUp(): void
     {
-        $path = new JsonPointer('a');
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('a');
+        $properties = ['a' => new JsonNull($path->addToken('a')), 'b' => new JsonTrue($path->addToken('b'))];
 
-        $this->jsonObject = new JsonObject(['a' => new JsonNull($path), 'b' => new JsonTrue($path)], $path);
+        $this->jsonObject = new JsonObject($properties, $path);
     }
 
     public function testGetProperties(): void
     {
-        $properties = $this->jsonObject->getProperties();
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('a');
+        $properties = ['a' => new JsonNull($path->addToken('a')), 'b' => new JsonTrue($path->addToken('b'))];
 
-        $this->assertCount(2, $properties);
-        $this->assertInstanceOf(JsonNull::class, $properties['a']);
-        $this->assertInstanceOf(JsonTrue::class, $properties['b']);
+        $this->assertEquals($properties, $this->jsonObject->getProperties());
     }
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonObject->getPath());
+        $jsonPointer = new JsonPointer();
+
+        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonObject->getPath());
     }
 
     /**
@@ -57,14 +61,14 @@ final class JsonObjectTest extends TestCase
     }
 
     /**
-     * @return list<array{JsonValue, bool}>
+     * @return non-empty-list<array{JsonValue, bool}>
      */
     public function valueProvider(): array
     {
-        $path = new JsonPointer('b');
-
-        $jsonNull = new JsonNull($path);
-        $jsonTrue = new JsonTrue($path);
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('b');
+        $jsonNull = new JsonNull($path->addToken('a'));
+        $jsonTrue = new JsonTrue($path->addToken('b'));
 
         return [
             [new JsonObject(['a' => $jsonNull, 'b' => $jsonTrue], $path), true],

@@ -17,23 +17,29 @@ use Yakimun\JsonSchemaValidator\Json\JsonPointer;
 final class JsonFalseTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private $jsonPointer;
+
+    /**
      * @var JsonFalse
      */
     private $jsonFalse;
 
     protected function setUp(): void
     {
-        $this->jsonFalse = new JsonFalse(new JsonPointer('a'));
+        $this->jsonPointer = new JsonPointer();
+        $this->jsonFalse = new JsonFalse($this->jsonPointer->addToken('a'));
     }
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonFalse->getPath());
+        $this->assertEquals($this->jsonPointer->addToken('a'), $this->jsonFalse->getPath());
     }
 
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
+        $path = $this->jsonPointer->addToken('b');
 
         $this->assertTrue($this->jsonFalse->equals(new JsonFalse($path)));
         $this->assertFalse($this->jsonFalse->equals(new JsonNull($path)));

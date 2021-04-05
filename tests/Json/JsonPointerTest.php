@@ -32,7 +32,7 @@ final class JsonPointerTest extends TestCase
     }
 
     /**
-     * @return list<array{list<string>, string}>
+     * @return non-empty-list<array{list<string>, string}>
      */
     public function tokenProvider(): array
     {

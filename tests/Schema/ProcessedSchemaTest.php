@@ -54,7 +54,8 @@ final class ProcessedSchemaTest extends TestCase
 
     public function testGetAnchors(): void
     {
-        $anchors = [new SchemaReference(new Uri('https://example.com#foo'), new JsonPointer('a'))];
+        $jsonPointer = new JsonPointer();
+        $anchors = [new SchemaReference(new Uri('https://example.com#foo'), $jsonPointer->addToken('a'))];
         $processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, []);
 
         $this->assertEquals($anchors, $processedSchema->getAnchors());
@@ -62,7 +63,8 @@ final class ProcessedSchemaTest extends TestCase
 
     public function testGetReferences(): void
     {
-        $references = [new SchemaReference(new Uri('https://example.com#/a'), new JsonPointer('a'))];
+        $jsonPointer = new JsonPointer();
+        $references = [new SchemaReference(new Uri('https://example.com#/a'), $jsonPointer->addToken('a'))];
         $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], $references);
 
         $this->assertEquals($references, $processedSchema->getReferences());

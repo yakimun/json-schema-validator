@@ -44,18 +44,21 @@ final class JsonValueConverterTest extends TestCase
     public function testConvertNull(): void
     {
         $jsonValue = $this->jsonValueConverter->convert(null);
+
         $this->assertEquals(new JsonNull(new JsonPointer()), $jsonValue);
     }
 
     public function testConvertTrue(): void
     {
         $jsonValue = $this->jsonValueConverter->convert(true);
+
         $this->assertEquals(new JsonTrue(new JsonPointer()), $jsonValue);
     }
 
     public function testConvertFalse(): void
     {
         $jsonValue = $this->jsonValueConverter->convert(false);
+
         $this->assertEquals(new JsonFalse(new JsonPointer()), $jsonValue);
     }
 
@@ -68,16 +71,16 @@ final class JsonValueConverterTest extends TestCase
     public function testConvertObject(array $valueProperties, array $expectedProperties): void
     {
         $jsonValue = $this->jsonValueConverter->convert((object)$valueProperties);
+
         $this->assertEquals(new JsonObject($expectedProperties, new JsonPointer()), $jsonValue);
     }
 
     /**
-     * @return list<array{array<string, null|true>, array<string, JsonNull|JsonTrue>}>
+     * @return non-empty-list<array{array<string, null|true>, array<string, JsonNull|JsonTrue>}>
      */
     public function objectProvider(): array
     {
         $jsonPointer = new JsonPointer();
-
         $jsonNull = new JsonNull($jsonPointer->addToken('a'));
         $jsonTrue = new JsonTrue($jsonPointer->addToken('b'));
 
@@ -97,16 +100,16 @@ final class JsonValueConverterTest extends TestCase
     public function testConvertArray(array $value, array $expected): void
     {
         $jsonValue = $this->jsonValueConverter->convert($value);
+
         $this->assertEquals(new JsonArray($expected, new JsonPointer()), $jsonValue);
     }
 
     /**
-     * @return list<array{list<null|true>, list<JsonNull|JsonTrue>}>
+     * @return non-empty-list<array{list<null|true>, list<JsonNull|JsonTrue>}>
      */
     public function arrayProvider(): array
     {
         $jsonPointer = new JsonPointer();
-
         $jsonNull = new JsonNull($jsonPointer->addToken('0'));
         $jsonTrue = new JsonTrue($jsonPointer->addToken('1'));
 
@@ -118,47 +121,50 @@ final class JsonValueConverterTest extends TestCase
     }
 
     /**
-     * @param array<array-key, null> $value
+     * @param non-empty-list<int|string> $keys
      *
      * @dataProvider arrayWithInvalidKeysProvider
      */
-    public function testConvertArrayWithInvalidKeys(array $value): void
+    public function testConvertArrayWithInvalidKeys(array $keys): void
     {
         $this->expectException(InvalidValueException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->jsonValueConverter->convert($value);
+        $this->jsonValueConverter->convert(array_flip($keys));
     }
 
     /**
-     * @return list<list<array<array-key, null>>>
+     * @return non-empty-list<non-empty-list<non-empty-list<string|int>>>
      */
     public function arrayWithInvalidKeysProvider(): array
     {
         return [
-            [['a' => null]],
-            [[1 => null]],
-            [[0 => null, 2 => null]],
+            [[1]],
+            [[0, 2]],
+            [['a']],
         ];
     }
 
     public function testConvertInt(): void
     {
         $jsonValue = $this->jsonValueConverter->convert(1);
+
         $this->assertEquals(new JsonInteger(1, new JsonPointer()), $jsonValue);
     }
 
     public function testConvertFloat(): void
     {
-        $jsonValue = $this->jsonValueConverter->convert(1.0);
-        $this->assertEquals(new JsonFloat(1.0, new JsonPointer()), $jsonValue);
+        $jsonValue = $this->jsonValueConverter->convert(1.5);
+
+        $this->assertEquals(new JsonFloat(1.5, new JsonPointer()), $jsonValue);
     }
 
     public function testConvertString(): void
     {
         $jsonValue = $this->jsonValueConverter->convert('foo');
+
         $this->assertEquals(new JsonString('foo', new JsonPointer()), $jsonValue);
     }
 

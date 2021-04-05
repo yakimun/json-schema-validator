@@ -17,23 +17,29 @@ use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 final class JsonNullTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private $jsonPointer;
+
+    /**
      * @var JsonNull
      */
     private $jsonNull;
 
     protected function setUp(): void
     {
-        $this->jsonNull = new JsonNull(new JsonPointer('a'));
+        $this->jsonPointer = new JsonPointer();
+        $this->jsonNull = new JsonNull($this->jsonPointer->addToken('a'));
     }
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonNull->getPath());
+        $this->assertEquals($this->jsonPointer->addToken('a'), $this->jsonNull->getPath());
     }
 
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
+        $path = $this->jsonPointer->addToken('b');
 
         $this->assertTrue($this->jsonNull->equals(new JsonNull($path)));
         $this->assertFalse($this->jsonNull->equals(new JsonTrue($path)));

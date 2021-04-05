@@ -23,7 +23,9 @@ final class JsonIntegerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->jsonInteger = new JsonInteger(1, new JsonPointer('a'));
+        $jsonPointer = new JsonPointer();
+
+        $this->jsonInteger = new JsonInteger(1, $jsonPointer->addToken('a'));
     }
 
     public function testGetValue(): void
@@ -33,12 +35,15 @@ final class JsonIntegerTest extends TestCase
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonInteger->getPath());
+        $jsonPointer = new JsonPointer();
+
+        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonInteger->getPath());
     }
 
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('b');
 
         $this->assertTrue($this->jsonInteger->equals(new JsonInteger(1, $path)));
         $this->assertFalse($this->jsonInteger->equals(new JsonInteger(2, $path)));

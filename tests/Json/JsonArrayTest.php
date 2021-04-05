@@ -26,23 +26,27 @@ final class JsonArrayTest extends TestCase
 
     protected function setUp(): void
     {
-        $path = new JsonPointer('a');
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('a');
+        $items = [new JsonNull($path->addToken('0')), new JsonTrue($path->addToken('1'))];
 
-        $this->jsonArray = new JsonArray([new JsonNull($path), new JsonTrue($path)], $path);
+        $this->jsonArray = new JsonArray($items, $path);
     }
 
     public function testGetItems(): void
     {
-        $items = $this->jsonArray->getItems();
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('a');
+        $items = [new JsonNull($path->addToken('0')), new JsonTrue($path->addToken('1'))];
 
-        $this->assertCount(2, $items);
-        $this->assertInstanceOf(JsonNull::class, $items[0]);
-        $this->assertInstanceOf(JsonTrue::class, $items[1]);
+        $this->assertEquals($items, $this->jsonArray->getItems());
     }
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonArray->getPath());
+        $jsonPointer = new JsonPointer();
+
+        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonArray->getPath());
     }
 
     /**
@@ -57,17 +61,17 @@ final class JsonArrayTest extends TestCase
     }
 
     /**
-     * @return list<array{JsonValue, bool}>
+     * @return non-empty-list<array{JsonValue, bool}>
      */
     public function valueProvider(): array
     {
-        $path = new JsonPointer('b');
-
-        $jsonNull = new JsonNull($path);
-        $jsonTrue = new JsonTrue($path);
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('b');
+        $jsonNull = new JsonNull($path->addToken('0'));
+        $jsonTrue = new JsonTrue($path->addToken('1'));
 
         return [
-            [new JsonArray([$jsonNull, $jsonTrue], $path), true],
+            [new JsonArray([new JsonNull($path), $jsonTrue], $path), true],
             [new JsonArray([], $path), false],
             [new JsonArray([$jsonNull], $path), false],
             [new JsonArray([$jsonTrue, $jsonNull], $path), false],

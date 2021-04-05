@@ -58,7 +58,7 @@ final class SchemaFactoryTest extends TestCase
 
     public function testCreateSchemaWithObjectValue(): void
     {
-        $properties = ['foo' => new JsonNull(new JsonPointer('foo'))];
+        $properties = ['foo' => new JsonNull($this->jsonPointer->addToken('foo'))];
         $schemaFactory = new SchemaFactory($this->keywords);
         $expectedSchema = new ObjectSchema($properties, $this->identifier, $schemaFactory, $this->keywords);
         $schema = $schemaFactory->createSchema(new JsonObject($properties, $this->jsonPointer), $this->identifier);

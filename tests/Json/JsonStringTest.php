@@ -23,7 +23,9 @@ final class JsonStringTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->jsonString = new JsonString('foo', new JsonPointer('a'));
+        $jsonPointer = new JsonPointer();
+
+        $this->jsonString = new JsonString('foo', $jsonPointer->addToken('a'));
     }
 
     public function testGetValue(): void
@@ -33,12 +35,15 @@ final class JsonStringTest extends TestCase
 
     public function testGetPath(): void
     {
-        $this->assertEquals('/a', $this->jsonString->getPath());
+        $jsonPointer = new JsonPointer();
+
+        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonString->getPath());
     }
 
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
+        $jsonPointer = new JsonPointer();
+        $path = $jsonPointer->addToken('b');
 
         $this->assertTrue($this->jsonString->equals(new JsonString('foo', $path)));
         $this->assertFalse($this->jsonString->equals(new JsonString('bar', $path)));
