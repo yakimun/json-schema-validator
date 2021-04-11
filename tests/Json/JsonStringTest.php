@@ -19,34 +19,29 @@ final class JsonStringTest extends TestCase
     /**
      * @var JsonString
      */
-    private $jsonString;
+    private $value;
 
     protected function setUp(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->jsonString = new JsonString('foo', $jsonPointer->addToken('a'));
+        $this->value = new JsonString('foo', new JsonPointer('a'));
     }
 
     public function testGetValue(): void
     {
-        $this->assertEquals('foo', $this->jsonString->getValue());
+        $this->assertEquals('foo', $this->value->getValue());
     }
 
     public function testGetPath(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonString->getPath());
+        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
     }
 
     public function testEquals(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('b');
+        $path = new JsonPointer('b');
 
-        $this->assertTrue($this->jsonString->equals(new JsonString('foo', $path)));
-        $this->assertFalse($this->jsonString->equals(new JsonString('bar', $path)));
-        $this->assertFalse($this->jsonString->equals(new JsonNull($path)));
+        $this->assertTrue($this->value->equals(new JsonString('foo', $path)));
+        $this->assertFalse($this->value->equals(new JsonString('bar', $path)));
+        $this->assertFalse($this->value->equals(new JsonNull($path)));
     }
 }

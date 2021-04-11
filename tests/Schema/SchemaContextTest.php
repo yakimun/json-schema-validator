@@ -72,8 +72,7 @@ final class SchemaContextTest extends TestCase
     public function testAddAnchor(): void
     {
         $schemaContext = new SchemaContext($this->factory, $this->identifier);
-        $jsonPointer = new JsonPointer();
-        $anchor = new SchemaReference(new Uri('https://example.com#foo'), $jsonPointer->addToken('a'));
+        $anchor = new SchemaReference(new Uri('https://example.com#foo'), new JsonPointer('a'));
         $schemaContext->addAnchor($anchor);
 
         $this->assertEquals([$anchor], $schemaContext->getAnchors());
@@ -89,8 +88,7 @@ final class SchemaContextTest extends TestCase
     public function testAddReference(): void
     {
         $schemaContext = new SchemaContext($this->factory, $this->identifier);
-        $jsonPointer = new JsonPointer();
-        $reference = new SchemaReference(new Uri('https://example.com'), $jsonPointer->addToken('a'));
+        $reference = new SchemaReference(new Uri('https://example.com'), new JsonPointer('a'));
         $schemaContext->addReference($reference);
 
         $this->assertEquals([$reference], $schemaContext->getReferences());
@@ -122,11 +120,10 @@ final class SchemaContextTest extends TestCase
     public function testCreateValidator(): void
     {
         $schemaContext = new SchemaContext($this->factory, $this->identifier);
-        $jsonPointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.org'), $jsonPointer);
+        $identifier = new SchemaIdentifier(new Uri('https://example.org'), new JsonPointer());
         $expectedValidator = new TrueSchemaValidator($identifier);
         $expectedProcessedSchema = new ProcessedSchema($expectedValidator, $identifier, [], []);
-        $validator = $schemaContext->createValidator(new JsonTrue($jsonPointer->addToken('a')), $identifier);
+        $validator = $schemaContext->createValidator(new JsonTrue(new JsonPointer('a')), $identifier);
 
         $this->assertEquals($expectedValidator, $validator);
         $this->assertEquals([$expectedProcessedSchema], $schemaContext->getProcessedSchemas());

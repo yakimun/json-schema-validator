@@ -40,11 +40,6 @@ final class SchemaFactoryTest extends TestCase
     private $keywords;
 
     /**
-     * @var JsonPointer
-     */
-    private $jsonPointer;
-
-    /**
      * @var SchemaIdentifier
      */
     private $identifier;
@@ -52,16 +47,15 @@ final class SchemaFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->keywords = ['foo' => $this->createStub(Keyword::class)];
-        $this->jsonPointer = new JsonPointer();
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->jsonPointer);
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
     }
 
     public function testCreateSchemaWithObjectValue(): void
     {
-        $properties = ['foo' => new JsonNull($this->jsonPointer->addToken('foo'))];
+        $properties = ['foo' => new JsonNull(new JsonPointer('foo'))];
         $schemaFactory = new SchemaFactory($this->keywords);
         $expectedSchema = new ObjectSchema($properties, $this->identifier, $schemaFactory, $this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonObject($properties, $this->jsonPointer), $this->identifier);
+        $schema = $schemaFactory->createSchema(new JsonObject($properties, new JsonPointer()), $this->identifier);
 
         $this->assertEquals($expectedSchema, $schema);
     }
@@ -69,7 +63,7 @@ final class SchemaFactoryTest extends TestCase
     public function testCreateSchemaWithTrueValue(): void
     {
         $schemaFactory = new SchemaFactory($this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonTrue($this->jsonPointer), $this->identifier);
+        $schema = $schemaFactory->createSchema(new JsonTrue(new JsonPointer()), $this->identifier);
 
         $this->assertEquals(new TrueSchema($this->identifier), $schema);
     }
@@ -77,7 +71,7 @@ final class SchemaFactoryTest extends TestCase
     public function testCreateSchemaWithFalseValue(): void
     {
         $schemaFactory = new SchemaFactory($this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonFalse($this->jsonPointer), $this->identifier);
+        $schema = $schemaFactory->createSchema(new JsonFalse(new JsonPointer()), $this->identifier);
 
         $this->assertEquals(new FalseSchema($this->identifier), $schema);
     }
@@ -91,6 +85,6 @@ final class SchemaFactoryTest extends TestCase
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $schemaFactory->createSchema(new JsonNull($this->jsonPointer), $this->identifier);
+        $schemaFactory->createSchema(new JsonNull(new JsonPointer()), $this->identifier);
     }
 }

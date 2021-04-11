@@ -19,34 +19,29 @@ final class JsonFloatTest extends TestCase
     /**
      * @var JsonFloat
      */
-    private $jsonFloat;
+    private $value;
 
     protected function setUp(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->jsonFloat = new JsonFloat(1.5, $jsonPointer->addToken('a'));
+        $this->value = new JsonFloat(1.5, new JsonPointer('a'));
     }
 
     public function testGetValue(): void
     {
-        $this->assertEquals(1.5, $this->jsonFloat->getValue());
+        $this->assertEquals(1.5, $this->value->getValue());
     }
 
     public function testGetPath(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonFloat->getPath());
+        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
     }
 
     public function testEquals(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('b');
+        $path = new JsonPointer('b');
 
-        $this->assertTrue($this->jsonFloat->equals(new JsonFloat(1.5, $path)));
-        $this->assertFalse($this->jsonFloat->equals(new JsonFloat(2.5, $path)));
-        $this->assertFalse($this->jsonFloat->equals(new JsonNull($path)));
+        $this->assertTrue($this->value->equals(new JsonFloat(1.5, $path)));
+        $this->assertFalse($this->value->equals(new JsonFloat(2.5, $path)));
+        $this->assertFalse($this->value->equals(new JsonNull($path)));
     }
 }

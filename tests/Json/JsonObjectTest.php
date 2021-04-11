@@ -22,31 +22,25 @@ final class JsonObjectTest extends TestCase
     /**
      * @var JsonObject
      */
-    private $jsonObject;
+    private $value;
 
     protected function setUp(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('a');
-        $properties = ['a' => new JsonNull($path->addToken('a')), 'b' => new JsonTrue($path->addToken('b'))];
+        $properties = ['a' => new JsonNull(new JsonPointer('a', 'a')), 'b' => new JsonTrue(new JsonPointer('a', 'b'))];
 
-        $this->jsonObject = new JsonObject($properties, $path);
+        $this->value = new JsonObject($properties, new JsonPointer('a'));
     }
 
     public function testGetProperties(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('a');
-        $properties = ['a' => new JsonNull($path->addToken('a')), 'b' => new JsonTrue($path->addToken('b'))];
+        $properties = ['a' => new JsonNull(new JsonPointer('a', 'a')), 'b' => new JsonTrue(new JsonPointer('a', 'b'))];
 
-        $this->assertEquals($properties, $this->jsonObject->getProperties());
+        $this->assertEquals($properties, $this->value->getProperties());
     }
 
     public function testGetPath(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonObject->getPath());
+        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
     }
 
     /**
@@ -57,7 +51,7 @@ final class JsonObjectTest extends TestCase
      */
     public function testEquals(JsonValue $value, bool $expected): void
     {
-        $this->assertEquals($expected, $this->jsonObject->equals($value));
+        $this->assertEquals($expected, $this->value->equals($value));
     }
 
     /**
@@ -65,10 +59,9 @@ final class JsonObjectTest extends TestCase
      */
     public function valueProvider(): array
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('b');
-        $jsonNull = new JsonNull($path->addToken('a'));
-        $jsonTrue = new JsonTrue($path->addToken('b'));
+        $path = new JsonPointer('b');
+        $jsonNull = new JsonNull(new JsonPointer('b', 'a'));
+        $jsonTrue = new JsonTrue(new JsonPointer('b', 'b'));
 
         return [
             [new JsonObject(['a' => $jsonNull, 'b' => $jsonTrue], $path), true],

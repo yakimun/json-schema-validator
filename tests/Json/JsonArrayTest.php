@@ -22,31 +22,25 @@ final class JsonArrayTest extends TestCase
     /**
      * @var JsonArray
      */
-    private $jsonArray;
+    private $value;
 
     protected function setUp(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('a');
-        $items = [new JsonNull($path->addToken('0')), new JsonTrue($path->addToken('1'))];
+        $items = [new JsonNull(new JsonPointer('a', '0')), new JsonTrue(new JsonPointer('a', '1'))];
 
-        $this->jsonArray = new JsonArray($items, $path);
+        $this->value = new JsonArray($items, new JsonPointer('a'));
     }
 
     public function testGetItems(): void
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('a');
-        $items = [new JsonNull($path->addToken('0')), new JsonTrue($path->addToken('1'))];
+        $items = [new JsonNull(new JsonPointer('a', '0')), new JsonTrue(new JsonPointer('a', '1'))];
 
-        $this->assertEquals($items, $this->jsonArray->getItems());
+        $this->assertEquals($items, $this->value->getItems());
     }
 
     public function testGetPath(): void
     {
-        $jsonPointer = new JsonPointer();
-
-        $this->assertEquals($jsonPointer->addToken('a'), $this->jsonArray->getPath());
+        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
     }
 
     /**
@@ -57,7 +51,7 @@ final class JsonArrayTest extends TestCase
      */
     public function testEquals(JsonValue $value, bool $expected): void
     {
-        $this->assertEquals($expected, $this->jsonArray->equals($value));
+        $this->assertEquals($expected, $this->value->equals($value));
     }
 
     /**
@@ -65,13 +59,12 @@ final class JsonArrayTest extends TestCase
      */
     public function valueProvider(): array
     {
-        $jsonPointer = new JsonPointer();
-        $path = $jsonPointer->addToken('b');
-        $jsonNull = new JsonNull($path->addToken('0'));
-        $jsonTrue = new JsonTrue($path->addToken('1'));
+        $path = new JsonPointer('b');
+        $jsonNull = new JsonNull(new JsonPointer('b', '0'));
+        $jsonTrue = new JsonTrue(new JsonPointer('b', '1'));
 
         return [
-            [new JsonArray([new JsonNull($path), $jsonTrue], $path), true],
+            [new JsonArray([$jsonNull, $jsonTrue], $path), true],
             [new JsonArray([], $path), false],
             [new JsonArray([$jsonNull], $path), false],
             [new JsonArray([$jsonTrue, $jsonNull], $path), false],

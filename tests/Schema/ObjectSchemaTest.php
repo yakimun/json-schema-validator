@@ -73,8 +73,7 @@ final class ObjectSchemaTest extends TestCase
 
     public function testProcessWithKnownKeyword(): void
     {
-        $jsonPointer = new JsonPointer();
-        $properties = ['foo' => new JsonNull($jsonPointer->addToken('foo'))];
+        $properties = ['foo' => new JsonNull(new JsonPointer('foo'))];
 
         $this->keyword
             ->expects($this->once())
@@ -93,8 +92,7 @@ final class ObjectSchemaTest extends TestCase
 
     public function testProcessWithUnknownKeyword(): void
     {
-        $jsonPointer = new JsonPointer();
-        $properties = ['bar' => new JsonNull($jsonPointer->addToken('bar'))];
+        $properties = ['bar' => new JsonNull(new JsonPointer('bar'))];
 
         $this->keyword
             ->expects($this->never())
