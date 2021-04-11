@@ -12,7 +12,16 @@ final class JsonPointer
     /**
      * @var list<string>
      */
-    private $tokens = [];
+    private $tokens;
+
+    /**
+     * @param string ...$tokens
+     * @no-named-arguments
+     */
+    public function __construct(string ...$tokens)
+    {
+        $this->tokens = $tokens;
+    }
 
     /**
      * @param string $token
@@ -20,11 +29,7 @@ final class JsonPointer
      */
     public function addToken(string $token): self
     {
-        $pointer = new self();
-        $pointer->tokens = $this->tokens;
-        $pointer->tokens[] = $token;
-
-        return $pointer;
+        return new self(...array_merge($this->tokens, [$token]));
     }
 
     /**
