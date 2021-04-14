@@ -24,12 +24,22 @@ final class JsonPointer
     }
 
     /**
-     * @param string $token
+     * @param string ...$tokens
      * @return self
+     * @no-named-arguments
      */
-    public function addToken(string $token): self
+    public function addTokens(string ...$tokens): self
     {
-        return new self(...array_merge($this->tokens, [$token]));
+        return new self(...array_merge($this->tokens, $tokens));
+    }
+
+    /**
+     * @param self $pointer
+     * @return bool
+     */
+    public function equals(self $pointer): bool
+    {
+        return $this->tokens === $pointer->tokens;
     }
 
     /**

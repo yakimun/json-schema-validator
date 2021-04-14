@@ -126,7 +126,7 @@ final class JsonValueConverterTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<non-empty-list<non-empty-list<string|int>>>
+     * @return non-empty-list<array{non-empty-list<int|string>}>
      */
     public function arrayWithInvalidKeysProvider(): array
     {

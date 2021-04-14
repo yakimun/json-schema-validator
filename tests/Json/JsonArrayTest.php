@@ -44,7 +44,7 @@ final class JsonArrayTest extends TestCase
     }
 
     /**
-     * @param JsonValue $value
+     * @param JsonArray|JsonNull $value
      * @param bool $expected
      *
      * @dataProvider valueProvider
@@ -55,7 +55,7 @@ final class JsonArrayTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{JsonValue, bool}>
+     * @return non-empty-list<array{JsonArray|JsonNull, bool}>
      */
     public function valueProvider(): array
     {

@@ -73,7 +73,7 @@ final class JsonValueConverter
          * @var null|scalar|object|array<array-key, mixed> $property
          */
         foreach ($value as $key => $property) {
-            $properties[$key] = $this->convertValue($property, $path->addToken($key));
+            $properties[$key] = $this->convertValue($property, $path->addTokens($key));
         }
 
         return new JsonObject($properties, $path);
@@ -98,7 +98,7 @@ final class JsonValueConverter
                 throw new InvalidValueException(sprintf($format, (string)$path));
             }
 
-            $items[] = $this->convertValue($item, $path->addToken((string)$index));
+            $items[] = $this->convertValue($item, $path->addTokens((string)$index));
             $expectedIndex++;
         }
 
