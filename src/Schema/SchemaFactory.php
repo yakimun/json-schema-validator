@@ -37,15 +37,15 @@ final class SchemaFactory
     public function createSchema(JsonValue $value, SchemaIdentifier $identifier): Schema
     {
         if ($value instanceof JsonObject) {
-            return new ObjectSchema($value->getProperties(), $identifier, $this, $this->keywords);
+            return new ObjectSchema($value, $identifier, $this, $this->keywords);
         }
 
         if ($value instanceof JsonTrue) {
-            return new TrueSchema($identifier);
+            return new TrueSchema($value, $identifier);
         }
 
         if ($value instanceof JsonFalse) {
-            return new FalseSchema($identifier);
+            return new FalseSchema($value, $identifier);
         }
 
         $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$value->getPath());

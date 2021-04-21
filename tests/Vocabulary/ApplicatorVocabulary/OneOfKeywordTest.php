@@ -88,8 +88,11 @@ final class OneOfKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
 
-        $processedSchema1 = new ProcessedSchema(new ObjectSchemaValidator([], $identifier1), $identifier1, [], []);
-        $processedSchema2 = new ProcessedSchema(new ObjectSchemaValidator([], $identifier2), $identifier2, [], []);
+        $objectValidator1 = new ObjectSchemaValidator([], $identifier1);
+        $objectValidator2 = new ObjectSchemaValidator([], $identifier2);
+
+        $processedSchema1 = new ProcessedSchema($objectValidator1, $identifier1, [], [], $pointer1);
+        $processedSchema2 = new ProcessedSchema($objectValidator2, $identifier2, [], [], $pointer2);
 
         return [
             [[$jsonObject1], [$processedSchema1]],

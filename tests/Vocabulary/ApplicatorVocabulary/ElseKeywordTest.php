@@ -46,12 +46,13 @@ final class ElseKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $validatorIdentifier = new SchemaIdentifier($uri, new JsonPointer('else'));
+        $pointer = new JsonPointer('else');
+        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
         $objectValidator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], []);
+        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(new SchemaFactory(['else' => $this->keyword]), $identifier);
-        $this->keyword->process(['else' => new JsonObject([], new JsonPointer('else'))], $context);
+        $this->keyword->process(['else' => new JsonObject([], $pointer)], $context);
 
         $this->assertEmpty($context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());

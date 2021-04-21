@@ -89,8 +89,8 @@ final class PropertiesKeywordTest extends TestCase
         $objectValidator1 = new ObjectSchemaValidator([], $identifier1);
         $objectValidator2 = new ObjectSchemaValidator([], $identifier2);
 
-        $processedSchema1 = new ProcessedSchema($objectValidator1, $identifier1, [], []);
-        $processedSchema2 = new ProcessedSchema($objectValidator2, $identifier2, [], []);
+        $processedSchema1 = new ProcessedSchema($objectValidator1, $identifier1, [], [], $pointer1);
+        $processedSchema2 = new ProcessedSchema($objectValidator2, $identifier2, [], [], $pointer2);
 
         return [
             [[], []],

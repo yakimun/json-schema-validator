@@ -51,11 +51,12 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer('unevaluatedProperties');
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $unevaluatedPropertiesIdentifier = new SchemaIdentifier($uri, new JsonPointer('unevaluatedProperties'));
+        $unevaluatedPropertiesIdentifier = new SchemaIdentifier($uri, $pointer);
         $validator = new ObjectSchemaValidator([], $unevaluatedPropertiesIdentifier);
-        $processedSchemas = [new ProcessedSchema($validator, $unevaluatedPropertiesIdentifier, [], [])];
-        $properties = ['unevaluatedProperties' => new JsonObject([], new JsonPointer('unevaluatedProperties'))];
+        $processedSchemas = [new ProcessedSchema($validator, $unevaluatedPropertiesIdentifier, [], [], $pointer)];
+        $properties = ['unevaluatedProperties' => new JsonObject([], $pointer)];
         $context = new SchemaContext(new SchemaFactory(['unevaluatedProperties' => $this->keyword]), $identifier);
         $this->keyword->process($properties, $context);
 

@@ -122,7 +122,7 @@ final class SchemaContextTest extends TestCase
         $schemaContext = new SchemaContext($this->factory, $this->identifier);
         $identifier = new SchemaIdentifier(new Uri('https://example.org'), new JsonPointer());
         $expectedValidator = new TrueSchemaValidator($identifier);
-        $expectedProcessedSchema = new ProcessedSchema($expectedValidator, $identifier, [], []);
+        $expectedProcessedSchema = new ProcessedSchema($expectedValidator, $identifier, [], [], new JsonPointer('a'));
         $validator = $schemaContext->createValidator(new JsonTrue(new JsonPointer('a')), $identifier);
 
         $this->assertEquals($expectedValidator, $validator);

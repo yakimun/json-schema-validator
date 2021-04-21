@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Schema;
 
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
@@ -12,10 +12,10 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
 final class ObjectSchema implements Schema
 {
     /**
-     * @var array<string, JsonValue>
+     * @var JsonObject
      * @readonly
      */
-    private $properties;
+    private $value;
 
     /**
      * @var SchemaIdentifier
@@ -36,18 +36,18 @@ final class ObjectSchema implements Schema
     private $keywords;
 
     /**
-     * @param array<string, JsonValue> $properties
+     * @param JsonObject $value
      * @param SchemaIdentifier $identifier
      * @param SchemaFactory $factory
      * @param non-empty-array<string, Keyword> $keywords
      */
     public function __construct(
-        array $properties,
+        JsonObject $value,
         SchemaIdentifier $identifier,
         SchemaFactory $factory,
         array $keywords
     ) {
-        $this->properties = $properties;
+        $this->value = $value;
         $this->identifier = $identifier;
         $this->factory = $factory;
         $this->keywords = $keywords;
@@ -58,17 +58,22 @@ final class ObjectSchema implements Schema
      */
     public function process(): array
     {
-        if (!$this->properties) {
-            return [new ProcessedSchema(new ObjectSchemaValidator([], $this->identifier), $this->identifier, [], [])];
+        $properties = $this->value->getProperties();
+        $path = $this->value->getPath();
+
+        if (!$properties) {
+            $validator = new ObjectSchemaValidator([], $this->identifier);
+
+            return [new ProcessedSchema($validator, $this->identifier, [], [], $path)];
         }
 
         $context = new SchemaContext($this->factory, $this->identifier);
 
-        foreach (array_intersect_key($this->keywords, $this->properties) as $keyword) {
-            $keyword->process($this->properties, $context);
+        foreach (array_intersect_key($this->keywords, $properties) as $keyword) {
+            $keyword->process($properties, $context);
         }
 
-        foreach (array_diff_key($this->properties, $this->keywords) as $name => $value) {
+        foreach (array_diff_key($properties, $this->keywords) as $name => $value) {
             $context->addKeywordHandler(new UnknownKeywordHandler($name, $value));
         }
 
@@ -77,7 +82,7 @@ final class ObjectSchema implements Schema
         $references = $context->getReferences();
 
         $validator = new ObjectSchemaValidator($context->getKeywordHandlers(), $identifier);
-        $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references);
+        $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $path);
 
         return array_merge([$processedSchema], $context->getProcessedSchemas());
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Schema;
 
+use Yakimun\JsonSchemaValidator\Json\JsonFalse;
 use Yakimun\JsonSchemaValidator\SchemaValidator\FalseSchemaValidator;
 
 /**
@@ -12,15 +13,22 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\FalseSchemaValidator;
 final class FalseSchema implements Schema
 {
     /**
+     * @var JsonFalse
+     */
+    private $value;
+
+    /**
      * @var SchemaIdentifier
      */
     private $identifier;
 
     /**
+     * @param JsonFalse $value
      * @param SchemaIdentifier $identifier
      */
-    public function __construct(SchemaIdentifier $identifier)
+    public function __construct(JsonFalse $value, SchemaIdentifier $identifier)
     {
+        $this->value = $value;
         $this->identifier = $identifier;
     }
 
@@ -29,6 +37,8 @@ final class FalseSchema implements Schema
      */
     public function process(): array
     {
-        return [new ProcessedSchema(new FalseSchemaValidator($this->identifier), $this->identifier, [], [])];
+        $validator = new FalseSchemaValidator($this->identifier);
+
+        return [new ProcessedSchema($validator, $this->identifier, [], [], $this->value->getPath())];
     }
 }

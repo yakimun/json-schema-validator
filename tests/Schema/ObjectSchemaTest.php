@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonPointer;
 use Yakimun\JsonSchemaValidator\Schema\ObjectSchema;
 use Yakimun\JsonSchemaValidator\Schema\ProcessedSchema;
@@ -20,6 +21,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
 /**
  * @covers \Yakimun\JsonSchemaValidator\Schema\ObjectSchema
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\Schema\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\Schema\SchemaContext
@@ -30,6 +32,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
  */
 final class ObjectSchemaTest extends TestCase
 {
+    /**
+     * @var JsonPointer
+     */
+    private $pointer;
+
     /**
      * @var Keyword&MockObject
      */
@@ -52,7 +59,8 @@ final class ObjectSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer);
         $this->keyword = $this->createMock(Keyword::class);
         $this->keywords = ['foo' => $this->keyword];
         $this->factory = new SchemaFactory($this->keywords);
@@ -64,9 +72,10 @@ final class ObjectSchemaTest extends TestCase
             ->expects($this->never())
             ->method('process');
 
-        $schema = new ObjectSchema([], $this->identifier, $this->factory, $this->keywords);
+        $jsonObject = new JsonObject([], $this->pointer);
+        $schema = new ObjectSchema($jsonObject, $this->identifier, $this->factory, $this->keywords);
         $validator = new ObjectSchemaValidator([], $this->identifier);
-        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], []);
+        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], [], $this->pointer);
 
         $this->assertEquals([$processedSchema], $schema->process());
     }
@@ -83,9 +92,10 @@ final class ObjectSchemaTest extends TestCase
                 $this->anything(),
             );
 
-        $schema = new ObjectSchema($properties, $this->identifier, $this->factory, $this->keywords);
+        $jsonObject = new JsonObject($properties, $this->pointer);
+        $schema = new ObjectSchema($jsonObject, $this->identifier, $this->factory, $this->keywords);
         $validator = new ObjectSchemaValidator([], $this->identifier);
-        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], []);
+        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], [], $this->pointer);
 
         $this->assertEquals([$processedSchema], $schema->process());
     }
@@ -98,10 +108,11 @@ final class ObjectSchemaTest extends TestCase
             ->expects($this->never())
             ->method('process');
 
-        $schema = new ObjectSchema($properties, $this->identifier, $this->factory, $this->keywords);
+        $jsonObject = new JsonObject($properties, $this->pointer);
+        $schema = new ObjectSchema($jsonObject, $this->identifier, $this->factory, $this->keywords);
         $keywordValidator = new UnknownKeywordHandler('bar', $properties['bar']);
         $validator = new ObjectSchemaValidator([$keywordValidator], $this->identifier);
-        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], []);
+        $processedSchema = new ProcessedSchema($validator, $this->identifier, [], [], $this->pointer);
 
         $this->assertEquals([$processedSchema], $schema->process());
     }

@@ -23,6 +23,11 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
 final class ProcessedSchemaTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private $pointer;
+
+    /**
      * @var SchemaIdentifier
      */
     private $identifier;
@@ -34,20 +39,21 @@ final class ProcessedSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer);
         $this->validator = new TrueSchemaValidator($this->identifier);
     }
 
     public function testGetValidator(): void
     {
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], []);
+        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
 
         $this->assertEquals($this->validator, $processedSchema->getValidator());
     }
 
     public function testGetIdentifier(): void
     {
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], []);
+        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
 
         $this->assertEquals($this->identifier, $processedSchema->getIdentifier());
     }
@@ -55,7 +61,7 @@ final class ProcessedSchemaTest extends TestCase
     public function testGetAnchors(): void
     {
         $anchors = [new SchemaReference(new Uri('https://example.com#foo'), new JsonPointer('a'))];
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, []);
+        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, [], $this->pointer);
 
         $this->assertEquals($anchors, $processedSchema->getAnchors());
     }
@@ -63,8 +69,15 @@ final class ProcessedSchemaTest extends TestCase
     public function testGetReferences(): void
     {
         $references = [new SchemaReference(new Uri('https://example.com#/a'), new JsonPointer('a'))];
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], $references);
+        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], $references, $this->pointer);
 
         $this->assertEquals($references, $processedSchema->getReferences());
+    }
+
+    public function testGetPath(): void
+    {
+        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
+
+        $this->assertEquals($this->pointer, $processedSchema->getPath());
     }
 }

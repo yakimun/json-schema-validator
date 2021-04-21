@@ -51,12 +51,13 @@ final class ContainsKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $validatorIdentifier = new SchemaIdentifier($uri, new JsonPointer('contains'));
+        $pointer = new JsonPointer('contains');
+        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
         $objectValidator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], []);
+        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(new SchemaFactory(['contains' => $this->keyword]), $identifier);
-        $this->keyword->process(['contains' => new JsonObject([], new JsonPointer('contains'))], $context);
+        $this->keyword->process(['contains' => new JsonObject([], $pointer)], $context);
 
         $this->assertEquals([new ContainsKeywordHandler($objectValidator)], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());

@@ -54,12 +54,13 @@ final class IfKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer('if');
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, new JsonPointer('if'));
+        $ifIdentifier = new SchemaIdentifier($uri, $pointer);
         $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
-        $processedSchemas = [new ProcessedSchema($ifValidator, $ifIdentifier, [], [])];
+        $processedSchemas = [new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $pointer)];
         $context = new SchemaContext(new SchemaFactory(['if' => $this->keyword]), $identifier);
-        $this->keyword->process(['if' => new JsonObject([], new JsonPointer('if'))], $context);
+        $this->keyword->process(['if' => new JsonObject([], $pointer)], $context);
 
         $this->assertEquals([new IfKeywordHandler($ifValidator)], $context->getKeywordHandlers());
         $this->assertEquals($processedSchemas, $context->getProcessedSchemas());
@@ -68,18 +69,20 @@ final class IfKeywordTest extends TestCase
     public function testProcessWithThen(): void
     {
         $uri = new Uri('https://example.com');
+        $ifPointer = new JsonPointer('if');
+        $thenPointer = new JsonPointer('then');
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, new JsonPointer('if'));
-        $thenIdentifier = new SchemaIdentifier($uri, new JsonPointer('then'));
+        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
+        $thenIdentifier = new SchemaIdentifier($uri, $thenPointer);
         $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
         $thenValidator = new ObjectSchemaValidator([], $thenIdentifier);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], []),
-            new ProcessedSchema($thenValidator, $thenIdentifier, [], []),
+            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
+            new ProcessedSchema($thenValidator, $thenIdentifier, [], [], $thenPointer),
         ];
         $properties = [
-            'if' => new JsonObject([], new JsonPointer('if')),
-            'then' => new JsonObject([], new JsonPointer('then')),
+            'if' => new JsonObject([], $ifPointer),
+            'then' => new JsonObject([], $thenPointer),
         ];
         $context = new SchemaContext(new SchemaFactory(['if' => $this->keyword]), $identifier);
         $this->keyword->process($properties, $context);
@@ -91,18 +94,20 @@ final class IfKeywordTest extends TestCase
     public function testProcessWithElse(): void
     {
         $uri = new Uri('https://example.com');
+        $ifPointer = new JsonPointer('if');
+        $elsePointer = new JsonPointer('else');
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, new JsonPointer('if'));
-        $elseIdentifier = new SchemaIdentifier($uri, new JsonPointer('else'));
+        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
+        $elseIdentifier = new SchemaIdentifier($uri, $elsePointer);
         $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
         $elseValidator = new ObjectSchemaValidator([], $elseIdentifier);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], []),
-            new ProcessedSchema($elseValidator, $elseIdentifier, [], []),
+            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
+            new ProcessedSchema($elseValidator, $elseIdentifier, [], [], $elsePointer),
         ];
         $properties = [
-            'if' => new JsonObject([], new JsonPointer('if')),
-            'else' => new JsonObject([], new JsonPointer('else')),
+            'if' => new JsonObject([], $ifPointer),
+            'else' => new JsonObject([], $elsePointer),
         ];
         $context = new SchemaContext(new SchemaFactory(['if' => $this->keyword]), $identifier);
         $this->keyword->process($properties, $context);
@@ -114,23 +119,26 @@ final class IfKeywordTest extends TestCase
     public function testProcessWithThenAndElse(): void
     {
         $uri = new Uri('https://example.com');
+        $ifPointer = new JsonPointer('if');
+        $thenPointer = new JsonPointer('then');
+        $elsePointer = new JsonPointer('else');
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, new JsonPointer('if'));
-        $thenIdentifier = new SchemaIdentifier($uri, new JsonPointer('then'));
-        $elseIdentifier = new SchemaIdentifier($uri, new JsonPointer('else'));
+        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
+        $thenIdentifier = new SchemaIdentifier($uri, $thenPointer);
+        $elseIdentifier = new SchemaIdentifier($uri, $elsePointer);
         $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
         $thenValidator = new ObjectSchemaValidator([], $thenIdentifier);
         $elseValidator = new ObjectSchemaValidator([], $elseIdentifier);
         $keywordHandler = new IfThenElseKeywordHandler($ifValidator, $thenValidator, $elseValidator);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], []),
-            new ProcessedSchema($thenValidator, $thenIdentifier, [], []),
-            new ProcessedSchema($elseValidator, $elseIdentifier, [], []),
+            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
+            new ProcessedSchema($thenValidator, $thenIdentifier, [], [], $thenPointer),
+            new ProcessedSchema($elseValidator, $elseIdentifier, [], [], $elsePointer),
         ];
         $properties = [
-            'if' => new JsonObject([], new JsonPointer('if')),
-            'then' => new JsonObject([], new JsonPointer('then')),
-            'else' => new JsonObject([], new JsonPointer('else')),
+            'if' => new JsonObject([], $ifPointer),
+            'then' => new JsonObject([], $thenPointer),
+            'else' => new JsonObject([], $elsePointer),
         ];
         $context = new SchemaContext(new SchemaFactory(['if' => $this->keyword]), $identifier);
         $this->keyword->process($properties, $context);

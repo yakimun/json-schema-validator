@@ -51,12 +51,13 @@ final class PropertyNamesKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $validatorIdentifier = new SchemaIdentifier($uri, new JsonPointer('propertyNames'));
+        $pointer = new JsonPointer('propertyNames');
+        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
         $objectValidator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], []);
+        $processedSchema = new ProcessedSchema($objectValidator, $validatorIdentifier, [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(new SchemaFactory(['propertyNames' => $this->keyword]), $identifier);
-        $this->keyword->process(['propertyNames' => new JsonObject([], new JsonPointer('propertyNames'))], $context);
+        $this->keyword->process(['propertyNames' => new JsonObject([], $pointer)], $context);
 
         $this->assertEquals([new PropertyNamesKeywordHandler($objectValidator)], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());

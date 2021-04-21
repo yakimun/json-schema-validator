@@ -52,10 +52,10 @@ final class SchemaFactoryTest extends TestCase
 
     public function testCreateSchemaWithObjectValue(): void
     {
-        $properties = ['foo' => new JsonNull(new JsonPointer('foo'))];
+        $jsonObject = new JsonObject(['foo' => new JsonNull(new JsonPointer('foo'))], new JsonPointer());
         $schemaFactory = new SchemaFactory($this->keywords);
-        $expectedSchema = new ObjectSchema($properties, $this->identifier, $schemaFactory, $this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonObject($properties, new JsonPointer()), $this->identifier);
+        $expectedSchema = new ObjectSchema($jsonObject, $this->identifier, $schemaFactory, $this->keywords);
+        $schema = $schemaFactory->createSchema($jsonObject, $this->identifier);
 
         $this->assertEquals($expectedSchema, $schema);
     }
@@ -63,17 +63,19 @@ final class SchemaFactoryTest extends TestCase
     public function testCreateSchemaWithTrueValue(): void
     {
         $schemaFactory = new SchemaFactory($this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonTrue(new JsonPointer()), $this->identifier);
+        $jsonTrue = new JsonTrue(new JsonPointer());
+        $schema = $schemaFactory->createSchema($jsonTrue, $this->identifier);
 
-        $this->assertEquals(new TrueSchema($this->identifier), $schema);
+        $this->assertEquals(new TrueSchema($jsonTrue, $this->identifier), $schema);
     }
 
     public function testCreateSchemaWithFalseValue(): void
     {
         $schemaFactory = new SchemaFactory($this->keywords);
-        $schema = $schemaFactory->createSchema(new JsonFalse(new JsonPointer()), $this->identifier);
+        $jsonFalse = new JsonFalse(new JsonPointer());
+        $schema = $schemaFactory->createSchema($jsonFalse, $this->identifier);
 
-        $this->assertEquals(new FalseSchema($this->identifier), $schema);
+        $this->assertEquals(new FalseSchema($jsonFalse, $this->identifier), $schema);
     }
 
     public function testCreateSchemaWithInvalidValue(): void
