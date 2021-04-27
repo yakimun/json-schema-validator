@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Vocabulary;
 
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\Schema\SchemaContext;
+use Yakimun\JsonSchemaValidator\SchemaContext;
 
 interface Keyword
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 
-use Yakimun\JsonSchemaValidator\Schema\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
 /**

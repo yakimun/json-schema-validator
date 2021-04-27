@@ -4,18 +4,29 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Json;
 
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonPointer;
 use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\ProcessedSchema;
+use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
+use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
+ * @uses \Yakimun\JsonSchemaValidator\SchemaContext
+ * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler
  */
 final class JsonObjectTest extends TestCase
 {
@@ -72,5 +83,62 @@ final class JsonObjectTest extends TestCase
             [new JsonObject(['a' => $jsonNull, 'b' => $jsonTrue, 'c' => $jsonNull], $path), false],
             [new JsonNull($path), false],
         ];
+    }
+
+    public function testProcessAsSchemaWithEmptyValue(): void
+    {
+        $path = new JsonPointer('a');
+
+        $keyword = $this->createMock(Keyword::class);
+        $keyword
+            ->expects($this->never())
+            ->method('process');
+
+        $value = new JsonObject([], $path);
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $validator = new ObjectSchemaValidator([], $identifier);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
+    }
+
+    public function testProcessAsSchemaWithKnownKeyword(): void
+    {
+        $path = new JsonPointer('a');
+        $properties = ['a' => new JsonNull($path)];
+
+        $keyword = $this->createMock(Keyword::class);
+        $keyword
+            ->expects($this->once())
+            ->method('process')
+            ->with(
+                $this->equalTo($properties),
+                $this->anything(),
+            );
+
+        $value = new JsonObject($properties, $path);
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $validator = new ObjectSchemaValidator([], $identifier);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
+    }
+
+    public function testProcessAsSchemaWithUnknownKeyword(): void
+    {
+        $path = new JsonPointer('a');
+        $properties = ['a' => new JsonNull($path)];
+
+        $keyword = $this->createMock(Keyword::class);
+        $keyword
+            ->expects($this->never())
+            ->method('process');
+
+        $value = new JsonObject($properties, $path);
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $validator = new ObjectSchemaValidator([new UnknownKeywordHandler('a', $properties['a'])], $identifier);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['b' => $keyword]));
     }
 }

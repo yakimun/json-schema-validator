@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Json;
 
-/**
- * @psalm-immutable
- */
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\ProcessedSchema;
+use Yakimun\JsonSchemaValidator\SchemaContext;
+use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
+use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
+
 final class JsonObject implements JsonValue
 {
     /**
      * @var array<string, JsonValue>
+     * @readonly
      */
     private $properties;
 
     /**
      * @var JsonPointer
+     * @readonly
      */
     private $path;
 
@@ -31,6 +38,7 @@ final class JsonObject implements JsonValue
 
     /**
      * @return array<string, JsonValue>
+     * @psalm-mutation-free
      */
     public function getProperties(): array
     {
@@ -39,6 +47,7 @@ final class JsonObject implements JsonValue
 
     /**
      * @return JsonPointer
+     * @psalm-mutation-free
      */
     public function getPath(): JsonPointer
     {
@@ -48,6 +57,7 @@ final class JsonObject implements JsonValue
     /**
      * @param JsonValue $value
      * @return bool
+     * @psalm-mutation-free
      */
     public function equals(JsonValue $value): bool
     {
@@ -62,5 +72,35 @@ final class JsonObject implements JsonValue
         }
 
         return true;
+    }
+
+    /**
+     * @param non-empty-array<string, Keyword> $keywords
+     * @return non-empty-list<ProcessedSchema>
+     */
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    {
+        if (!$this->properties) {
+            return [new ProcessedSchema(new ObjectSchemaValidator([], $identifier), $identifier, [], [], $this->path)];
+        }
+
+        $context = new SchemaContext($keywords, $identifier);
+
+        foreach (array_intersect_key($keywords, $this->properties) as $keyword) {
+            $keyword->process($this->properties, $context);
+        }
+
+        foreach (array_diff_key($this->properties, $keywords) as $name => $value) {
+            $context->addKeywordHandler(new UnknownKeywordHandler($name, $value));
+        }
+
+        $identifier = $context->getIdentifier();
+        $anchors = $context->getAnchors();
+        $references = $context->getReferences();
+
+        $validator = new ObjectSchemaValidator($context->getKeywordHandlers(), $identifier);
+        $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $this->path);
+
+        return array_merge([$processedSchema], $context->getProcessedSchemas());
     }
 }

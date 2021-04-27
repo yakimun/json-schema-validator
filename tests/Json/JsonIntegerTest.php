@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Json;
 
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonInteger;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonPointer;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  */
 final class JsonIntegerTest extends TestCase
 {
@@ -43,5 +48,18 @@ final class JsonIntegerTest extends TestCase
         $this->assertTrue($this->value->equals(new JsonInteger(1, $path)));
         $this->assertFalse($this->value->equals(new JsonInteger(2, $path)));
         $this->assertFalse($this->value->equals(new JsonNull($path)));
+    }
+
+    public function testProcessAsSchema(): void
+    {
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $keywords = ['foo' => $this->createStub(Keyword::class)];
+
+        $this->expectException(InvalidSchemaException::class);
+
+        /**
+         * @psalm-suppress UnusedMethodCall
+         */
+        $this->value->processAsSchema($identifier, $keywords);
     }
 }

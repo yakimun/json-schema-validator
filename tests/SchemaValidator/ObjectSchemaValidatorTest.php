@@ -6,14 +6,14 @@ namespace Yakimun\JsonSchemaValidator\Tests\SchemaValidator;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Json\JsonPointer;
-use Yakimun\JsonSchemaValidator\Schema\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonPointer
- * @uses \Yakimun\JsonSchemaValidator\Schema\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  */
 final class ObjectSchemaValidatorTest extends TestCase
 {
