@@ -27,16 +27,19 @@ jobs:
         coverage: xdebug
 
     - name: Setup problem matchers for PHPUnit
-      run: echo ::add-matcher::${{ runner.tool_cache }}/phpunit.json
+      run: echo '::add-matcher::${{ runner.tool_cache }}/phpunit.json'
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
-    - name: Cache Composer packages
+    - name: Get Composer cache directory
       id: composer-cache
-      uses: actions/cache@v2.1.5
+      run: echo '::set-output name=dir::$(composer config cache-files-dir)'
+
+    - name: Cache Composer packages
+      uses: actions/cache@v2
       with:
-        path: vendor
+        path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
