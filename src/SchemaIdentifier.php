@@ -48,7 +48,7 @@ final class SchemaIdentifier
     }
 
     /**
-     * @param list<string> $tokens
+     * @param string ...$tokens
      * @return self
      * @no-named-arguments
      */

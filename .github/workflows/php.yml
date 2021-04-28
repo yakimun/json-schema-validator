@@ -43,6 +43,9 @@ jobs:
     - name: Run PHP_CodeSniffer
       run: composer run-script phpcs
 
+    - name: Run PHPStan
+      run: composer run-script phpstan
+
     - name: Run Psalm
       run: composer run-script psalm -- --output-format=github --shepherd
 

@@ -28,12 +28,12 @@ final class FileJsonLoader implements JsonLoader
      */
     public function load(): JsonValue
     {
-        if (!is_readable($this->filename)) {
+        if (!is_readable($this->filename) || ($json = file_get_contents($this->filename)) === false) {
             $message = sprintf('The file must exist and be readable. Filename: "%s".', $this->filename);
             throw new InvalidValueException($message);
         }
 
-        $loader = new StringJsonLoader(file_get_contents($this->filename));
+        $loader = new StringJsonLoader($json);
 
         return $loader->load();
     }

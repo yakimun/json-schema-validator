@@ -19,17 +19,17 @@ use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonFalse
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonFloat
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
- * @uses \Yakimun\JsonSchemaValidator\JsonLoader\StringJsonLoader
- * @uses \Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader
- * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonArray
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonFalse
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonFloat
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonInteger
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonNull
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonString
+ * @uses   \Yakimun\JsonSchemaValidator\Json\JsonTrue
+ * @uses   \Yakimun\JsonSchemaValidator\JsonLoader\StringJsonLoader
+ * @uses   \Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader
+ * @uses   \Yakimun\JsonSchemaValidator\JsonPointer
  */
 final class FileJsonLoaderTest extends TestCase
 {
@@ -45,8 +45,14 @@ final class FileJsonLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->filename = tempnam(sys_get_temp_dir(), 'jsv');
-        $this->loader = new FileJsonLoader($this->filename);
+        $filename = tempnam(sys_get_temp_dir(), 'jsv');
+
+        if (!$filename) {
+            throw new \RuntimeException('The temporary file cannot be created.');
+        }
+
+        $this->filename = $filename;
+        $this->loader = new FileJsonLoader($filename);
     }
 
     protected function tearDown(): void
@@ -177,6 +183,11 @@ final class FileJsonLoaderTest extends TestCase
     public function testLoadWithInvalidFile(): void
     {
         $filename = tempnam(sys_get_temp_dir(), 'jsv');
+
+        if (!$filename) {
+            throw new \RuntimeException('The temporary file cannot be created.');
+        }
+
         $loader = new FileJsonLoader($filename);
         unlink($filename);
 

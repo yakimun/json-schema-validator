@@ -101,6 +101,9 @@ final class JsonObject implements JsonValue
         $validator = new ObjectSchemaValidator($context->getKeywordHandlers(), $identifier);
         $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $this->path);
 
-        return array_merge([$processedSchema], $context->getProcessedSchemas());
+        /** @var non-empty-list<ProcessedSchema> $processedSchemas */
+        $processedSchemas = array_merge([$processedSchema], $context->getProcessedSchemas());
+
+        return $processedSchemas;
     }
 }

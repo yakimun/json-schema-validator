@@ -31,9 +31,7 @@ final class ValueJsonLoader implements JsonLoader
      */
     public function __construct($value)
     {
-        /**
-         * @var null|scalar|object|array<array-key, mixed> $value
-         */
+        /** @var null|scalar|object|array<array-key, mixed> $value */
         $this->value = $value;
     }
 
@@ -93,11 +91,8 @@ final class ValueJsonLoader implements JsonLoader
     {
         $properties = [];
 
-        /**
-         * @var string $key
-         * @var null|scalar|object|array<array-key, mixed> $property
-         */
-        foreach ($value as $key => $property) {
+        /** @var null|scalar|object|array<array-key, mixed> $property */
+        foreach (get_object_vars($value) as $key => $property) {
             $properties[$key] = $this->convert($property, $path->addTokens($key));
         }
 
@@ -114,9 +109,7 @@ final class ValueJsonLoader implements JsonLoader
         $items = [];
         $expectedIndex = 0;
 
-        /**
-         * @var null|scalar|object|array<array-key, mixed> $item
-         */
+        /** @var null|scalar|object|array<array-key, mixed> $item */
         foreach ($value as $index => $item) {
             if ($index !== $expectedIndex) {
                 $format = 'The array keys must be integers starting from 0 with no gaps in between. Path: "%s".';
