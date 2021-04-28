@@ -14,6 +14,7 @@
         "guzzlehttp/psr7": "^1.8"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.18",
         "phpstan/phpstan": "^0.12.85",
         "phpunit/phpunit": "^9.5",
         "psalm/plugin-phpunit": "^0.15.1",
@@ -30,6 +31,7 @@
         "sort-packages": true
     },
     "scripts": {
+        "php-cs-fixer": "vendor/bin/php-cs-fixer",
         "phpcs": "vendor/bin/phpcs",
         "phpstan": "vendor/bin/phpstan",
         "psalm": "vendor/bin/psalm",

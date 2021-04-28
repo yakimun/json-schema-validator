@@ -47,6 +47,9 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
+    - name: Run PHP CS Fixer
+      run: composer run-script php-cs-fixer fix -- --dry-run --format=checkstyle | cs2pr
+
     - name: Run PHP_CodeSniffer
       run: composer run-script phpcs -- --report=checkstyle | cs2pr
 
