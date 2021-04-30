@@ -11,7 +11,7 @@ use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses   \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  */
 final class SchemaIdentifierTest extends TestCase
 {

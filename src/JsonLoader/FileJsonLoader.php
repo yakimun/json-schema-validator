@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\JsonLoader;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidValueException;
+use GuzzleHttp\Psr7\LazyOpenStream;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 
 final class FileJsonLoader implements JsonLoader
@@ -28,12 +28,7 @@ final class FileJsonLoader implements JsonLoader
      */
     public function load(): JsonValue
     {
-        if (!is_readable($this->filename) || ($json = file_get_contents($this->filename)) === false) {
-            $message = sprintf('The file must exist and be readable. Filename: "%s".', $this->filename);
-            throw new InvalidValueException($message);
-        }
-
-        $loader = new StringJsonLoader($json);
+        $loader = new StreamJsonLoader(new LazyOpenStream($this->filename, 'r'));
 
         return $loader->load();
     }

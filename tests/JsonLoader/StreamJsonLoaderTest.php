@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\JsonLoader;
 
+use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 use Yakimun\JsonSchemaValidator\Exception\InvalidValueException;
 use Yakimun\JsonSchemaValidator\Json\JsonArray;
 use Yakimun\JsonSchemaValidator\Json\JsonFalse;
@@ -14,11 +16,11 @@ use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\Json\JsonTrue;
-use Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader;
+use Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
- * @covers \Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader
+ * @covers \Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonFalse
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonFloat
@@ -27,57 +29,48 @@ use Yakimun\JsonSchemaValidator\JsonPointer;
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
- * @uses \Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\JsonLoader\StringJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  */
-final class FileJsonLoaderTest extends TestCase
+final class StreamJsonLoaderTest extends TestCase
 {
     /**
-     * @var string
+     * @var StreamInterface
      */
-    private $filename;
+    private $stream;
 
     /**
-     * @var FileJsonLoader
+     * @var StreamJsonLoader
      */
     private $loader;
 
     protected function setUp(): void
     {
-        $filename = tempnam(sys_get_temp_dir(), 'jsv');
-
-        if (!$filename) {
-            throw new \RuntimeException('The temporary file cannot be created.');
-        }
-
-        $this->filename = $filename;
-        $this->loader = new FileJsonLoader($filename);
-    }
-
-    protected function tearDown(): void
-    {
-        unlink($this->filename);
+        $this->stream = Utils::streamFor();
+        $this->loader = new StreamJsonLoader($this->stream);
     }
 
     public function testLoadFileWithNull(): void
     {
-        file_put_contents($this->filename, 'null');
+        $this->stream->write('null');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonNull(new JsonPointer()), $this->loader->load());
     }
 
     public function testLoadTrue(): void
     {
-        file_put_contents($this->filename, 'true');
+        $this->stream->write('true');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonTrue(new JsonPointer()), $this->loader->load());
     }
 
     public function testLoadFalse(): void
     {
-        file_put_contents($this->filename, 'false');
+        $this->stream->write('false');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonFalse(new JsonPointer()), $this->loader->load());
     }
@@ -90,7 +83,8 @@ final class FileJsonLoaderTest extends TestCase
      */
     public function testLoadObject(string $value, array $expected): void
     {
-        file_put_contents($this->filename, $value);
+        $this->stream->write($value);
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonObject($expected, new JsonPointer()), $this->loader->load());
     }
@@ -118,7 +112,8 @@ final class FileJsonLoaderTest extends TestCase
      */
     public function testLoadArray(string $value, array $expected): void
     {
-        file_put_contents($this->filename, $value);
+        $this->stream->write($value);
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonArray($expected, new JsonPointer()), $this->loader->load());
     }
@@ -140,21 +135,24 @@ final class FileJsonLoaderTest extends TestCase
 
     public function testLoadInt(): void
     {
-        file_put_contents($this->filename, '1');
+        $this->stream->write('1');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonInteger(1, new JsonPointer()), $this->loader->load());
     }
 
     public function testLoadFloat(): void
     {
-        file_put_contents($this->filename, '1.5');
+        $this->stream->write('1.5');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonFloat(1.5, new JsonPointer()), $this->loader->load());
     }
 
     public function testLoadString(): void
     {
-        file_put_contents($this->filename, '"a"');
+        $this->stream->write('"a"');
+        $this->stream->rewind();
 
         $this->assertEquals(new JsonString('a', new JsonPointer()), $this->loader->load());
     }
@@ -166,28 +164,21 @@ final class FileJsonLoaderTest extends TestCase
         $this->loader->load();
     }
 
-    public function testLoadWithInvalidFilename(): void
+    public function testLoadWithClosedStream(): void
     {
-        $loader = new FileJsonLoader('');
+        $this->stream->close();
 
         $this->expectException(InvalidValueException::class);
 
-        $loader->load();
+        $this->loader->load();
     }
 
-    public function testLoadWithInvalidFile(): void
+    public function testLoadWithDetachedStream(): void
     {
-        $filename = tempnam(sys_get_temp_dir(), 'jsv');
-
-        if (!$filename) {
-            throw new \RuntimeException('The temporary file cannot be created.');
-        }
-
-        $loader = new FileJsonLoader($filename);
-        unlink($filename);
+        $this->stream->detach();
 
         $this->expectException(InvalidValueException::class);
 
-        $loader->load();
+        $this->loader->load();
     }
 }
