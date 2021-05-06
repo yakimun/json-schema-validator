@@ -13,9 +13,19 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 final class IfElseKeywordHandler implements KeywordHandler
 {
     /**
+     * @var string
+     */
+    private $absoluteLocation;
+
+    /**
      * @var SchemaValidator
      */
     private $schemaValidator;
+
+    /**
+     * @var string
+     */
+    private $elseAbsoluteLocation;
 
     /**
      * @var SchemaValidator
@@ -23,12 +33,20 @@ final class IfElseKeywordHandler implements KeywordHandler
     private $elseSchemaValidator;
 
     /**
+     * @param string $absoluteLocation
      * @param SchemaValidator $schemaValidator
+     * @param string $elseAbsoluteLocation
      * @param SchemaValidator $elseSchemaValidator
      */
-    public function __construct(SchemaValidator $schemaValidator, SchemaValidator $elseSchemaValidator)
-    {
+    public function __construct(
+        string $absoluteLocation,
+        SchemaValidator $schemaValidator,
+        string $elseAbsoluteLocation,
+        SchemaValidator $elseSchemaValidator
+    ) {
+        $this->absoluteLocation = $absoluteLocation;
         $this->schemaValidator = $schemaValidator;
+        $this->elseAbsoluteLocation = $elseAbsoluteLocation;
         $this->elseSchemaValidator = $elseSchemaValidator;
     }
 }

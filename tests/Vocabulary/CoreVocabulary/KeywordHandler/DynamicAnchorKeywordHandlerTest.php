@@ -14,7 +14,7 @@ final class DynamicAnchorKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new DynamicAnchorKeywordHandler('a');
+        $keywordHandler = new DynamicAnchorKeywordHandler('https://example.com#/$dynamicAnchor', 'a');
 
         $this->assertInstanceOf(DynamicAnchorKeywordHandler::class, $keywordHandler);
     }

@@ -14,7 +14,7 @@ final class DependentSchemasKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new DependentSchemasKeywordHandler([]);
+        $keywordHandler = new DependentSchemasKeywordHandler('https://example.com#/dependentSchemas', []);
 
         $this->assertInstanceOf(DependentSchemasKeywordHandler::class, $keywordHandler);
     }

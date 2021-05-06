@@ -39,8 +39,12 @@ final class DynamicRefKeyword implements Keyword
             throw new InvalidSchemaException(sprintf('The value must be a string. Path: "%s".', (string)$path));
         }
 
-        $dynamicRef = UriResolver::resolve($context->getIdentifier()->getUri(), new Uri($property->getValue()));
+        $identifier = $context->getIdentifier();
+        $dynamicRefIdentifier = $identifier->addTokens('$dynamicRef');
+
+        $dynamicRef = UriResolver::resolve($identifier->getUri(), new Uri($property->getValue()));
+
         $context->addReference(new SchemaReference($dynamicRef, $path));
-        $context->addKeywordHandler(new DynamicRefKeywordHandler($dynamicRef));
+        $context->addKeywordHandler(new DynamicRefKeywordHandler((string)$dynamicRefIdentifier, (string)$dynamicRef));
     }
 }

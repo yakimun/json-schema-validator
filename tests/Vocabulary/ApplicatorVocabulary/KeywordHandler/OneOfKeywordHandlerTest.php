@@ -14,7 +14,7 @@ final class OneOfKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new OneOfKeywordHandler([]);
+        $keywordHandler = new OneOfKeywordHandler('https://example.com#/oneOf', []);
 
         $this->assertInstanceOf(OneOfKeywordHandler::class, $keywordHandler);
     }

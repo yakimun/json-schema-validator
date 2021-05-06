@@ -49,14 +49,15 @@ final class NotKeywordTest extends TestCase
     {
         $uri = new Uri('https://example.com');
         $pointer = new JsonPointer('not');
-        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
-        $validator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($validator, $validatorIdentifier, [], [], $pointer);
+        $absoluteLocation = 'https://example.com#/not';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $keywordHandler = new NotKeywordHandler($absoluteLocation, $validator);
+        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(['not' => $this->keyword], $identifier);
         $this->keyword->process(['not' => new JsonObject([], $pointer)], $context);
 
-        $this->assertEquals([new NotKeywordHandler($validator)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
     }
 

@@ -54,11 +54,11 @@ final class DynamicRefKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com/a/b'), new JsonPointer());
         $context = new SchemaContext(['$dynamicRef' => $this->keyword], $identifier);
         $path = new JsonPointer('$dynamicRef');
-        $expectedUri = new Uri($expected);
+        $keywordHandler = new DynamicRefKeywordHandler('https://example.com/a/b#/$dynamicRef', $expected);
         $this->keyword->process(['$dynamicRef' => new JsonString($value, $path)], $context);
 
-        $this->assertEquals([new SchemaReference($expectedUri, $path)], $context->getReferences());
-        $this->assertEquals([new DynamicRefKeywordHandler($expectedUri)], $context->getKeywordHandlers());
+        $this->assertEquals([new SchemaReference(new Uri($expected), $path)], $context->getReferences());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     /**

@@ -35,13 +35,13 @@ final class PatternPropertiesKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('patternProperties');
         $validators = [];
 
         foreach ($property->getProperties() as $key => $value) {
-            $identifier = $context->getIdentifier()->addTokens('patternProperties', $key);
-            $validators['/' . $key . '/'] = $context->createValidator($value, $identifier);
+            $validators['/' . $key . '/'] = $context->createValidator($value, $identifier->addTokens($key));
         }
 
-        $context->addKeywordHandler(new PatternPropertiesKeywordHandler($validators));
+        $context->addKeywordHandler(new PatternPropertiesKeywordHandler((string)$identifier, $validators));
     }
 }

@@ -45,8 +45,10 @@ final class DynamicAnchorKeyword implements Keyword
             throw new InvalidSchemaException(sprintf($format, (string)$path));
         }
 
-        $reference = new SchemaReference($context->getIdentifier()->getUri()->withFragment($dynamicAnchor), $path);
-        $context->addAnchor($reference);
-        $context->addKeywordHandler(new DynamicAnchorKeywordHandler($dynamicAnchor));
+        $identifier = $context->getIdentifier();
+        $dynamicAnchorIdentifier = $identifier->addTokens('$dynamicAnchor');
+
+        $context->addAnchor(new SchemaReference($identifier->getUri()->withFragment($dynamicAnchor), $path));
+        $context->addKeywordHandler(new DynamicAnchorKeywordHandler((string)$dynamicAnchorIdentifier, $dynamicAnchor));
     }
 }

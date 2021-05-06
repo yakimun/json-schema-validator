@@ -54,11 +54,11 @@ final class RefKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com/a/b'), new JsonPointer());
         $context = new SchemaContext(['$ref' => $this->keyword], $identifier);
         $path = new JsonPointer('$ref');
-        $expectedUri = new Uri($expected);
+        $keywordHandler = new RefKeywordHandler('https://example.com/a/b#/$ref', $expected);
         $this->keyword->process(['$ref' => new JsonString($value, $path)], $context);
 
-        $this->assertEquals([new SchemaReference($expectedUri, $path)], $context->getReferences());
-        $this->assertEquals([new RefKeywordHandler($expectedUri)], $context->getKeywordHandlers());
+        $this->assertEquals([new SchemaReference(new Uri($expected), $path)], $context->getReferences());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     /**

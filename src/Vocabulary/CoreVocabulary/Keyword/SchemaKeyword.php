@@ -48,7 +48,7 @@ final class SchemaKeyword implements Keyword
             throw new InvalidSchemaException(sprintf('The value must be a normalized URI. Path: "%s".', (string)$path));
         }
 
-        if (!$path->equals(new JsonPointer('$schema')) && !($properties['$id'] ?? null)) {
+        if (!($properties['$id'] ?? null) && !$path->equals(new JsonPointer('$schema'))) {
             $format = 'The keyword must not appear in non-resource root schema objects. Path: "%s".';
             throw new InvalidSchemaException(sprintf($format, (string)$path));
         }

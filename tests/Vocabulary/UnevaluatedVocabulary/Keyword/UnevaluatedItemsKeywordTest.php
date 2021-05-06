@@ -49,14 +49,15 @@ final class UnevaluatedItemsKeywordTest extends TestCase
     {
         $uri = new Uri('https://example.com');
         $pointer = new JsonPointer('unevaluatedItems');
-        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
-        $validator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($validator, $validatorIdentifier, [], [], $pointer);
+        $absoluteLocation = 'https://example.com#/unevaluatedItems';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $keywordHandler = new UnevaluatedItemsKeywordHandler($absoluteLocation, $validator);
+        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(['unevaluatedItems' => $this->keyword], $identifier);
         $this->keyword->process(['unevaluatedItems' => new JsonObject([], $pointer)], $context);
 
-        $this->assertEquals([new UnevaluatedItemsKeywordHandler($validator)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
     }
 

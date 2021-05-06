@@ -14,7 +14,7 @@ final class PropertiesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new PropertiesKeywordHandler([]);
+        $keywordHandler = new PropertiesKeywordHandler('https://example.com#/properties', []);
 
         $this->assertInstanceOf(PropertiesKeywordHandler::class, $keywordHandler);
     }

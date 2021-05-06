@@ -28,6 +28,6 @@ final class NotKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('not');
         $validator = $context->createValidator($properties['not'], $identifier);
-        $context->addKeywordHandler(new NotKeywordHandler($validator));
+        $context->addKeywordHandler(new NotKeywordHandler((string)$identifier, $validator));
     }
 }

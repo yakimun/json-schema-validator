@@ -14,7 +14,7 @@ final class PrefixItemsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new PrefixItemsKeywordHandler([]);
+        $keywordHandler = new PrefixItemsKeywordHandler('https://example.com#/prefixItems', []);
 
         $this->assertInstanceOf(PrefixItemsKeywordHandler::class, $keywordHandler);
     }

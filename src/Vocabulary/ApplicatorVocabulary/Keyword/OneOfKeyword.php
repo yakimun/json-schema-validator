@@ -42,13 +42,13 @@ final class OneOfKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('oneOf');
         $validators = [];
 
         foreach ($items as $index => $item) {
-            $identifier = $context->getIdentifier()->addTokens('oneOf', (string)$index);
-            $validators[] = $context->createValidator($item, $identifier);
+            $validators[] = $context->createValidator($item, $identifier->addTokens((string)$index));
         }
 
-        $context->addKeywordHandler(new OneOfKeywordHandler($validators));
+        $context->addKeywordHandler(new OneOfKeywordHandler((string)$identifier, $validators));
     }
 }

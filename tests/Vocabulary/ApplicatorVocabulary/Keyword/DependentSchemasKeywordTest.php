@@ -59,12 +59,15 @@ final class DependentSchemasKeywordTest extends TestCase
         $value = new JsonObject($properties, new JsonPointer('dependentSchemas'));
         $this->keyword->process(['dependentSchemas' => $value], $context);
 
-        $schemaValidators = [];
+        $validators = [];
+
         foreach ($expected as $key => $processedSchema) {
-            $schemaValidators[$key] = $processedSchema->getValidator();
+            $validators[$key] = $processedSchema->getValidator();
         }
 
-        $this->assertEquals([new DependentSchemasKeywordHandler($schemaValidators)], $context->getKeywordHandlers());
+        $keywordHandler = new DependentSchemasKeywordHandler('https://example.com#/dependentSchemas', $validators);
+
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals(array_values($expected), $context->getProcessedSchemas());
     }
 
@@ -84,8 +87,8 @@ final class DependentSchemasKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
 
-        $validator1 = new ObjectSchemaValidator([], $identifier1);
-        $validator2 = new ObjectSchemaValidator([], $identifier2);
+        $validator1 = new ObjectSchemaValidator('https://example.com#/dependentSchemas/a', []);
+        $validator2 = new ObjectSchemaValidator('https://example.com#/dependentSchemas/b', []);
 
         $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], $pointer1);
         $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], $pointer2);

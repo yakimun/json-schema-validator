@@ -51,6 +51,6 @@ final class JsonTrue implements JsonValue
      */
     public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
     {
-        return [new ProcessedSchema(new TrueSchemaValidator($identifier), $identifier, [], [], $this->path)];
+        return [new ProcessedSchema(new TrueSchemaValidator((string)$identifier), $identifier, [], [], $this->path)];
     }
 }

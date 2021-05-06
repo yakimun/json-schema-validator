@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-
 /**
  * @psalm-immutable
  */
 final class TrueSchemaValidator implements SchemaValidator
 {
     /**
-     * @var SchemaIdentifier
+     * @var string
      */
-    private $identifier;
+    private $absoluteLocation;
 
     /**
-     * @param SchemaIdentifier $identifier
+     * @param string $absoluteLocation
      */
-    public function __construct(SchemaIdentifier $identifier)
+    public function __construct(string $absoluteLocation)
     {
-        $this->identifier = $identifier;
+        $this->absoluteLocation = $absoluteLocation;
     }
 }

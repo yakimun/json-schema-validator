@@ -39,8 +39,12 @@ final class RefKeyword implements Keyword
             throw new InvalidSchemaException(sprintf('The value must be a string. Path: "%s".', (string)$path));
         }
 
-        $ref = UriResolver::resolve($context->getIdentifier()->getUri(), new Uri($property->getValue()));
+        $identifier = $context->getIdentifier();
+        $refIdentifier = $identifier->addTokens('$ref');
+
+        $ref = UriResolver::resolve($identifier->getUri(), new Uri($property->getValue()));
+
         $context->addReference(new SchemaReference($ref, $path));
-        $context->addKeywordHandler(new RefKeywordHandler($ref));
+        $context->addKeywordHandler(new RefKeywordHandler((string)$refIdentifier, (string)$ref));
     }
 }

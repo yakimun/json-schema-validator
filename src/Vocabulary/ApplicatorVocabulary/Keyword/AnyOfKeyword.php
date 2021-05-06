@@ -42,13 +42,13 @@ final class AnyOfKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('anyOf');
         $validators = [];
 
         foreach ($items as $index => $item) {
-            $identifier = $context->getIdentifier()->addTokens('anyOf', (string)$index);
-            $validators[] = $context->createValidator($item, $identifier);
+            $validators[] = $context->createValidator($item, $identifier->addTokens((string)$index));
         }
 
-        $context->addKeywordHandler(new AnyOfKeywordHandler($validators));
+        $context->addKeywordHandler(new AnyOfKeywordHandler((string)$identifier, $validators));
     }
 }

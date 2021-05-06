@@ -70,4 +70,31 @@ final class SchemaIdentifierTest extends TestCase
             [['a', 'b'], ['c', 'd'], ['a', 'b', 'c', 'd']],
         ];
     }
+
+    /**
+     * @param list<string> $tokens
+     * @param string $expected
+     *
+     * @dataProvider tokenWithStringProvider
+     */
+    public function testToString(array $tokens, string $expected): void
+    {
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer(...$tokens));
+
+        $this->assertEquals('https://example.com' . $expected, $identifier);
+    }
+
+    /**
+     * @return non-empty-list<array{list<string>, string}>
+     */
+    public function tokenWithStringProvider(): array
+    {
+        return [
+            [[], ''],
+            [['a'], '#/a'],
+            [['a', 'b'], '#/a/b'],
+            [['~'], '#/~0'],
+            [['/'], '#/~1'],
+        ];
+    }
 }

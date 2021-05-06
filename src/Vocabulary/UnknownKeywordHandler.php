@@ -14,6 +14,11 @@ final class UnknownKeywordHandler implements KeywordHandler
     /**
      * @var string
      */
+    private $absoluteLocation;
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -22,11 +27,13 @@ final class UnknownKeywordHandler implements KeywordHandler
     private $value;
 
     /**
+     * @param string $absoluteLocation
      * @param string $name
      * @param JsonValue $value
      */
-    public function __construct(string $name, JsonValue $value)
+    public function __construct(string $absoluteLocation, string $name, JsonValue $value)
     {
+        $this->absoluteLocation = $absoluteLocation;
         $this->name = $name;
         $this->value = $value;
     }

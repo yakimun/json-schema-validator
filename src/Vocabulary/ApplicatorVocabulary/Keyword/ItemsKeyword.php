@@ -28,6 +28,6 @@ final class ItemsKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('items');
         $validator = $context->createValidator($properties['items'], $identifier);
-        $context->addKeywordHandler(new ItemsKeywordHandler($validator));
+        $context->addKeywordHandler(new ItemsKeywordHandler((string)$identifier, $validator));
     }
 }

@@ -28,6 +28,6 @@ final class ContainsKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('contains');
         $validator = $context->createValidator($properties['contains'], $identifier);
-        $context->addKeywordHandler(new ContainsKeywordHandler($validator));
+        $context->addKeywordHandler(new ContainsKeywordHandler((string)$identifier, $validator));
     }
 }

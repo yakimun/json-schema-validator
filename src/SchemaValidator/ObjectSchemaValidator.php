@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
 /**
@@ -13,22 +12,22 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 final class ObjectSchemaValidator implements SchemaValidator
 {
     /**
+     * @var string
+     */
+    private $absoluteLocation;
+
+    /**
      * @var list<KeywordHandler>
      */
     private $keywordHandlers;
 
     /**
-     * @var SchemaIdentifier
-     */
-    private $identifier;
-
-    /**
+     * @param string $absoluteLocation
      * @param list<KeywordHandler> $keywordHandlers
-     * @param SchemaIdentifier $identifier
      */
-    public function __construct(array $keywordHandlers, SchemaIdentifier $identifier)
+    public function __construct(string $absoluteLocation, array $keywordHandlers)
     {
+        $this->absoluteLocation = $absoluteLocation;
         $this->keywordHandlers = $keywordHandlers;
-        $this->identifier = $identifier;
     }
 }

@@ -55,10 +55,11 @@ final class DynamicAnchorKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(['$dynamicAnchor' => $this->keyword], $identifier);
         $path = new JsonPointer('$dynamicAnchor');
+        $keywordHandler = new DynamicAnchorKeywordHandler('https://example.com#/$dynamicAnchor', $value);
         $this->keyword->process(['$dynamicAnchor' => new JsonString($value, $path)], $context);
 
         $this->assertEquals([new SchemaReference($uri->withFragment($value), $path)], $context->getAnchors());
-        $this->assertEquals([new DynamicAnchorKeywordHandler($value)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     /**

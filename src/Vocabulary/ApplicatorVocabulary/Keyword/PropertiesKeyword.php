@@ -35,13 +35,13 @@ final class PropertiesKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('properties');
         $validators = [];
 
         foreach ($property->getProperties() as $key => $value) {
-            $identifier = $context->getIdentifier()->addTokens('properties', $key);
-            $validators[$key] = $context->createValidator($value, $identifier);
+            $validators[$key] = $context->createValidator($value, $identifier->addTokens($key));
         }
 
-        $context->addKeywordHandler(new PropertiesKeywordHandler($validators));
+        $context->addKeywordHandler(new PropertiesKeywordHandler((string)$identifier, $validators));
     }
 }

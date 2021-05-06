@@ -51,6 +51,6 @@ final class JsonFalse implements JsonValue
      */
     public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
     {
-        return [new ProcessedSchema(new FalseSchemaValidator($identifier), $identifier, [], [], $this->path)];
+        return [new ProcessedSchema(new FalseSchemaValidator((string)$identifier), $identifier, [], [], $this->path)];
     }
 }

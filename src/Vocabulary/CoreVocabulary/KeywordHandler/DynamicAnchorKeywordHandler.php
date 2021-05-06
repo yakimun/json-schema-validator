@@ -14,13 +14,20 @@ final class DynamicAnchorKeywordHandler implements KeywordHandler
     /**
      * @var string
      */
+    private $absoluteLocation;
+
+    /**
+     * @var string
+     */
     private $dynamicAnchor;
 
     /**
+     * @param string $absoluteLocation
      * @param string $dynamicAnchor
      */
-    public function __construct(string $dynamicAnchor)
+    public function __construct(string $absoluteLocation, string $dynamicAnchor)
     {
+        $this->absoluteLocation = $absoluteLocation;
         $this->dynamicAnchor = $dynamicAnchor;
     }
 }

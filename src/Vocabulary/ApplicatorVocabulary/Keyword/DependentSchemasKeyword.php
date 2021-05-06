@@ -35,13 +35,13 @@ final class DependentSchemasKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('dependentSchemas');
         $validators = [];
 
         foreach ($property->getProperties() as $key => $value) {
-            $identifier = $context->getIdentifier()->addTokens('dependentSchemas', $key);
-            $validators[$key] = $context->createValidator($value, $identifier);
+            $validators[$key] = $context->createValidator($value, $identifier->addTokens($key));
         }
 
-        $context->addKeywordHandler(new DependentSchemasKeywordHandler($validators));
+        $context->addKeywordHandler(new DependentSchemasKeywordHandler((string)$identifier, $validators));
     }
 }

@@ -28,6 +28,6 @@ final class PropertyNamesKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('propertyNames');
         $validator = $context->createValidator($properties['propertyNames'], $identifier);
-        $context->addKeywordHandler(new PropertyNamesKeywordHandler($validator));
+        $context->addKeywordHandler(new PropertyNamesKeywordHandler((string)$identifier, $validator));
     }
 }

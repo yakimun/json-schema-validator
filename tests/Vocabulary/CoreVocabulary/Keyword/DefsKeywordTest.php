@@ -75,8 +75,8 @@ final class DefsKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
 
-        $validator1 = new ObjectSchemaValidator([], $identifier1);
-        $validator2 = new ObjectSchemaValidator([], $identifier2);
+        $validator1 = new ObjectSchemaValidator('https://example.com#/$defs/a', []);
+        $validator2 = new ObjectSchemaValidator('https://example.com#/$defs/b', []);
 
         $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], $pointer1);
         $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], $pointer2);

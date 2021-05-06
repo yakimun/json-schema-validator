@@ -28,6 +28,6 @@ final class UnevaluatedPropertiesKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('unevaluatedProperties');
         $validator = $context->createValidator($properties['unevaluatedProperties'], $identifier);
-        $context->addKeywordHandler(new UnevaluatedPropertiesKeywordHandler($validator));
+        $context->addKeywordHandler(new UnevaluatedPropertiesKeywordHandler((string)$identifier, $validator));
     }
 }

@@ -52,92 +52,107 @@ final class IfKeywordTest extends TestCase
     {
         $uri = new Uri('https://example.com');
         $pointer = new JsonPointer('if');
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, $pointer);
-        $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
-        $processedSchemas = [new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $pointer)];
-        $context = new SchemaContext(['if' => $this->keyword], $identifier);
+        $validator = new ObjectSchemaValidator('https://example.com#/if', []);
+        $keywordHandler = new IfKeywordHandler('https://example.com#/if', $validator);
+        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
+        $context = new SchemaContext(['if' => $this->keyword], new SchemaIdentifier($uri, new JsonPointer()));
         $this->keyword->process(['if' => new JsonObject([], $pointer)], $context);
 
-        $this->assertEquals([new IfKeywordHandler($ifValidator)], $context->getKeywordHandlers());
-        $this->assertEquals($processedSchemas, $context->getProcessedSchemas());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
     }
 
     public function testProcessWithThen(): void
     {
+        $absoluteLocation = 'https://example.com#/if';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $thenAbsoluteLocation = 'https://example.com#/then';
+        $thenValidator = new ObjectSchemaValidator($thenAbsoluteLocation, []);
+        $keywordHandler = new IfThenKeywordHandler(
+            $absoluteLocation,
+            $validator,
+            $thenAbsoluteLocation,
+            $thenValidator,
+        );
         $uri = new Uri('https://example.com');
-        $ifPointer = new JsonPointer('if');
+        $pointer = new JsonPointer('if');
         $thenPointer = new JsonPointer('then');
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
-        $thenIdentifier = new SchemaIdentifier($uri, $thenPointer);
-        $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
-        $thenValidator = new ObjectSchemaValidator([], $thenIdentifier);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
-            new ProcessedSchema($thenValidator, $thenIdentifier, [], [], $thenPointer),
+            new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer),
+            new ProcessedSchema($thenValidator, new SchemaIdentifier($uri, $thenPointer), [], [], $thenPointer),
         ];
         $properties = [
-            'if' => new JsonObject([], $ifPointer),
+            'if' => new JsonObject([], $pointer),
             'then' => new JsonObject([], $thenPointer),
         ];
-        $context = new SchemaContext(['if' => $this->keyword], $identifier);
+        $context = new SchemaContext(['if' => $this->keyword], new SchemaIdentifier($uri, new JsonPointer()));
         $this->keyword->process($properties, $context);
 
-        $this->assertEquals([new IfThenKeywordHandler($ifValidator, $thenValidator)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals($processedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithElse(): void
     {
+        $absoluteLocation = 'https://example.com#/if';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $elseAbsoluteLocation = 'https://example.com#/else';
+        $elseValidator = new ObjectSchemaValidator($elseAbsoluteLocation, []);
+        $keywordHandler = new IfElseKeywordHandler(
+            $absoluteLocation,
+            $validator,
+            $elseAbsoluteLocation,
+            $elseValidator,
+        );
         $uri = new Uri('https://example.com');
-        $ifPointer = new JsonPointer('if');
+        $pointer = new JsonPointer('if');
         $elsePointer = new JsonPointer('else');
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
-        $elseIdentifier = new SchemaIdentifier($uri, $elsePointer);
-        $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
-        $elseValidator = new ObjectSchemaValidator([], $elseIdentifier);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
-            new ProcessedSchema($elseValidator, $elseIdentifier, [], [], $elsePointer),
+            new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer),
+            new ProcessedSchema($elseValidator, new SchemaIdentifier($uri, $elsePointer), [], [], $elsePointer),
         ];
         $properties = [
-            'if' => new JsonObject([], $ifPointer),
+            'if' => new JsonObject([], $pointer),
             'else' => new JsonObject([], $elsePointer),
         ];
-        $context = new SchemaContext(['if' => $this->keyword], $identifier);
+        $context = new SchemaContext(['if' => $this->keyword], new SchemaIdentifier($uri, new JsonPointer()));
         $this->keyword->process($properties, $context);
 
-        $this->assertEquals([new IfElseKeywordHandler($ifValidator, $elseValidator)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals($processedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithThenAndElse(): void
     {
+        $absoluteLocation = 'https://example.com#/if';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $thenAbsoluteLocation = 'https://example.com#/then';
+        $thenValidator = new ObjectSchemaValidator($thenAbsoluteLocation, []);
+        $elseAbsoluteLocation = 'https://example.com#/else';
+        $elseValidator = new ObjectSchemaValidator($elseAbsoluteLocation, []);
+        $keywordHandler = new IfThenElseKeywordHandler(
+            $absoluteLocation,
+            $validator,
+            $thenAbsoluteLocation,
+            $thenValidator,
+            $elseAbsoluteLocation,
+            $elseValidator,
+        );
         $uri = new Uri('https://example.com');
-        $ifPointer = new JsonPointer('if');
+        $pointer = new JsonPointer('if');
         $thenPointer = new JsonPointer('then');
         $elsePointer = new JsonPointer('else');
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
-        $ifIdentifier = new SchemaIdentifier($uri, $ifPointer);
-        $thenIdentifier = new SchemaIdentifier($uri, $thenPointer);
-        $elseIdentifier = new SchemaIdentifier($uri, $elsePointer);
-        $ifValidator = new ObjectSchemaValidator([], $ifIdentifier);
-        $thenValidator = new ObjectSchemaValidator([], $thenIdentifier);
-        $elseValidator = new ObjectSchemaValidator([], $elseIdentifier);
-        $keywordHandler = new IfThenElseKeywordHandler($ifValidator, $thenValidator, $elseValidator);
         $processedSchemas = [
-            new ProcessedSchema($ifValidator, $ifIdentifier, [], [], $ifPointer),
-            new ProcessedSchema($thenValidator, $thenIdentifier, [], [], $thenPointer),
-            new ProcessedSchema($elseValidator, $elseIdentifier, [], [], $elsePointer),
+            new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer),
+            new ProcessedSchema($thenValidator, new SchemaIdentifier($uri, $thenPointer), [], [], $thenPointer),
+            new ProcessedSchema($elseValidator, new SchemaIdentifier($uri, $elsePointer), [], [], $elsePointer),
         ];
         $properties = [
-            'if' => new JsonObject([], $ifPointer),
+            'if' => new JsonObject([], $pointer),
             'then' => new JsonObject([], $thenPointer),
             'else' => new JsonObject([], $elsePointer),
         ];
-        $context = new SchemaContext(['if' => $this->keyword], $identifier);
+        $context = new SchemaContext(['if' => $this->keyword], new SchemaIdentifier($uri, new JsonPointer()));
         $this->keyword->process($properties, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());

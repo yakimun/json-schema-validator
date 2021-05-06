@@ -81,7 +81,9 @@ final class JsonObject implements JsonValue
     public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
     {
         if (!$this->properties) {
-            return [new ProcessedSchema(new ObjectSchemaValidator([], $identifier), $identifier, [], [], $this->path)];
+            $validator = new ObjectSchemaValidator((string)$identifier, []);
+
+            return [new ProcessedSchema($validator, $identifier, [], [], $this->path)];
         }
 
         $context = new SchemaContext($keywords, $identifier);
@@ -91,14 +93,15 @@ final class JsonObject implements JsonValue
         }
 
         foreach (array_diff_key($this->properties, $keywords) as $name => $value) {
-            $context->addKeywordHandler(new UnknownKeywordHandler($name, $value));
+            $keywordIdentifier = $identifier->addTokens($name);
+            $context->addKeywordHandler(new UnknownKeywordHandler((string)$keywordIdentifier, $name, $value));
         }
 
         $identifier = $context->getIdentifier();
         $anchors = $context->getAnchors();
         $references = $context->getReferences();
 
-        $validator = new ObjectSchemaValidator($context->getKeywordHandlers(), $identifier);
+        $validator = new ObjectSchemaValidator((string)$identifier, $context->getKeywordHandlers());
         $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $this->path);
 
         /** @var non-empty-list<ProcessedSchema> $processedSchemas */

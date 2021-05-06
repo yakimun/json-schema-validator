@@ -14,7 +14,7 @@ final class PatternPropertiesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new PatternPropertiesKeywordHandler([]);
+        $keywordHandler = new PatternPropertiesKeywordHandler('https://example.com#/patternProperties', []);
 
         $this->assertInstanceOf(PatternPropertiesKeywordHandler::class, $keywordHandler);
     }

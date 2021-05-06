@@ -42,13 +42,13 @@ final class AllOfKeyword implements Keyword
             throw new InvalidSchemaException($message);
         }
 
+        $identifier = $context->getIdentifier()->addTokens('allOf');
         $validators = [];
 
         foreach ($items as $index => $item) {
-            $identifier = $context->getIdentifier()->addTokens('allOf', (string)$index);
-            $validators[] = $context->createValidator($item, $identifier);
+            $validators[] = $context->createValidator($item, $identifier->addTokens((string)$index));
         }
 
-        $context->addKeywordHandler(new AllOfKeywordHandler($validators));
+        $context->addKeywordHandler(new AllOfKeywordHandler((string)$identifier, $validators));
     }
 }

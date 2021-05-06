@@ -28,6 +28,6 @@ final class AdditionalPropertiesKeyword implements Keyword
     {
         $identifier = $context->getIdentifier()->addTokens('additionalProperties');
         $validator = $context->createValidator($properties['additionalProperties'], $identifier);
-        $context->addKeywordHandler(new AdditionalPropertiesKeywordHandler($validator));
+        $context->addKeywordHandler(new AdditionalPropertiesKeywordHandler((string)$identifier, $validator));
     }
 }

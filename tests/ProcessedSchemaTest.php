@@ -41,7 +41,7 @@ final class ProcessedSchemaTest extends TestCase
     {
         $this->pointer = new JsonPointer();
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer);
-        $this->validator = new TrueSchemaValidator($this->identifier);
+        $this->validator = new TrueSchemaValidator('https://example.com');
     }
 
     public function testGetValidator(): void

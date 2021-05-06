@@ -49,14 +49,15 @@ final class AdditionalPropertiesKeywordTest extends TestCase
     {
         $uri = new Uri('https://example.com');
         $pointer = new JsonPointer('additionalProperties');
-        $validatorIdentifier = new SchemaIdentifier($uri, $pointer);
-        $validator = new ObjectSchemaValidator([], $validatorIdentifier);
-        $processedSchema = new ProcessedSchema($validator, $validatorIdentifier, [], [], $pointer);
+        $absoluteLocation = 'https://example.com#/additionalProperties';
+        $validator = new ObjectSchemaValidator($absoluteLocation, []);
+        $keywordHandler = new AdditionalPropertiesKeywordHandler($absoluteLocation, $validator);
+        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
         $identifier = new SchemaIdentifier($uri, new JsonPointer());
         $context = new SchemaContext(['additionalProperties' => $this->keyword], $identifier);
         $this->keyword->process(['additionalProperties' => new JsonObject([], $pointer)], $context);
 
-        $this->assertEquals([new AdditionalPropertiesKeywordHandler($validator)], $context->getKeywordHandlers());
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordHandler;
 
-use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
 /**
@@ -13,15 +12,22 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 final class DynamicRefKeywordHandler implements KeywordHandler
 {
     /**
-     * @var UriInterface
+     * @var string
+     */
+    private $absoluteLocation;
+
+    /**
+     * @var string
      */
     private $dynamicRef;
 
     /**
-     * @param UriInterface $dynamicRef
+     * @param string $absoluteLocation
+     * @param string $dynamicRef
      */
-    public function __construct(UriInterface $dynamicRef)
+    public function __construct(string $absoluteLocation, string $dynamicRef)
     {
+        $this->absoluteLocation = $absoluteLocation;
         $this->dynamicRef = $dynamicRef;
     }
 }

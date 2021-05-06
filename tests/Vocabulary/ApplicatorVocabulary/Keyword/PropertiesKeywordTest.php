@@ -56,14 +56,18 @@ final class PropertiesKeywordTest extends TestCase
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['properties' => $this->keyword], $identifier);
-        $this->keyword->process(['properties' => new JsonObject($properties, new JsonPointer('properties'))], $context);
+        $value = new JsonObject($properties, new JsonPointer('properties'));
+        $this->keyword->process(['properties' => $value], $context);
 
-        $schemaValidators = [];
+        $validators = [];
+
         foreach ($expected as $key => $processedSchema) {
-            $schemaValidators[$key] = $processedSchema->getValidator();
+            $validators[$key] = $processedSchema->getValidator();
         }
 
-        $this->assertEquals([new PropertiesKeywordHandler($schemaValidators)], $context->getKeywordHandlers());
+        $keywordHandler = new PropertiesKeywordHandler('https://example.com#/properties', $validators);
+
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals(array_values($expected), $context->getProcessedSchemas());
     }
 
@@ -83,8 +87,8 @@ final class PropertiesKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
 
-        $validator1 = new ObjectSchemaValidator([], $identifier1);
-        $validator2 = new ObjectSchemaValidator([], $identifier2);
+        $validator1 = new ObjectSchemaValidator('https://example.com#/properties/a', []);
+        $validator2 = new ObjectSchemaValidator('https://example.com#/properties/b', []);
 
         $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], $pointer1);
         $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], $pointer2);

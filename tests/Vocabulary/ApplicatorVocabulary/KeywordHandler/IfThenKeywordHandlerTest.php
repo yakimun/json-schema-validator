@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ApplicatorVocabulary\KeywordHandler;
 
-use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\JsonPointer;
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfThenKeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfThenKeywordHandler
- * @uses \Yakimun\JsonSchemaValidator\JsonPointer
- * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
  */
 final class IfThenKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $schemaValidator = new TrueSchemaValidator($identifier);
-        $keywordHandler = new IfThenKeywordHandler($schemaValidator, $schemaValidator);
+        $absoluteLocation = 'https://example.com#/if';
+        $schemaValidator = $this->createStub(SchemaValidator::class);
+        $thenAbsoluteLocation = 'https://example.com#/then';
+        $thenSchemaValidator = $this->createStub(SchemaValidator::class);
+        $keywordHandler = new IfThenKeywordHandler(
+            $absoluteLocation,
+            $schemaValidator,
+            $thenAbsoluteLocation,
+            $thenSchemaValidator,
+        );
 
         $this->assertInstanceOf(IfThenKeywordHandler::class, $keywordHandler);
     }

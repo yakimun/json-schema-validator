@@ -4,25 +4,20 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ApplicatorVocabulary\KeywordHandler;
 
-use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\JsonPointer;
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfKeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfKeywordHandler
- * @uses \Yakimun\JsonSchemaValidator\JsonPointer
- * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
  */
 final class IfKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $keywordHandler = new IfKeywordHandler(new TrueSchemaValidator($identifier));
+        $absoluteLocation = 'https://example.com/#if';
+        $validator = $this->createStub(SchemaValidator::class);
+        $keywordHandler = new IfKeywordHandler($absoluteLocation, $validator);
 
         $this->assertInstanceOf(IfKeywordHandler::class, $keywordHandler);
     }

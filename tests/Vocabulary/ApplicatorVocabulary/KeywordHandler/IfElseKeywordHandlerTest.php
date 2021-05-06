@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ApplicatorVocabulary\KeywordHandler;
 
-use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\JsonPointer;
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfElseKeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\IfElseKeywordHandler
- * @uses \Yakimun\JsonSchemaValidator\JsonPointer
- * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
  */
 final class IfElseKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $schemaValidator = new TrueSchemaValidator($identifier);
-        $keywordHandler = new IfElseKeywordHandler($schemaValidator, $schemaValidator);
+        $absoluteLocation = 'https://example.com#/if';
+        $schemaValidator = $this->createStub(SchemaValidator::class);
+        $elseAbsoluteLocation = 'https://example.com#/else';
+        $elseSchemaValidator = $this->createStub(SchemaValidator::class);
+        $keywordHandler = new IfElseKeywordHandler(
+            $absoluteLocation,
+            $schemaValidator,
+            $elseAbsoluteLocation,
+            $elseSchemaValidator,
+        );
 
         $this->assertInstanceOf(IfElseKeywordHandler::class, $keywordHandler);
     }

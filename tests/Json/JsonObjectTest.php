@@ -96,7 +96,7 @@ final class JsonObjectTest extends TestCase
 
         $value = new JsonObject([], $path);
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $validator = new ObjectSchemaValidator([], $identifier);
+        $validator = new ObjectSchemaValidator('https://example.com', []);
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
 
         $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
@@ -118,7 +118,7 @@ final class JsonObjectTest extends TestCase
 
         $value = new JsonObject($properties, $path);
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $validator = new ObjectSchemaValidator([], $identifier);
+        $validator = new ObjectSchemaValidator('https://example.com', []);
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
 
         $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
@@ -136,7 +136,8 @@ final class JsonObjectTest extends TestCase
 
         $value = new JsonObject($properties, $path);
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $validator = new ObjectSchemaValidator([new UnknownKeywordHandler('a', $properties['a'])], $identifier);
+        $keywordHandler = new UnknownKeywordHandler('https://example.com#/a', 'a', $properties['a']);
+        $validator = new ObjectSchemaValidator('https://example.com', [$keywordHandler]);
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
 
         $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['b' => $keyword]));

@@ -18,7 +18,7 @@ final class UnknownKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new UnknownKeywordHandler('foo', new JsonNull(new JsonPointer()));
+        $keywordHandler = new UnknownKeywordHandler('https://example.com#/foo', 'foo', new JsonNull(new JsonPointer()));
 
         $this->assertInstanceOf(UnknownKeywordHandler::class, $keywordHandler);
     }

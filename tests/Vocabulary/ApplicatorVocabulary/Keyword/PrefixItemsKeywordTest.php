@@ -58,14 +58,18 @@ final class PrefixItemsKeywordTest extends TestCase
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['prefixItems' => $this->keyword], $identifier);
-        $this->keyword->process(['prefixItems' => new JsonArray($items, new JsonPointer('prefixItems'))], $context);
+        $value = new JsonArray($items, new JsonPointer('prefixItems'));
+        $this->keyword->process(['prefixItems' => $value], $context);
 
-        $schemaValidators = [];
+        $validators = [];
+
         foreach ($expected as $processedSchema) {
-            $schemaValidators[] = $processedSchema->getValidator();
+            $validators[] = $processedSchema->getValidator();
         }
 
-        $this->assertEquals([new PrefixItemsKeywordHandler($schemaValidators)], $context->getKeywordHandlers());
+        $keywordHandler = new PrefixItemsKeywordHandler('https://example.com#/prefixItems', $validators);
+
+        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals($expected, $context->getProcessedSchemas());
     }
 
@@ -85,8 +89,8 @@ final class PrefixItemsKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
 
-        $validator1 = new ObjectSchemaValidator([], $identifier1);
-        $validator2 = new ObjectSchemaValidator([], $identifier2);
+        $validator1 = new ObjectSchemaValidator('https://example.com#/prefixItems/0', []);
+        $validator2 = new ObjectSchemaValidator('https://example.com#/prefixItems/1', []);
 
         $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], $pointer1);
         $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], $pointer2);

@@ -51,7 +51,7 @@ final class JsonTrueTest extends TestCase
     {
         $keywords = ['foo' => $this->createStub(Keyword::class)];
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $validator = new TrueSchemaValidator($identifier);
+        $validator = new TrueSchemaValidator('https://example.com');
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], new JsonPointer('a'));
 
         $this->assertEquals([$processedSchema], $this->value->processAsSchema($identifier, $keywords));
