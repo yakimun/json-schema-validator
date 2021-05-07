@@ -7,7 +7,7 @@ namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 /**
  * @psalm-immutable
  */
-final class TrueSchemaValidator implements SchemaValidator
+final class BooleanSchemaValidator implements SchemaValidator
 {
     /**
      * @var string
@@ -15,10 +15,17 @@ final class TrueSchemaValidator implements SchemaValidator
     private $absoluteLocation;
 
     /**
-     * @param string $absoluteLocation
+     * @var bool
      */
-    public function __construct(string $absoluteLocation)
+    private $value;
+
+    /**
+     * @param string $absoluteLocation
+     * @param bool $value
+     */
+    public function __construct(string $absoluteLocation, bool $value)
     {
         $this->absoluteLocation = $absoluteLocation;
+        $this->value = $value;
     }
 }

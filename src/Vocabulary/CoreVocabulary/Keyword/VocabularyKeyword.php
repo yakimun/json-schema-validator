@@ -7,9 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriNormalizer;
 use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonFalse;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -53,7 +52,7 @@ final class VocabularyKeyword implements Keyword
                 throw new InvalidSchemaException(sprintf($format, (string)$path));
             }
 
-            if (!$value instanceof JsonTrue && !$value instanceof JsonFalse) {
+            if (!$value instanceof JsonBoolean) {
                 $message = sprintf('The values of the object properties must be booleans. Path: "%s".', (string)$path);
                 throw new InvalidSchemaException($message);
             }

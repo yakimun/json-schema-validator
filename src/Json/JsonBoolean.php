@@ -7,25 +7,40 @@ namespace Yakimun\JsonSchemaValidator\Json;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 /**
  * @psalm-immutable
  */
-final class JsonTrue implements JsonValue
+final class JsonBoolean implements JsonValue
 {
+    /**
+     * @var bool
+     */
+    private $value;
+
     /**
      * @var JsonPointer
      */
     private $path;
 
     /**
+     * @param bool $value
      * @param JsonPointer $path
      */
-    public function __construct(JsonPointer $path)
+    public function __construct(bool $value, JsonPointer $path)
     {
+        $this->value = $value;
         $this->path = $path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getValue(): bool
+    {
+        return $this->value;
     }
 
     /**
@@ -42,7 +57,7 @@ final class JsonTrue implements JsonValue
      */
     public function equals(JsonValue $value): bool
     {
-        return $value instanceof self;
+        return $value instanceof self && $this->value === $value->value;
     }
 
     /**
@@ -51,6 +66,8 @@ final class JsonTrue implements JsonValue
      */
     public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
     {
-        return [new ProcessedSchema(new TrueSchemaValidator((string)$identifier), $identifier, [], [], $this->path)];
+        $validator = new BooleanSchemaValidator((string)$identifier, $this->value);
+
+        return [new ProcessedSchema($validator, $identifier, [], [], $this->path)];
     }
 }

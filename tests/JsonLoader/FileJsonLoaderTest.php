@@ -7,26 +7,24 @@ namespace Yakimun\JsonSchemaValidator\Tests\JsonLoader;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\InvalidValueException;
 use Yakimun\JsonSchemaValidator\Json\JsonArray;
-use Yakimun\JsonSchemaValidator\Json\JsonFalse;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonFloat;
 use Yakimun\JsonSchemaValidator\Json\JsonInteger;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonFalse
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonFloat
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
  * @uses \Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\JsonLoader\StringJsonLoader
  * @uses \Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader
@@ -68,23 +66,16 @@ final class FileJsonLoaderTest extends TestCase
         $this->assertEquals(new JsonNull(new JsonPointer()), $this->loader->load());
     }
 
-    public function testLoadTrue(): void
+    public function testLoadBoolean(): void
     {
         file_put_contents($this->filename, 'true');
 
-        $this->assertEquals(new JsonTrue(new JsonPointer()), $this->loader->load());
-    }
-
-    public function testLoadFalse(): void
-    {
-        file_put_contents($this->filename, 'false');
-
-        $this->assertEquals(new JsonFalse(new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonBoolean(true, new JsonPointer()), $this->loader->load());
     }
 
     /**
      * @param string $value
-     * @param array<string, JsonNull|JsonTrue> $expected
+     * @param array<string, JsonNull|JsonBoolean> $expected
      *
      * @dataProvider objectProvider
      */
@@ -96,23 +87,23 @@ final class FileJsonLoaderTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{string, array<string, JsonNull|JsonTrue>}>
+     * @return non-empty-list<array{string, array<string, JsonNull|JsonBoolean>}>
      */
     public function objectProvider(): array
     {
         $jsonNull = new JsonNull(new JsonPointer('a'));
-        $jsonTrue = new JsonTrue(new JsonPointer('b'));
+        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b'));
 
         return [
             ['{}', []],
             ['{"a": null}', ['a' => $jsonNull]],
-            ['{"a": null, "b": true}', ['a' => $jsonNull, 'b' => $jsonTrue]],
+            ['{"a": null, "b": true}', ['a' => $jsonNull, 'b' => $jsonBoolean]],
         ];
     }
 
     /**
      * @param string $value
-     * @param list<JsonNull|JsonTrue> $expected
+     * @param list<JsonNull|JsonBoolean> $expected
      *
      * @dataProvider arrayProvider
      */
@@ -124,17 +115,17 @@ final class FileJsonLoaderTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{string, list<JsonNull|JsonTrue>}>
+     * @return non-empty-list<array{string, list<JsonNull|JsonBoolean>}>
      */
     public function arrayProvider(): array
     {
         $jsonNull = new JsonNull(new JsonPointer('0'));
-        $jsonTrue = new JsonTrue(new JsonPointer('1'));
+        $jsonBoolean = new JsonBoolean(true, new JsonPointer('1'));
 
         return [
             ['[]', []],
             ['[null]', [$jsonNull]],
-            ['[null, true]', [$jsonNull, $jsonTrue]],
+            ['[null, true]', [$jsonNull, $jsonBoolean]],
         ];
     }
 

@@ -6,32 +6,37 @@ namespace Yakimun\JsonSchemaValidator\Tests\Json;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 /**
- * @covers \Yakimun\JsonSchemaValidator\Json\JsonTrue
+ * @covers \Yakimun\JsonSchemaValidator\Json\JsonBoolean
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
  */
-final class JsonTrueTest extends TestCase
+final class JsonBooleanTest extends TestCase
 {
     /**
-     * @var JsonTrue
+     * @var JsonBoolean
      */
     private $value;
 
     protected function setUp(): void
     {
-        $this->value = new JsonTrue(new JsonPointer('a'));
+        $this->value = new JsonBoolean(true, new JsonPointer('a'));
+    }
+
+    public function testGetValue(): void
+    {
+        $this->assertEquals(true, $this->value->getValue());
     }
 
     public function testGetPath(): void
@@ -43,7 +48,8 @@ final class JsonTrueTest extends TestCase
     {
         $path = new JsonPointer('b');
 
-        $this->assertTrue($this->value->equals(new JsonTrue($path)));
+        $this->assertTrue($this->value->equals(new JsonBoolean(true, $path)));
+        $this->assertFalse($this->value->equals(new JsonBoolean(false, $path)));
         $this->assertFalse($this->value->equals(new JsonNull($path)));
     }
 
@@ -51,7 +57,7 @@ final class JsonTrueTest extends TestCase
     {
         $keywords = ['foo' => $this->createStub(Keyword::class)];
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $validator = new TrueSchemaValidator('https://example.com');
+        $validator = new BooleanSchemaValidator('https://example.com', true);
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], new JsonPointer('a'));
 
         $this->assertEquals([$processedSchema], $this->value->processAsSchema($identifier, $keywords));

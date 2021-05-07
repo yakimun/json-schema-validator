@@ -6,9 +6,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Json;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
@@ -19,8 +19,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
  * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -37,14 +37,20 @@ final class JsonObjectTest extends TestCase
 
     protected function setUp(): void
     {
-        $properties = ['a' => new JsonNull(new JsonPointer('a', 'a')), 'b' => new JsonTrue(new JsonPointer('a', 'b'))];
+        $properties = [
+            'a' => new JsonNull(new JsonPointer('a', 'a')),
+            'b' => new JsonBoolean(true, new JsonPointer('a', 'b')),
+        ];
 
         $this->value = new JsonObject($properties, new JsonPointer('a'));
     }
 
     public function testGetProperties(): void
     {
-        $properties = ['a' => new JsonNull(new JsonPointer('a', 'a')), 'b' => new JsonTrue(new JsonPointer('a', 'b'))];
+        $properties = [
+            'a' => new JsonNull(new JsonPointer('a', 'a')),
+            'b' => new JsonBoolean(true, new JsonPointer('a', 'b')),
+        ];
 
         $this->assertEquals($properties, $this->value->getProperties());
     }
@@ -72,15 +78,15 @@ final class JsonObjectTest extends TestCase
     {
         $path = new JsonPointer('b');
         $jsonNull = new JsonNull(new JsonPointer('b', 'a'));
-        $jsonTrue = new JsonTrue(new JsonPointer('b', 'b'));
+        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b', 'b'));
 
         return [
-            [new JsonObject(['a' => $jsonNull, 'b' => $jsonTrue], $path), true],
-            [new JsonObject(['b' => $jsonTrue, 'a' => $jsonNull], $path), true],
+            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean], $path), true],
+            [new JsonObject(['b' => $jsonBoolean, 'a' => $jsonNull], $path), true],
             [new JsonObject([], $path), false],
             [new JsonObject(['a' => $jsonNull], $path), false],
-            [new JsonObject(['a' => $jsonTrue, 'b' => $jsonNull], $path), false],
-            [new JsonObject(['a' => $jsonNull, 'b' => $jsonTrue, 'c' => $jsonNull], $path), false],
+            [new JsonObject(['a' => $jsonBoolean, 'b' => $jsonNull], $path), false],
+            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean, 'c' => $jsonNull], $path), false],
             [new JsonNull($path), false],
         ];
     }

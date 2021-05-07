@@ -10,15 +10,14 @@ use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaReference;
-use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
  */
 final class ProcessedSchemaTest extends TestCase
 {
@@ -33,7 +32,7 @@ final class ProcessedSchemaTest extends TestCase
     private $identifier;
 
     /**
-     * @var SchemaValidator
+     * @var BooleanSchemaValidator
      */
     private $validator;
 
@@ -41,7 +40,7 @@ final class ProcessedSchemaTest extends TestCase
     {
         $this->pointer = new JsonPointer();
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer);
-        $this->validator = new TrueSchemaValidator('https://example.com');
+        $this->validator = new BooleanSchemaValidator('https://example.com', true);
     }
 
     public function testGetValidator(): void

@@ -6,13 +6,12 @@ namespace Yakimun\JsonSchemaValidator\JsonLoader;
 
 use Yakimun\JsonSchemaValidator\Exception\InvalidValueException;
 use Yakimun\JsonSchemaValidator\Json\JsonArray;
-use Yakimun\JsonSchemaValidator\Json\JsonFalse;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonFloat;
 use Yakimun\JsonSchemaValidator\Json\JsonInteger;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 
@@ -55,7 +54,7 @@ final class ValueJsonLoader implements JsonLoader
         }
 
         if (is_bool($value)) {
-            return $value ? new JsonTrue($path) : new JsonFalse($path);
+            return new JsonBoolean($value, $path);
         }
 
         if (is_object($value)) {

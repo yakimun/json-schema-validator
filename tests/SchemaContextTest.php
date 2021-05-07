@@ -6,24 +6,24 @@ namespace Yakimun\JsonSchemaValidator\Tests;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaReference;
-use Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaContext
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonTrue
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\TrueSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
  */
 final class SchemaContextTest extends TestCase
 {
@@ -118,9 +118,9 @@ final class SchemaContextTest extends TestCase
     {
         $schemaContext = new SchemaContext($this->keywords, $this->identifier);
         $identifier = new SchemaIdentifier(new Uri('https://example.org'), new JsonPointer());
-        $expectedValidator = new TrueSchemaValidator('https://example.org');
+        $expectedValidator = new BooleanSchemaValidator('https://example.org', true);
         $expectedProcessedSchema = new ProcessedSchema($expectedValidator, $identifier, [], [], new JsonPointer('a'));
-        $validator = $schemaContext->createValidator(new JsonTrue(new JsonPointer('a')), $identifier);
+        $validator = $schemaContext->createValidator(new JsonBoolean(true, new JsonPointer('a')), $identifier);
 
         $this->assertEquals($expectedValidator, $validator);
         $this->assertEquals([$expectedProcessedSchema], $schemaContext->getProcessedSchemas());

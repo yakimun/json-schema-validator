@@ -7,10 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonFalse;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonTrue;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -43,7 +42,7 @@ final class VocabularyKeywordTest extends TestCase
     }
 
     /**
-     * @param array<string, JsonTrue|JsonFalse> $properties
+     * @param array<string, JsonBoolean|JsonBoolean> $properties
      *
      * @dataProvider valueProvider
      */
@@ -59,18 +58,18 @@ final class VocabularyKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{array<string, JsonTrue|JsonFalse>}>
+     * @return non-empty-list<array{array<string, JsonBoolean>}>
      */
     public function valueProvider(): array
     {
-        $jsonTrue = new JsonTrue(new JsonPointer('$vocabulary', 'https://example.com/foo'));
-        $jsonFalse = new JsonFalse(new JsonPointer('$vocabulary', 'https://example.com/bar'));
+        $jsonBoolean1 = new JsonBoolean(true, new JsonPointer('$vocabulary', 'https://example.com/foo'));
+        $jsonBoolean2 = new JsonBoolean(false, new JsonPointer('$vocabulary', 'https://example.com/bar'));
 
         return [
             [[]],
-            [['https://example.com/foo' => $jsonTrue]],
-            [['https://example.com/bar' => $jsonFalse]],
-            [['https://example.com/foo' => $jsonTrue, 'https://example.com/bar' => $jsonFalse]],
+            [['https://example.com/foo' => $jsonBoolean1]],
+            [['https://example.com/bar' => $jsonBoolean2]],
+            [['https://example.com/foo' => $jsonBoolean1, 'https://example.com/bar' => $jsonBoolean2]],
         ];
     }
 
@@ -100,8 +99,8 @@ final class VocabularyKeywordTest extends TestCase
 
         return [
             [new JsonNull($path)],
-            [new JsonObject(['foo' => new JsonTrue(new JsonPointer('$vocabulary', 'foo'))], $path)],
-            [new JsonObject([$uri1 => new JsonTrue(new JsonPointer('$vocabulary', $uri1))], $path)],
+            [new JsonObject(['foo' => new JsonBoolean(true, new JsonPointer('$vocabulary', 'foo'))], $path)],
+            [new JsonObject([$uri1 => new JsonBoolean(true, new JsonPointer('$vocabulary', $uri1))], $path)],
             [new JsonObject([$uri2 => new JsonNull(new JsonPointer('$vocabulary', $uri2))], $path)],
             [new JsonObject([], new JsonPointer('foo', '$vocabulary'))],
         ];
