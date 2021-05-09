@@ -50,7 +50,7 @@ final class MaximumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['maximum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMaximumKeywordHandler('https://example.com#/maximum', 1);
-        $this->keyword->process(['maximum' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['maximum' => new JsonInteger(1, new JsonPointer('maximum'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -60,7 +60,7 @@ final class MaximumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['maximum' => $this->keyword], $identifier);
         $keywordHandler = new FloatMaximumKeywordHandler('https://example.com#/maximum', 1.5);
-        $this->keyword->process(['maximum' => new JsonFloat(1.5, new JsonPointer())], $context);
+        $this->keyword->process(['maximum' => new JsonFloat(1.5, new JsonPointer('maximum'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -72,6 +72,6 @@ final class MaximumKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maximum' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['maximum' => new JsonNull(new JsonPointer('maximum'))], $context);
     }
 }

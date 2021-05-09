@@ -46,7 +46,7 @@ final class MinPropertiesKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['minProperties' => $this->keyword], $identifier);
         $keywordHandler = new MinPropertiesKeywordHandler('https://example.com#/minProperties', 1);
-        $this->keyword->process(['minProperties' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['minProperties' => new JsonInteger(1, new JsonPointer('minProperties'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,7 +58,7 @@ final class MinPropertiesKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minProperties' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['minProperties' => new JsonNull(new JsonPointer('minProperties'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -68,6 +68,6 @@ final class MinPropertiesKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minProperties' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['minProperties' => new JsonInteger(-1, new JsonPointer('minProperties'))], $context);
     }
 }

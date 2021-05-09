@@ -42,7 +42,7 @@ final class ConstKeywordTest extends TestCase
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['const' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer());
+        $value = new JsonNull(new JsonPointer('const'));
         $keywordHandler = new ConstKeywordHandler('https://example.com#/const', $value);
         $this->keyword->process(['const' => $value], $context);
 

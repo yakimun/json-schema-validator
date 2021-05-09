@@ -46,7 +46,7 @@ final class PatternKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['pattern' => $this->keyword], $identifier);
         $keywordHandler = new PatternKeywordHandler('https://example.com#/pattern', '/.*a.*/');
-        $this->keyword->process(['pattern' => new JsonString('a', new JsonPointer())], $context);
+        $this->keyword->process(['pattern' => new JsonString('a', new JsonPointer('pattern'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,6 +58,6 @@ final class PatternKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['pattern' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['pattern' => new JsonNull(new JsonPointer('pattern'))], $context);
     }
 }

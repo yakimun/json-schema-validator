@@ -50,8 +50,10 @@ final class DependentRequiredKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['dependentRequired' => $this->keyword], $identifier);
         $keywordHandler = new DependentRequiredKeywordHandler('https://example.com#/dependentRequired', ['a' => ['b']]);
-        $properties = ['a' => new JsonArray([new JsonString('b', new JsonPointer('a', '0'))], new JsonPointer('a'))];
-        $this->keyword->process(['dependentRequired' => new JsonObject($properties, new JsonPointer())], $context);
+        $items = [new JsonString('b', new JsonPointer('dependentRequired', 'a', '0'))];
+        $properties = ['a' => new JsonArray($items, new JsonPointer('dependentRequired', 'a'))];
+        $value = new JsonObject($properties, new JsonPointer('dependentRequired'));
+        $this->keyword->process(['dependentRequired' => $value], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -63,40 +65,47 @@ final class DependentRequiredKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['dependentRequired' => new JsonNull(new JsonPointer('dependentRequired'))], $context);
     }
 
     public function testProcessWithInvalidObjectProperty(): void
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['dependentRequired' => $this->keyword], $identifier);
-        $properties = ['a' => new JsonNull(new JsonPointer('a'))];
+        $properties = ['a' => new JsonNull(new JsonPointer('dependentRequired', 'a'))];
+        $value = new JsonObject($properties, new JsonPointer('dependentRequired'));
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => new JsonObject($properties, new JsonPointer())], $context);
+        $this->keyword->process(['dependentRequired' => $value], $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['dependentRequired' => $this->keyword], $identifier);
-        $properties = ['a' => new JsonArray([new JsonNull(new JsonPointer('a', '0'))], new JsonPointer('a'))];
+        $items = [new JsonNull(new JsonPointer('dependentRequired', 'a', '0'))];
+        $properties = ['a' => new JsonArray($items, new JsonPointer('dependentRequired', 'a'))];
+        $value = new JsonObject($properties, new JsonPointer('dependentRequired'));
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => new JsonObject($properties, new JsonPointer())], $context);
+        $this->keyword->process(['dependentRequired' => $value], $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['dependentRequired' => $this->keyword], $identifier);
-        $items = [new JsonString('b', new JsonPointer('a', '0')), new JsonString('b', new JsonPointer('a', '1'))];
-        $properties = ['a' => new JsonArray($items, new JsonPointer('a'))];
+        $items = [
+            new JsonString('b', new JsonPointer('dependentRequired', 'a', '0')),
+            new JsonString('b', new JsonPointer('dependentRequired', 'a', '1')),
+        ];
+        $properties = ['a' => new JsonArray($items, new JsonPointer('dependentRequired', 'a'))];
+        $value = new JsonObject($properties, new JsonPointer('dependentRequired'));
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => new JsonObject($properties, new JsonPointer())], $context);
+        $this->keyword->process(['dependentRequired' => $value], $context);
     }
 }

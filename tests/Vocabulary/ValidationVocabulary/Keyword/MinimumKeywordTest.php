@@ -50,7 +50,7 @@ final class MinimumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['minimum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMinimumKeywordHandler('https://example.com#/minimum', 1);
-        $this->keyword->process(['minimum' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['minimum' => new JsonInteger(1, new JsonPointer('minimum'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -60,7 +60,7 @@ final class MinimumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['minimum' => $this->keyword], $identifier);
         $keywordHandler = new FloatMinimumKeywordHandler('https://example.com#/minimum', 1.5);
-        $this->keyword->process(['minimum' => new JsonFloat(1.5, new JsonPointer())], $context);
+        $this->keyword->process(['minimum' => new JsonFloat(1.5, new JsonPointer('minimum'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -72,6 +72,6 @@ final class MinimumKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minimum' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['minimum' => new JsonNull(new JsonPointer('minimum'))], $context);
     }
 }

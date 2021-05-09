@@ -50,7 +50,8 @@ final class ExclusiveMinimumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1);
-        $this->keyword->process(['exclusiveMinimum' => new JsonInteger(1, new JsonPointer())], $context);
+        $properties = ['exclusiveMinimum' => new JsonInteger(1, new JsonPointer('exclusiveMinimum'))];
+        $this->keyword->process($properties, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -60,7 +61,8 @@ final class ExclusiveMinimumKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
         $keywordHandler = new FloatExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1.5);
-        $this->keyword->process(['exclusiveMinimum' => new JsonFloat(1.5, new JsonPointer())], $context);
+        $properties = ['exclusiveMinimum' => new JsonFloat(1.5, new JsonPointer('exclusiveMinimum'))];
+        $this->keyword->process($properties, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -72,6 +74,6 @@ final class ExclusiveMinimumKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['exclusiveMinimum' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['exclusiveMinimum' => new JsonNull(new JsonPointer('exclusiveMinimum'))], $context);
     }
 }

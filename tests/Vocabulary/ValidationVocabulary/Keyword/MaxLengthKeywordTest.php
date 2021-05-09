@@ -46,7 +46,7 @@ final class MaxLengthKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['maxLength' => $this->keyword], $identifier);
         $keywordHandler = new MaxLengthKeywordHandler('https://example.com#/maxLength', 1);
-        $this->keyword->process(['maxLength' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['maxLength' => new JsonInteger(1, new JsonPointer('maxLength'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,7 +58,7 @@ final class MaxLengthKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxLength' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['maxLength' => new JsonNull(new JsonPointer('maxLength'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -68,6 +68,6 @@ final class MaxLengthKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxLength' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['maxLength' => new JsonInteger(-1, new JsonPointer('maxLength'))], $context);
     }
 }

@@ -45,9 +45,9 @@ final class EnumKeywordTest extends TestCase
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['enum' => $this->keyword], $identifier);
-        $elements = [new JsonNull(new JsonPointer('0'))];
+        $elements = [new JsonNull(new JsonPointer('enum', '0'))];
         $keywordHandler = new EnumKeywordHandler('https://example.com#/enum', $elements);
-        $this->keyword->process(['enum' => new JsonArray($elements, new JsonPointer())], $context);
+        $this->keyword->process(['enum' => new JsonArray($elements, new JsonPointer('enum'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -59,6 +59,6 @@ final class EnumKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['enum' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['enum' => new JsonNull(new JsonPointer('enum'))], $context);
     }
 }

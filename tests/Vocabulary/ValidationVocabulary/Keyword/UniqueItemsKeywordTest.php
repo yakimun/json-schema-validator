@@ -46,7 +46,7 @@ final class UniqueItemsKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['uniqueItems' => $this->keyword], $identifier);
         $keywordHandler = new UniqueItemsKeywordHandler('https://example.com#/uniqueItems', true);
-        $this->keyword->process(['uniqueItems' => new JsonBoolean(true, new JsonPointer())], $context);
+        $this->keyword->process(['uniqueItems' => new JsonBoolean(true, new JsonPointer('uniqueItems'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,6 +58,6 @@ final class UniqueItemsKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['uniqueItems' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['uniqueItems' => new JsonNull(new JsonPointer('uniqueItems'))], $context);
     }
 }

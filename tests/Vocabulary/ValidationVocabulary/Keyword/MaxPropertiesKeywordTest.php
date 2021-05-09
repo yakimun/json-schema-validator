@@ -46,7 +46,7 @@ final class MaxPropertiesKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
         $keywordHandler = new MaxPropertiesKeywordHandler('https://example.com#/maxProperties', 1);
-        $this->keyword->process(['maxProperties' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['maxProperties' => new JsonInteger(1, new JsonPointer('maxProperties'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,7 +58,7 @@ final class MaxPropertiesKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxProperties' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['maxProperties' => new JsonNull(new JsonPointer('maxProperties'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -68,6 +68,6 @@ final class MaxPropertiesKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxProperties' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['maxProperties' => new JsonInteger(-1, new JsonPointer('maxProperties'))], $context);
     }
 }

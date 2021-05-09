@@ -46,7 +46,7 @@ final class MinLengthKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['minLength' => $this->keyword], $identifier);
         $keywordHandler = new MinLengthKeywordHandler('https://example.com#/minLength', 1);
-        $this->keyword->process(['minLength' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['minLength' => new JsonInteger(1, new JsonPointer('minLength'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -58,7 +58,7 @@ final class MinLengthKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minLength' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['minLength' => new JsonNull(new JsonPointer('minLength'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -68,6 +68,6 @@ final class MinLengthKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minLength' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['minLength' => new JsonInteger(-1, new JsonPointer('minLength'))], $context);
     }
 }

@@ -50,7 +50,7 @@ final class MultipleOfKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMultipleOfKeywordHandler('https://example.com#/multipleOf', 1);
-        $this->keyword->process(['multipleOf' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['multipleOf' => new JsonInteger(1, new JsonPointer('multipleOf'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -60,7 +60,7 @@ final class MultipleOfKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
         $keywordHandler = new FloatMultipleOfKeywordHandler('https://example.com#/multipleOf', 1.5);
-        $this->keyword->process(['multipleOf' => new JsonFloat(1.5, new JsonPointer())], $context);
+        $this->keyword->process(['multipleOf' => new JsonFloat(1.5, new JsonPointer('multipleOf'))], $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -72,7 +72,7 @@ final class MultipleOfKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['multipleOf' => new JsonNull(new JsonPointer('multipleOf'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -82,7 +82,7 @@ final class MultipleOfKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['multipleOf' => new JsonInteger(-1, new JsonPointer('multipleOf'))], $context);
     }
 
     public function testProcessWithNegativeFloat(): void
@@ -92,6 +92,6 @@ final class MultipleOfKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonFloat(-1, new JsonPointer())], $context);
+        $this->keyword->process(['multipleOf' => new JsonFloat(-1, new JsonPointer('multipleOf'))], $context);
     }
 }

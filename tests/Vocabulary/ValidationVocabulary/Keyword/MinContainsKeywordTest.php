@@ -49,8 +49,8 @@ final class MinContainsKeywordTest extends TestCase
         $context = new SchemaContext(['minContains' => $this->keyword], $identifier);
         $keywordHandler = new MinContainsKeywordHandler('https://example.com#/minContains', 1);
         $properties = [
-            'contains' => new JsonBoolean(true, new JsonPointer()),
-            'minContains' => new JsonInteger(1, new JsonPointer()),
+            'contains' => new JsonBoolean(true, new JsonPointer('contains')),
+            'minContains' => new JsonInteger(1, new JsonPointer('minContains')),
         ];
         $this->keyword->process($properties, $context);
 
@@ -64,7 +64,7 @@ final class MinContainsKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minContains' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['minContains' => new JsonNull(new JsonPointer('minContains'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -74,14 +74,14 @@ final class MinContainsKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minContains' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['minContains' => new JsonInteger(-1, new JsonPointer('minContains'))], $context);
     }
 
     public function testProcessWithoutContains(): void
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['minContains' => $this->keyword], $identifier);
-        $this->keyword->process(['minContains' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['minContains' => new JsonInteger(1, new JsonPointer('minContains'))], $context);
 
         $this->assertEmpty($context->getKeywordHandlers());
     }

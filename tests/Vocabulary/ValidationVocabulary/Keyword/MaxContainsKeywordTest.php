@@ -49,8 +49,8 @@ final class MaxContainsKeywordTest extends TestCase
         $context = new SchemaContext(['maxContains' => $this->keyword], $identifier);
         $keywordHandler = new MaxContainsKeywordHandler('https://example.com#/maxContains', 1);
         $properties = [
-            'contains' => new JsonBoolean(true, new JsonPointer()),
-            'maxContains' => new JsonInteger(1, new JsonPointer()),
+            'contains' => new JsonBoolean(true, new JsonPointer('contains')),
+            'maxContains' => new JsonInteger(1, new JsonPointer('maxContains')),
         ];
         $this->keyword->process($properties, $context);
 
@@ -64,7 +64,7 @@ final class MaxContainsKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxContains' => new JsonNull(new JsonPointer())], $context);
+        $this->keyword->process(['maxContains' => new JsonNull(new JsonPointer('maxContains'))], $context);
     }
 
     public function testProcessWithNegativeInteger(): void
@@ -74,14 +74,14 @@ final class MaxContainsKeywordTest extends TestCase
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxContains' => new JsonInteger(-1, new JsonPointer())], $context);
+        $this->keyword->process(['maxContains' => new JsonInteger(-1, new JsonPointer('maxContains'))], $context);
     }
 
     public function testProcessWithoutContains(): void
     {
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
         $context = new SchemaContext(['maxContains' => $this->keyword], $identifier);
-        $this->keyword->process(['maxContains' => new JsonInteger(1, new JsonPointer())], $context);
+        $this->keyword->process(['maxContains' => new JsonInteger(1, new JsonPointer('maxContains'))], $context);
 
         $this->assertEmpty($context->getKeywordHandlers());
     }
