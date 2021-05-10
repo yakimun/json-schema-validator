@@ -15,7 +15,7 @@ final class PropertyNamesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $absoluteLocation = 'https://example.com/#propertyNames';
+        $absoluteLocation = 'https://example.com#/propertyNames';
         $validator = $this->createStub(SchemaValidator::class);
         $keywordHandler = new PropertyNamesKeywordHandler($absoluteLocation, $validator);
 

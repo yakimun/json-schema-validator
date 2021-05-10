@@ -14,7 +14,7 @@ final class RequiredKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new RequiredKeywordHandler('https://example.com/#required', []);
+        $keywordHandler = new RequiredKeywordHandler('https://example.com#/required', []);
 
         $this->assertInstanceOf(RequiredKeywordHandler::class, $keywordHandler);
     }

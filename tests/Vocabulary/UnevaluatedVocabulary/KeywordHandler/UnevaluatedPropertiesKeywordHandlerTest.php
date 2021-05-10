@@ -15,7 +15,7 @@ final class UnevaluatedPropertiesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $absoluteLocation = 'https://example.com/#unevaluatedProperties';
+        $absoluteLocation = 'https://example.com#/unevaluatedProperties';
         $validator = $this->createStub(SchemaValidator::class);
         $keywordHandler = new UnevaluatedPropertiesKeywordHandler($absoluteLocation, $validator);
 

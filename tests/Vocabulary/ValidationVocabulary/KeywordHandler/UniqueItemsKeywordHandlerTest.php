@@ -14,7 +14,7 @@ final class UniqueItemsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new UniqueItemsKeywordHandler('https://example.com/#uniqueItems', true);
+        $keywordHandler = new UniqueItemsKeywordHandler('https://example.com#/uniqueItems', true);
 
         $this->assertInstanceOf(UniqueItemsKeywordHandler::class, $keywordHandler);
     }

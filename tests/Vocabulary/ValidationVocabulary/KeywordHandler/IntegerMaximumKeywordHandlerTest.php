@@ -14,7 +14,7 @@ final class IntegerMaximumKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new IntegerMaximumKeywordHandler('https://example.com/#maximum', 1);
+        $keywordHandler = new IntegerMaximumKeywordHandler('https://example.com#/maximum', 1);
 
         $this->assertInstanceOf(IntegerMaximumKeywordHandler::class, $keywordHandler);
     }

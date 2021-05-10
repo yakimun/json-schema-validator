@@ -14,7 +14,7 @@ final class EnumKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new EnumKeywordHandler('https://example.com/#enum', []);
+        $keywordHandler = new EnumKeywordHandler('https://example.com#/enum', []);
 
         $this->assertInstanceOf(EnumKeywordHandler::class, $keywordHandler);
     }

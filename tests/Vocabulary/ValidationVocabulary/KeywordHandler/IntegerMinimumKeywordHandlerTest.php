@@ -14,7 +14,7 @@ final class IntegerMinimumKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new IntegerMinimumKeywordHandler('https://example.com/#minimum', 1);
+        $keywordHandler = new IntegerMinimumKeywordHandler('https://example.com#/minimum', 1);
 
         $this->assertInstanceOf(IntegerMinimumKeywordHandler::class, $keywordHandler);
     }

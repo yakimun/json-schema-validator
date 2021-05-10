@@ -14,7 +14,7 @@ final class MinContainsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MinContainsKeywordHandler('https://example.com/#minContains', 1);
+        $keywordHandler = new MinContainsKeywordHandler('https://example.com#/minContains', 1);
 
         $this->assertInstanceOf(MinContainsKeywordHandler::class, $keywordHandler);
     }

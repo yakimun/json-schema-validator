@@ -15,7 +15,7 @@ final class ItemsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $absoluteLocation = 'https://example.com/#items';
+        $absoluteLocation = 'https://example.com#/items';
         $validator = $this->createStub(SchemaValidator::class);
         $keywordHandler = new ItemsKeywordHandler($absoluteLocation, $validator);
 

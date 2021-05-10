@@ -14,7 +14,7 @@ final class PatternKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new PatternKeywordHandler('https://example.com/#pattern', '/.*/');
+        $keywordHandler = new PatternKeywordHandler('https://example.com#/pattern', '/.*/');
 
         $this->assertInstanceOf(PatternKeywordHandler::class, $keywordHandler);
     }

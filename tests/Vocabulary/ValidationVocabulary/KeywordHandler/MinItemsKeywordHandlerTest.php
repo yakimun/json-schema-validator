@@ -14,7 +14,7 @@ final class MinItemsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MinItemsKeywordHandler('https://example.com/#minItems', 1);
+        $keywordHandler = new MinItemsKeywordHandler('https://example.com#/minItems', 1);
 
         $this->assertInstanceOf(MinItemsKeywordHandler::class, $keywordHandler);
     }

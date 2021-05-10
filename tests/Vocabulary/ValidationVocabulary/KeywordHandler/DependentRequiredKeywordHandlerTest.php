@@ -14,7 +14,7 @@ final class DependentRequiredKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new DependentRequiredKeywordHandler('https://example.com/#dependentRequired', []);
+        $keywordHandler = new DependentRequiredKeywordHandler('https://example.com#/dependentRequired', []);
 
         $this->assertInstanceOf(DependentRequiredKeywordHandler::class, $keywordHandler);
     }

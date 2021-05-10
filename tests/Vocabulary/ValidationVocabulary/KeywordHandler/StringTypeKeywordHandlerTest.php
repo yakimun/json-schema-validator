@@ -14,7 +14,7 @@ final class StringTypeKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new StringTypeKeywordHandler('https://example.com/#type', 'null');
+        $keywordHandler = new StringTypeKeywordHandler('https://example.com#/type', 'null');
 
         $this->assertInstanceOf(StringTypeKeywordHandler::class, $keywordHandler);
     }

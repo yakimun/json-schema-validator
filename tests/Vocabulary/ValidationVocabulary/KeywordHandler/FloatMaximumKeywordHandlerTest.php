@@ -14,7 +14,7 @@ final class FloatMaximumKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new FloatMaximumKeywordHandler('https://example.com/#maximum', 1.5);
+        $keywordHandler = new FloatMaximumKeywordHandler('https://example.com#/maximum', 1.5);
 
         $this->assertInstanceOf(FloatMaximumKeywordHandler::class, $keywordHandler);
     }

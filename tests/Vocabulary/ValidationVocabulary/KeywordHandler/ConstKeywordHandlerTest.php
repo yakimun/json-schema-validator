@@ -18,7 +18,7 @@ final class ConstKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new ConstKeywordHandler('https://example.com/#const', new JsonNull(new JsonPointer()));
+        $keywordHandler = new ConstKeywordHandler('https://example.com#/const', new JsonNull(new JsonPointer()));
 
         $this->assertInstanceOf(ConstKeywordHandler::class, $keywordHandler);
     }

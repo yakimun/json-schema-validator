@@ -14,7 +14,7 @@ final class MaxContainsKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MaxContainsKeywordHandler('https://example.com/#maxContains', 1);
+        $keywordHandler = new MaxContainsKeywordHandler('https://example.com#/maxContains', 1);
 
         $this->assertInstanceOf(MaxContainsKeywordHandler::class, $keywordHandler);
     }

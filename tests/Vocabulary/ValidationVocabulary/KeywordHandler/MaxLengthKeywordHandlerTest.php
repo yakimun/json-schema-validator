@@ -14,7 +14,7 @@ final class MaxLengthKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MaxLengthKeywordHandler('https://example.com/#maxLength', 1);
+        $keywordHandler = new MaxLengthKeywordHandler('https://example.com#/maxLength', 1);
 
         $this->assertInstanceOf(MaxLengthKeywordHandler::class, $keywordHandler);
     }

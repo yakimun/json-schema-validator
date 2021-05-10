@@ -14,7 +14,7 @@ final class ArrayTypeKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new ArrayTypeKeywordHandler('https://example.com/#type', []);
+        $keywordHandler = new ArrayTypeKeywordHandler('https://example.com#/type', []);
 
         $this->assertInstanceOf(ArrayTypeKeywordHandler::class, $keywordHandler);
     }

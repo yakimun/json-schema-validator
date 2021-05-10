@@ -15,7 +15,7 @@ final class NotKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $absoluteLocation = 'https://example.com/#not';
+        $absoluteLocation = 'https://example.com#/not';
         $validator = $this->createStub(SchemaValidator::class);
         $keywordHandler = new NotKeywordHandler($absoluteLocation, $validator);
 

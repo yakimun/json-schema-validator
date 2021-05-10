@@ -14,7 +14,7 @@ final class IntegerMultipleOfKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new IntegerMultipleOfKeywordHandler('https://example.com/#multipleOf', 1);
+        $keywordHandler = new IntegerMultipleOfKeywordHandler('https://example.com#/multipleOf', 1);
 
         $this->assertInstanceOf(IntegerMultipleOfKeywordHandler::class, $keywordHandler);
     }

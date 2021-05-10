@@ -14,7 +14,7 @@ final class MinPropertiesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MinPropertiesKeywordHandler('https://example.com/#minProperties', 1);
+        $keywordHandler = new MinPropertiesKeywordHandler('https://example.com#/minProperties', 1);
 
         $this->assertInstanceOf(MinPropertiesKeywordHandler::class, $keywordHandler);
     }

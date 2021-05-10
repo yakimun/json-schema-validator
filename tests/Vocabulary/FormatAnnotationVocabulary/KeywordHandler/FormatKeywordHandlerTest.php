@@ -14,7 +14,7 @@ final class FormatKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new FormatKeywordHandler('https://example.com/#format', 'a');
+        $keywordHandler = new FormatKeywordHandler('https://example.com#/format', 'a');
 
         $this->assertInstanceOf(FormatKeywordHandler::class, $keywordHandler);
     }

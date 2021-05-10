@@ -14,7 +14,7 @@ final class FloatMinimumKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new FloatMinimumKeywordHandler('https://example.com/#minimum', 1.5);
+        $keywordHandler = new FloatMinimumKeywordHandler('https://example.com#/minimum', 1.5);
 
         $this->assertInstanceOf(FloatMinimumKeywordHandler::class, $keywordHandler);
     }

@@ -15,7 +15,7 @@ final class IfKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $absoluteLocation = 'https://example.com/#if';
+        $absoluteLocation = 'https://example.com#/if';
         $validator = $this->createStub(SchemaValidator::class);
         $keywordHandler = new IfKeywordHandler($absoluteLocation, $validator);
 

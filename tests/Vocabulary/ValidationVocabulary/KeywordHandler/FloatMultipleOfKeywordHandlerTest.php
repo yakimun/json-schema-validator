@@ -14,7 +14,7 @@ final class FloatMultipleOfKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new FloatMultipleOfKeywordHandler('https://example.com/#multipleOf', 1.5);
+        $keywordHandler = new FloatMultipleOfKeywordHandler('https://example.com#/multipleOf', 1.5);
 
         $this->assertInstanceOf(FloatMultipleOfKeywordHandler::class, $keywordHandler);
     }

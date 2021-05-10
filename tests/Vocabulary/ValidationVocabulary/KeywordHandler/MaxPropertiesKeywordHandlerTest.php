@@ -14,7 +14,7 @@ final class MaxPropertiesKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MaxPropertiesKeywordHandler('https://example.com/#maxProperties', 1);
+        $keywordHandler = new MaxPropertiesKeywordHandler('https://example.com#/maxProperties', 1);
 
         $this->assertInstanceOf(MaxPropertiesKeywordHandler::class, $keywordHandler);
     }

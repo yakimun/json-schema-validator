@@ -14,7 +14,7 @@ final class MinLengthKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new MinLengthKeywordHandler('https://example.com/#minLength', 1);
+        $keywordHandler = new MinLengthKeywordHandler('https://example.com#/minLength', 1);
 
         $this->assertInstanceOf(MinLengthKeywordHandler::class, $keywordHandler);
     }
