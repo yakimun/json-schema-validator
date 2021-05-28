@@ -52,9 +52,10 @@ final class DefsKeywordTest extends TestCase
      */
     public function testProcess(array $properties, array $expected): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$defs' => $this->keyword], $identifier);
-        $this->keyword->process(['$defs' => new JsonObject($properties, new JsonPointer('$defs'))], $context);
+        $this->keyword->process(['$defs' => new JsonObject($properties)], $pointer, $context);
 
         $this->assertEquals($expected, $context->getProcessedSchemas());
     }
@@ -69,8 +70,8 @@ final class DefsKeywordTest extends TestCase
         $pointer1 = new JsonPointer('$defs', 'a');
         $pointer2 = new JsonPointer('$defs', 'b');
 
-        $jsonObject1 = new JsonObject([], $pointer1);
-        $jsonObject2 = new JsonObject([], $pointer2);
+        $jsonObject1 = new JsonObject([]);
+        $jsonObject2 = new JsonObject([]);
 
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
@@ -96,12 +97,13 @@ final class DefsKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(JsonValue $value): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$defs' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['$defs' => $value], $context);
+        $this->keyword->process(['$defs' => $value], $pointer, $context);
     }
 
     /**
@@ -109,11 +111,9 @@ final class DefsKeywordTest extends TestCase
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('$defs');
-
         return [
-            [new JsonNull($path)],
-            [new JsonObject(['a' => new JsonNull(new JsonPointer('$defs', 'a'))], $path)]
+            [new JsonNull()],
+            [new JsonObject(['a' => new JsonNull()])],
         ];
     }
 }

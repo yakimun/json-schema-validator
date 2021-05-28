@@ -43,21 +43,23 @@ final class ReadOnlyKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['readOnly' => $this->keyword], $identifier);
         $keywordHandler = new ReadOnlyKeywordHandler('https://example.com#/readOnly', true);
-        $this->keyword->process(['readOnly' => new JsonBoolean(true, new JsonPointer('readOnly'))], $context);
+        $this->keyword->process(['readOnly' => new JsonBoolean(true)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['readOnly' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['readOnly' => new JsonNull(new JsonPointer('readOnly'))], $context);
+        $this->keyword->process(['readOnly' => new JsonNull()], $pointer, $context);
     }
 }

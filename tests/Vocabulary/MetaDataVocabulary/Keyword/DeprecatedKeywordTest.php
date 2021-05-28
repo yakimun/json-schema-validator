@@ -43,21 +43,23 @@ final class DeprecatedKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['deprecated' => $this->keyword], $identifier);
         $keywordHandler = new DeprecatedKeywordHandler('https://example.com#/deprecated', true);
-        $this->keyword->process(['deprecated' => new JsonBoolean(true, new JsonPointer('deprecated'))], $context);
+        $this->keyword->process(['deprecated' => new JsonBoolean(true)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['deprecated' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['deprecated' => new JsonNull(new JsonPointer('deprecated'))], $context);
+        $this->keyword->process(['deprecated' => new JsonNull()], $pointer, $context);
     }
 }

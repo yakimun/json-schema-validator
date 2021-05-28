@@ -43,21 +43,23 @@ final class WriteOnlyKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['writeOnly' => $this->keyword], $identifier);
         $keywordHandler = new WriteOnlyKeywordHandler('https://example.com#/writeOnly', true);
-        $this->keyword->process(['writeOnly' => new JsonBoolean(true, new JsonPointer('writeOnly'))], $context);
+        $this->keyword->process(['writeOnly' => new JsonBoolean(true)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['writeOnly' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['writeOnly' => new JsonNull(new JsonPointer('writeOnly'))], $context);
+        $this->keyword->process(['writeOnly' => new JsonNull()], $pointer, $context);
     }
 }

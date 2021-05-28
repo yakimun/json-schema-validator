@@ -48,14 +48,16 @@ final class ContainsKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer('contains');
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('contains');
+        $identifier = new SchemaIdentifier($uri, $pointer);
+        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
         $absoluteLocation = 'https://example.com#/contains';
         $validator = new ObjectSchemaValidator($absoluteLocation, []);
         $keywordHandler = new ContainsKeywordHandler($absoluteLocation, $validator);
-        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
+        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
         $context = new SchemaContext(['contains' => $this->keyword], $identifier);
-        $this->keyword->process(['contains' => new JsonObject([], $pointer)], $context);
+        $this->keyword->process(['contains' => new JsonObject([])], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
@@ -63,12 +65,13 @@ final class ContainsKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['contains' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('contains'));
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['contains' => $value], $context);
+        $this->keyword->process(['contains' => $value], $pointer, $context);
     }
 }

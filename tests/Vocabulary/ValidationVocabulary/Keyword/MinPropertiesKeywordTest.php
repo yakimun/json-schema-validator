@@ -43,31 +43,36 @@ final class MinPropertiesKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minProperties' => $this->keyword], $identifier);
         $keywordHandler = new MinPropertiesKeywordHandler('https://example.com#/minProperties', 1);
-        $this->keyword->process(['minProperties' => new JsonInteger(1, new JsonPointer('minProperties'))], $context);
+        $this->keyword->process(['minProperties' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minProperties' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minProperties' => new JsonNull(new JsonPointer('minProperties'))], $context);
+        $this->keyword->process(['minProperties' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeInteger(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minProperties' => $this->keyword], $identifier);
+        $value = new JsonInteger(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minProperties' => new JsonInteger(-1, new JsonPointer('minProperties'))], $context);
+        $this->keyword->process(['minProperties' => $value], $pointer, $context);
     }
 }

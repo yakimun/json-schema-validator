@@ -21,18 +21,11 @@ final class JsonBoolean implements JsonValue
     private $value;
 
     /**
-     * @var JsonPointer
-     */
-    private $path;
-
-    /**
      * @param bool $value
-     * @param JsonPointer $path
      */
-    public function __construct(bool $value, JsonPointer $path)
+    public function __construct(bool $value)
     {
         $this->value = $value;
-        $this->path = $path;
     }
 
     /**
@@ -41,14 +34,6 @@ final class JsonBoolean implements JsonValue
     public function getValue(): bool
     {
         return $this->value;
-    }
-
-    /**
-     * @return JsonPointer
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
     }
 
     /**
@@ -61,13 +46,15 @@ final class JsonBoolean implements JsonValue
     }
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
         $validator = new BooleanSchemaValidator((string)$identifier, $this->value);
 
-        return [new ProcessedSchema($validator, $identifier, [], [], $this->path)];
+        return [new ProcessedSchema($validator, $identifier, [], [], $path)];
     }
 }

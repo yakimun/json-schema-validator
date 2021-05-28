@@ -8,6 +8,7 @@ use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonFloat;
 use Yakimun\JsonSchemaValidator\Json\JsonInteger;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\FloatMinimumKeywordHandler;
@@ -15,37 +16,42 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\I
 
 final class MinimumKeyword implements Keyword
 {
+    private const NAME = 'minimum';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'minimum';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['minimum'];
-        $identifier = (string)$context->getIdentifier()->addTokens('minimum');
+        $property = $properties[self::NAME];
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
 
         if ($property instanceof JsonInteger) {
-            $context->addKeywordHandler(new IntegerMinimumKeywordHandler($identifier, $property->getValue()));
+            $keywordHandler = new IntegerMinimumKeywordHandler((string)$keywordIdentifier, $property->getValue());
+            $context->addKeywordHandler($keywordHandler);
 
             return;
         }
 
         if ($property instanceof JsonFloat) {
-            $context->addKeywordHandler(new FloatMinimumKeywordHandler($identifier, $property->getValue()));
+            $keywordHandler = new FloatMinimumKeywordHandler((string)$keywordIdentifier, $property->getValue());
+            $context->addKeywordHandler($keywordHandler);
 
             return;
         }
 
-        $message = sprintf('The value must be a number. Path: "%s".', (string)$property->getPath());
+        $message = sprintf('The value must be a number. Path: "%s".', (string)$path->addTokens(self::NAME));
         throw new InvalidSchemaException($message);
     }
 }

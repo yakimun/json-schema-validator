@@ -52,10 +52,11 @@ final class TypeKeywordTest extends TestCase
      */
     public function testProcessWithStringValue(string $type): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
         $keywordHandler = new StringTypeKeywordHandler('https://example.com#/type', $type);
-        $this->keyword->process(['type' => new JsonString($type, new JsonPointer('type'))], $context);
+        $this->keyword->process(['type' => new JsonString($type)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -83,17 +84,18 @@ final class TypeKeywordTest extends TestCase
      */
     public function testProcessWithArrayValue(array $types): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
         $keywordHandler = new ArrayTypeKeywordHandler('https://example.com#/type', $types);
 
         $items = [];
 
-        foreach ($types as $index => $type) {
-            $items[] = new JsonString($type, new JsonPointer('type', (string)$index));
+        foreach ($types as $type) {
+            $items[] = new JsonString($type);
         }
 
-        $this->keyword->process(['type' => new JsonArray($items, new JsonPointer('type'))], $context);
+        $this->keyword->process(['type' => new JsonArray($items)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
@@ -117,46 +119,49 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['type' => new JsonNull(new JsonPointer('type'))], $context);
+        $this->keyword->process(['type' => $value], $pointer, $context);
     }
 
     public function testProcessWithInvalidStringType(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
+        $value = new JsonString('a');
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['type' => new JsonString('a', new JsonPointer('type'))], $context);
+        $this->keyword->process(['type' => $value], $pointer, $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $properties = ['type' => new JsonArray([new JsonNull(new JsonPointer('type', '0'))], new JsonPointer('type'))];
+        $value = new JsonArray([new JsonNull()]);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['type' => $value], $pointer, $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $items = [
-            new JsonString('null', new JsonPointer('type', '0')),
-            new JsonString('null', new JsonPointer('type', '1')),
-        ];
+        $value = new JsonArray([new JsonString('null'), new JsonString('null')]);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['type' => new JsonArray($items, new JsonPointer('type'))], $context);
+        $this->keyword->process(['type' => $value], $pointer, $context);
     }
 }

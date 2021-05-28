@@ -45,47 +45,48 @@ final class RequiredKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['required' => $this->keyword], $identifier);
         $keywordHandler = new RequiredKeywordHandler('https://example.com#/required', ['a']);
-        $items = [new JsonString('a', new JsonPointer('required', '0'))];
-        $this->keyword->process(['required' => new JsonArray($items, new JsonPointer('required'))], $context);
+        $this->keyword->process(['required' => new JsonArray([new JsonString('a')])], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['required' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['required' => new JsonNull(new JsonPointer('required'))], $context);
+        $this->keyword->process(['required' => $value], $pointer, $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['required' => $this->keyword], $identifier);
-        $items = [new JsonNull(new JsonPointer('required', '0'))];
+        $value = new JsonArray([new JsonNull()]);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['required' => new JsonArray($items, new JsonPointer('required'))], $context);
+        $this->keyword->process(['required' => $value], $pointer, $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['required' => $this->keyword], $identifier);
-        $items = [
-            new JsonString('a', new JsonPointer('required', '0')),
-            new JsonString('a', new JsonPointer('required', '1')),
-        ];
+        $value = new JsonArray([new JsonString('a'), new JsonString('a')]);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['required' => new JsonArray($items, new JsonPointer('required'))], $context);
+        $this->keyword->process(['required' => $value], $pointer, $context);
     }
 }

@@ -47,10 +47,11 @@ final class SchemaKeywordTest extends TestCase
      */
     public function testProcess(array $properties): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$schema' => $this->keyword], $identifier);
         $expectedContext = new SchemaContext(['$schema' => $this->keyword], $identifier);
-        $this->keyword->process($properties, $context);
+        $this->keyword->process($properties, $pointer, $context);
 
         $this->assertEquals($expectedContext, $context);
     }
@@ -61,41 +62,39 @@ final class SchemaKeywordTest extends TestCase
     public function valueProvider(): array
     {
         return [
-            [['$schema' => new JsonString('https://example.org/foo', new JsonPointer('$schema'))]],
-            [[
-                '$schema' => new JsonString('https://example.org/foo', new JsonPointer('foo', '$schema')),
-                '$id' => new JsonString('foo', new JsonPointer('foo', '$id')),
-            ]],
+            [['$schema' => new JsonString('https://example.org/foo')]],
+            [['$schema' => new JsonString('https://example.org/foo'), '$id' => new JsonString('foo')]],
         ];
     }
 
     /**
      * @param JsonNull|JsonString $value
+     * @param JsonPointer $pointer
      *
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value): void
+    public function testProcessWithInvalidValue(JsonValue $value, JsonPointer $pointer): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$schema' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['$schema' => $value], $context);
+        $this->keyword->process(['$schema' => $value], $pointer, $context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonString}>
+     * @return non-empty-list<array{JsonNull|JsonString, JsonPointer}>
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('$schema');
+        $pointer = new JsonPointer();
 
         return [
-            [new JsonNull($path)],
-            [new JsonString('/foo', $path)],
-            [new JsonString('https://example.com/foo/../bar', $path)],
-            [new JsonString('https://example.com/foo', new JsonPointer('foo', '$schema'))],
+            [new JsonNull(), $pointer],
+            [new JsonString('/foo'), $pointer],
+            [new JsonString('https://example.com/foo/../bar'), $pointer],
+            [new JsonString('https://example.com/foo'), new JsonPointer('foo')],
         ];
     }
 }

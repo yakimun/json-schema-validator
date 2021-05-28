@@ -6,7 +6,6 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ValidationVocabulary\Keyw
 
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\ConstKeywordHandler;
 
 /**
@@ -18,7 +17,7 @@ final class ConstKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $keywordHandler = new ConstKeywordHandler('https://example.com#/const', new JsonNull(new JsonPointer()));
+        $keywordHandler = new ConstKeywordHandler('https://example.com#/const', new JsonNull());
 
         $this->assertInstanceOf(ConstKeywordHandler::class, $keywordHandler);
     }

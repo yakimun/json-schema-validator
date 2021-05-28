@@ -48,11 +48,11 @@ final class VocabularyKeywordTest extends TestCase
      */
     public function testProcess(array $properties): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
         $expectedContext = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
-        $value = new JsonObject($properties, new JsonPointer('$vocabulary'));
-        $this->keyword->process(['$vocabulary' => $value], $context);
+        $this->keyword->process(['$vocabulary' => new JsonObject($properties)], $pointer, $context);
 
         $this->assertEquals($expectedContext, $context);
     }
@@ -62,8 +62,8 @@ final class VocabularyKeywordTest extends TestCase
      */
     public function valueProvider(): array
     {
-        $jsonBoolean1 = new JsonBoolean(true, new JsonPointer('$vocabulary', 'https://example.com/foo'));
-        $jsonBoolean2 = new JsonBoolean(false, new JsonPointer('$vocabulary', 'https://example.com/bar'));
+        $jsonBoolean1 = new JsonBoolean(true);
+        $jsonBoolean2 = new JsonBoolean(false);
 
         return [
             [[]],
@@ -75,34 +75,35 @@ final class VocabularyKeywordTest extends TestCase
 
     /**
      * @param JsonNull|JsonObject $value
+     * @param JsonPointer $pointer
      *
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value): void
+    public function testProcessWithInvalidValue(JsonValue $value, JsonPointer $pointer): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['$vocabulary' => $value], $context);
+        $this->keyword->process(['$vocabulary' => $value], $pointer, $context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonObject}>
+     * @return non-empty-list<array{JsonNull|JsonObject, JsonPointer}>
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('$vocabulary');
+        $pointer = new JsonPointer();
         $uri1 = 'https://example.com/foo/../bar';
         $uri2 = 'https://example.com/foo';
 
         return [
-            [new JsonNull($path)],
-            [new JsonObject(['foo' => new JsonBoolean(true, new JsonPointer('$vocabulary', 'foo'))], $path)],
-            [new JsonObject([$uri1 => new JsonBoolean(true, new JsonPointer('$vocabulary', $uri1))], $path)],
-            [new JsonObject([$uri2 => new JsonNull(new JsonPointer('$vocabulary', $uri2))], $path)],
-            [new JsonObject([], new JsonPointer('foo', '$vocabulary'))],
+            [new JsonNull(), $pointer],
+            [new JsonObject(['foo' => new JsonBoolean(true)]), $pointer],
+            [new JsonObject([$uri1 => new JsonBoolean(true)]), $pointer],
+            [new JsonObject([$uri2 => new JsonNull()]), $pointer],
+            [new JsonObject([]), new JsonPointer('foo')],
         ];
     }
 }

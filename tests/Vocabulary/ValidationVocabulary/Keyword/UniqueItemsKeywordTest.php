@@ -43,21 +43,24 @@ final class UniqueItemsKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['uniqueItems' => $this->keyword], $identifier);
         $keywordHandler = new UniqueItemsKeywordHandler('https://example.com#/uniqueItems', true);
-        $this->keyword->process(['uniqueItems' => new JsonBoolean(true, new JsonPointer('uniqueItems'))], $context);
+        $this->keyword->process(['uniqueItems' => new JsonBoolean(true)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['uniqueItems' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['uniqueItems' => new JsonNull(new JsonPointer('uniqueItems'))], $context);
+        $this->keyword->process(['uniqueItems' => $value], $pointer, $context);
     }
 }

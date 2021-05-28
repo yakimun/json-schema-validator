@@ -7,35 +7,42 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class DefsKeyword implements Keyword
 {
+    private const NAME = '$defs';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return '$defs';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['$defs'];
+        $property = $properties[self::NAME];
+        $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonObject) {
-            $message = sprintf('The value must be an object. Path: "%s".', (string)$property->getPath());
+            $message = sprintf('The value must be an object. Path: "%s".', (string)$keywordPath);
             throw new InvalidSchemaException($message);
         }
 
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+
         foreach ($property->getProperties() as $key => $value) {
-            $context->createValidator($value, $context->getIdentifier()->addTokens('$defs', $key));
+            $context->createValidator($value, $keywordIdentifier->addTokens($key), $keywordPath->addTokens($key));
         }
     }
 }

@@ -7,35 +7,40 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\FormatAssertionVocabulary\Keywo
 use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\FormatAssertionVocabulary\KeywordHandler\FormatKeywordHandler;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class FormatKeyword implements Keyword
 {
+    private const NAME = 'format';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'format';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['format'];
-        $identifier = (string)$context->getIdentifier()->addTokens('format');
+        $property = $properties[self::NAME];
 
         if (!$property instanceof JsonString) {
-            $message = sprintf('The value must be a string. Path: "%s".', (string)$property->getPath());
+            $message = sprintf('The value must be a string. Path: "%s".', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
-        $context->addKeywordHandler(new FormatKeywordHandler($identifier, $property->getValue()));
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+
+        $context->addKeywordHandler(new FormatKeywordHandler((string)$keywordIdentifier, $property->getValue()));
     }
 }

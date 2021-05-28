@@ -14,7 +14,6 @@ use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader
@@ -63,14 +62,14 @@ final class FileJsonLoaderTest extends TestCase
     {
         file_put_contents($this->filename, 'null');
 
-        $this->assertEquals(new JsonNull(new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonNull(), $this->loader->load());
     }
 
     public function testLoadBoolean(): void
     {
         file_put_contents($this->filename, 'true');
 
-        $this->assertEquals(new JsonBoolean(true, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonBoolean(true), $this->loader->load());
     }
 
     /**
@@ -83,7 +82,7 @@ final class FileJsonLoaderTest extends TestCase
     {
         file_put_contents($this->filename, $value);
 
-        $this->assertEquals(new JsonObject($expected, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonObject($expected), $this->loader->load());
     }
 
     /**
@@ -91,8 +90,8 @@ final class FileJsonLoaderTest extends TestCase
      */
     public function objectProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('a'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             ['{}', []],
@@ -111,7 +110,7 @@ final class FileJsonLoaderTest extends TestCase
     {
         file_put_contents($this->filename, $value);
 
-        $this->assertEquals(new JsonArray($expected, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonArray($expected), $this->loader->load());
     }
 
     /**
@@ -119,8 +118,8 @@ final class FileJsonLoaderTest extends TestCase
      */
     public function arrayProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('0'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('1'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             ['[]', []],
@@ -133,21 +132,21 @@ final class FileJsonLoaderTest extends TestCase
     {
         file_put_contents($this->filename, '1');
 
-        $this->assertEquals(new JsonInteger(1, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonInteger(1), $this->loader->load());
     }
 
     public function testLoadFloat(): void
     {
         file_put_contents($this->filename, '1.5');
 
-        $this->assertEquals(new JsonFloat(1.5, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonFloat(1.5), $this->loader->load());
     }
 
     public function testLoadString(): void
     {
         file_put_contents($this->filename, '"a"');
 
-        $this->assertEquals(new JsonString('a', new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonString('a'), $this->loader->load());
     }
 
     public function testLoadInvalidValue(): void

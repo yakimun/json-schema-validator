@@ -43,22 +43,23 @@ final class ContentMediaTypeKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['contentMediaType' => $this->keyword], $identifier);
         $keywordHandler = new ContentMediaTypeKeywordHandler('https://example.com#/contentMediaType', 'a');
-        $properties = ['contentMediaType' => new JsonString('a', new JsonPointer('contentMediaType'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['contentMediaType' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['contentMediaType' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['contentMediaType' => new JsonNull(new JsonPointer('contentMediaType'))], $context);
+        $this->keyword->process(['contentMediaType' => new JsonNull()], $pointer, $context);
     }
 }

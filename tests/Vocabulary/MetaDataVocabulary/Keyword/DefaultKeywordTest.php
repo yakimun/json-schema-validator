@@ -40,11 +40,12 @@ final class DefaultKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['default' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('default'));
+        $value = new JsonNull();
         $keywordHandler = new DefaultKeywordHandler('https://example.com#/default', $value);
-        $this->keyword->process(['default' => $value], $context);
+        $this->keyword->process(['default' => $value], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }

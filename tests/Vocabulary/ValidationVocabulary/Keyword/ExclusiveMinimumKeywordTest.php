@@ -47,33 +47,35 @@ final class ExclusiveMinimumKeywordTest extends TestCase
 
     public function testProcessWithIntegerValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1);
-        $properties = ['exclusiveMinimum' => new JsonInteger(1, new JsonPointer('exclusiveMinimum'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['exclusiveMinimum' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
         $keywordHandler = new FloatExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1.5);
-        $properties = ['exclusiveMinimum' => new JsonFloat(1.5, new JsonPointer('exclusiveMinimum'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['exclusiveMinimum' => new JsonFloat(1.5)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['exclusiveMinimum' => new JsonNull(new JsonPointer('exclusiveMinimum'))], $context);
+        $this->keyword->process(['exclusiveMinimum' => $value], $pointer, $context);
     }
 }

@@ -50,11 +50,11 @@ final class ValueJsonLoader implements JsonLoader
     private function convert($value, JsonPointer $path): JsonValue
     {
         if (is_null($value)) {
-            return new JsonNull($path);
+            return new JsonNull();
         }
 
         if (is_bool($value)) {
-            return new JsonBoolean($value, $path);
+            return new JsonBoolean($value);
         }
 
         if (is_object($value)) {
@@ -66,15 +66,15 @@ final class ValueJsonLoader implements JsonLoader
         }
 
         if (is_int($value)) {
-            return new JsonInteger($value, $path);
+            return new JsonInteger($value);
         }
 
         if (is_float($value)) {
-            return new JsonFloat($value, $path);
+            return new JsonFloat($value);
         }
 
         if (is_string($value)) {
-            return new JsonString($value, $path);
+            return new JsonString($value);
         }
 
         $format = 'The value must be a null, a boolean, an object, an array, an int, a float, or a string. Path: "%s".';
@@ -95,7 +95,7 @@ final class ValueJsonLoader implements JsonLoader
             $properties[$key] = $this->convert($property, $path->addTokens($key));
         }
 
-        return new JsonObject($properties, $path);
+        return new JsonObject($properties);
     }
 
     /**
@@ -119,6 +119,6 @@ final class ValueJsonLoader implements JsonLoader
             $expectedIndex++;
         }
 
-        return new JsonArray($items, $path);
+        return new JsonArray($items);
     }
 }

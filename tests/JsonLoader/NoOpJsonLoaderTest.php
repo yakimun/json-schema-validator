@@ -7,7 +7,6 @@ namespace Yakimun\JsonSchemaValidator\Tests\JsonLoader;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonLoader\NoOpJsonLoader;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\NoOpJsonLoader
@@ -18,7 +17,7 @@ final class NoOpJsonLoaderTest extends TestCase
 {
     public function testLoad(): void
     {
-        $value = new JsonNull(new JsonPointer());
+        $value = new JsonNull();
         $loader = new NoOpJsonLoader($value);
 
         $this->assertEquals($value, $loader->load());

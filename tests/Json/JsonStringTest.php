@@ -28,7 +28,7 @@ final class JsonStringTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->value = new JsonString('foo', new JsonPointer('a'));
+        $this->value = new JsonString('foo');
     }
 
     public function testGetValue(): void
@@ -36,30 +36,24 @@ final class JsonStringTest extends TestCase
         $this->assertEquals('foo', $this->value->getValue());
     }
 
-    public function testGetPath(): void
-    {
-        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
-    }
-
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
-
-        $this->assertTrue($this->value->equals(new JsonString('foo', $path)));
-        $this->assertFalse($this->value->equals(new JsonString('bar', $path)));
-        $this->assertFalse($this->value->equals(new JsonNull($path)));
+        $this->assertTrue($this->value->equals(new JsonString('foo')));
+        $this->assertFalse($this->value->equals(new JsonString('bar')));
+        $this->assertFalse($this->value->equals(new JsonNull()));
     }
 
     public function testProcessAsSchema(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $keywords = ['foo' => $this->createStub(Keyword::class)];
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
+        $keywords = ['a' => $this->createStub(Keyword::class)];
 
         $this->expectException(InvalidSchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->value->processAsSchema($identifier, $keywords);
+        $this->value->processAsSchema($identifier, $keywords, $pointer);
     }
 }

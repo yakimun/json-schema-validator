@@ -47,33 +47,35 @@ final class ExclusiveMaximumKeywordTest extends TestCase
 
     public function testProcessWithIntegerValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMaximum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerExclusiveMaximumKeywordHandler('https://example.com#/exclusiveMaximum', 1);
-        $properties = ['exclusiveMaximum' => new JsonInteger(1, new JsonPointer('exclusiveMaximum'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['exclusiveMaximum' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMaximum' => $this->keyword], $identifier);
         $keywordHandler = new FloatExclusiveMaximumKeywordHandler('https://example.com#/exclusiveMaximum', 1.5);
-        $properties = ['exclusiveMaximum' => new JsonFloat(1.5, new JsonPointer('exclusiveMaximum'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['exclusiveMaximum' => new JsonFloat(1.5)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['exclusiveMaximum' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['exclusiveMaximum' => new JsonNull(new JsonPointer('exclusiveMaximum'))], $context);
+        $this->keyword->process(['exclusiveMaximum' => $value], $pointer, $context);
     }
 }

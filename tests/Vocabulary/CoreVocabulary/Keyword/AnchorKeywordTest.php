@@ -50,11 +50,12 @@ final class AnchorKeywordTest extends TestCase
     public function testProcess(string $value): void
     {
         $uri = new Uri('https://example.com');
-        $context = new SchemaContext(['$anchor' => $this->keyword], new SchemaIdentifier($uri, new JsonPointer()));
-        $path = new JsonPointer('$anchor');
-        $this->keyword->process(['$anchor' => new JsonString($value, $path)], $context);
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('$anchor');
+        $context = new SchemaContext(['$anchor' => $this->keyword], new SchemaIdentifier($uri, $pointer));
+        $this->keyword->process(['$anchor' => new JsonString($value)], $pointer, $context);
 
-        $this->assertEquals([new SchemaReference($uri->withFragment($value), $path)], $context->getAnchors());
+        $this->assertEquals([new SchemaReference($uri->withFragment($value), $keywordPointer)], $context->getAnchors());
     }
 
     /**
@@ -83,12 +84,13 @@ final class AnchorKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(JsonValue $value): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$anchor' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['$anchor' => $value], $context);
+        $this->keyword->process(['$anchor' => $value], $pointer, $context);
     }
 
     /**
@@ -96,15 +98,13 @@ final class AnchorKeywordTest extends TestCase
      */
     public function valueProviderWithInvalidValue(): array
     {
-        $path = new JsonPointer('$anchor');
-
         return [
-            [new JsonNull($path)],
-            [new JsonString('-', $path)],
-            [new JsonString('', $path)],
-            [new JsonString('.', $path)],
-            [new JsonString('*', $path)],
-            [new JsonString('A*', $path)],
+            [new JsonNull()],
+            [new JsonString('-')],
+            [new JsonString('')],
+            [new JsonString('.')],
+            [new JsonString('*')],
+            [new JsonString('A*')],
         ];
     }
 }

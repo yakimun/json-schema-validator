@@ -16,27 +16,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 final class JsonNull implements JsonValue
 {
     /**
-     * @var JsonPointer
-     */
-    private $path;
-
-    /**
-     * @param JsonPointer $path
-     */
-    public function __construct(JsonPointer $path)
-    {
-        $this->path = $path;
-    }
-
-    /**
-     * @return JsonPointer
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
-    }
-
-    /**
      * @param JsonValue $value
      * @return bool
      */
@@ -46,12 +25,14 @@ final class JsonNull implements JsonValue
     }
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
-        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$this->path);
+        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path);
         throw new InvalidSchemaException($message);
     }
 }

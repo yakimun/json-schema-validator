@@ -43,21 +43,23 @@ final class FormatKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $keywordHandler = new FormatKeywordHandler('https://example.com#/format', 'a');
         $context = new SchemaContext(['format' => $this->keyword], $identifier);
-        $this->keyword->process(['format' => new JsonString('a', new JsonPointer('format'))], $context);
+        $this->keyword->process(['format' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['format' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['format' => new JsonNull(new JsonPointer('format'))], $context);
+        $this->keyword->process(['format' => new JsonNull()], $pointer, $context);
     }
 }

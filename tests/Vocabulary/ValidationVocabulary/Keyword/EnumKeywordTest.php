@@ -43,22 +43,25 @@ final class EnumKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['enum' => $this->keyword], $identifier);
-        $elements = [new JsonNull(new JsonPointer('enum', '0'))];
+        $elements = [new JsonNull()];
         $keywordHandler = new EnumKeywordHandler('https://example.com#/enum', $elements);
-        $this->keyword->process(['enum' => new JsonArray($elements, new JsonPointer('enum'))], $context);
+        $this->keyword->process(['enum' => new JsonArray($elements)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['enum' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['enum' => new JsonNull(new JsonPointer('enum'))], $context);
+        $this->keyword->process(['enum' => $value], $pointer, $context);
     }
 }

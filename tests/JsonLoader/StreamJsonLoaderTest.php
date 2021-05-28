@@ -16,7 +16,6 @@ use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\StreamJsonLoader
@@ -54,7 +53,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write('null');
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonNull(new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonNull(), $this->loader->load());
     }
 
     public function testLoadBoolean(): void
@@ -62,7 +61,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write('true');
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonBoolean(true, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonBoolean(true), $this->loader->load());
     }
 
     /**
@@ -76,7 +75,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write($value);
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonObject($expected, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonObject($expected), $this->loader->load());
     }
 
     /**
@@ -84,8 +83,8 @@ final class StreamJsonLoaderTest extends TestCase
      */
     public function objectProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('a'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             ['{}', []],
@@ -105,7 +104,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write($value);
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonArray($expected, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonArray($expected), $this->loader->load());
     }
 
     /**
@@ -113,8 +112,8 @@ final class StreamJsonLoaderTest extends TestCase
      */
     public function arrayProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('0'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('1'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             ['[]', []],
@@ -128,7 +127,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write('1');
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonInteger(1, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonInteger(1), $this->loader->load());
     }
 
     public function testLoadFloat(): void
@@ -136,7 +135,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write('1.5');
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonFloat(1.5, new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonFloat(1.5), $this->loader->load());
     }
 
     public function testLoadString(): void
@@ -144,7 +143,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->stream->write('"a"');
         $this->stream->rewind();
 
-        $this->assertEquals(new JsonString('a', new JsonPointer()), $this->loader->load());
+        $this->assertEquals(new JsonString('a'), $this->loader->load());
     }
 
     public function testLoadInvalidValue(): void

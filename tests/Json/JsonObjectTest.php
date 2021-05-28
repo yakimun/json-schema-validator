@@ -37,27 +37,12 @@ final class JsonObjectTest extends TestCase
 
     protected function setUp(): void
     {
-        $properties = [
-            'a' => new JsonNull(new JsonPointer('a', 'a')),
-            'b' => new JsonBoolean(true, new JsonPointer('a', 'b')),
-        ];
-
-        $this->value = new JsonObject($properties, new JsonPointer('a'));
+        $this->value = new JsonObject(['a' => new JsonNull(), 'b' => new JsonBoolean(true)]);
     }
 
     public function testGetProperties(): void
     {
-        $properties = [
-            'a' => new JsonNull(new JsonPointer('a', 'a')),
-            'b' => new JsonBoolean(true, new JsonPointer('a', 'b')),
-        ];
-
-        $this->assertEquals($properties, $this->value->getProperties());
-    }
-
-    public function testGetPath(): void
-    {
-        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
+        $this->assertEquals(['a' => new JsonNull(), 'b' => new JsonBoolean(true)], $this->value->getProperties());
     }
 
     /**
@@ -76,42 +61,39 @@ final class JsonObjectTest extends TestCase
      */
     public function valueProvider(): array
     {
-        $path = new JsonPointer('b');
-        $jsonNull = new JsonNull(new JsonPointer('b', 'a'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b', 'b'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
-            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean], $path), true],
-            [new JsonObject(['b' => $jsonBoolean, 'a' => $jsonNull], $path), true],
-            [new JsonObject([], $path), false],
-            [new JsonObject(['a' => $jsonNull], $path), false],
-            [new JsonObject(['a' => $jsonBoolean, 'b' => $jsonNull], $path), false],
-            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean, 'c' => $jsonNull], $path), false],
-            [new JsonNull($path), false],
+            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean]), true],
+            [new JsonObject(['b' => $jsonBoolean, 'a' => $jsonNull]), true],
+            [new JsonObject([]), false],
+            [new JsonObject(['a' => $jsonNull]), false],
+            [new JsonObject(['a' => $jsonBoolean, 'b' => $jsonNull]), false],
+            [new JsonObject(['a' => $jsonNull, 'b' => $jsonBoolean, 'c' => $jsonNull]), false],
+            [new JsonNull(), false],
         ];
     }
 
     public function testProcessAsSchemaWithEmptyValue(): void
     {
-        $path = new JsonPointer('a');
-
         $keyword = $this->createMock(Keyword::class);
         $keyword
             ->expects($this->never())
             ->method('process');
 
-        $value = new JsonObject([], $path);
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $value = new JsonObject([]);
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $validator = new ObjectSchemaValidator('https://example.com', []);
-        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $pointer);
 
-        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword], $pointer));
     }
 
     public function testProcessAsSchemaWithKnownKeyword(): void
     {
-        $path = new JsonPointer('a');
-        $properties = ['a' => new JsonNull($path)];
+        $properties = ['a' => new JsonNull()];
 
         $keyword = $this->createMock(Keyword::class);
         $keyword
@@ -122,30 +104,31 @@ final class JsonObjectTest extends TestCase
                 $this->anything(),
             );
 
-        $value = new JsonObject($properties, $path);
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $value = new JsonObject($properties);
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $validator = new ObjectSchemaValidator('https://example.com', []);
-        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $pointer);
 
-        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword]));
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['a' => $keyword], $pointer));
     }
 
     public function testProcessAsSchemaWithUnknownKeyword(): void
     {
-        $path = new JsonPointer('a');
-        $properties = ['a' => new JsonNull($path)];
+        $properties = ['a' => new JsonNull()];
 
         $keyword = $this->createMock(Keyword::class);
         $keyword
             ->expects($this->never())
             ->method('process');
 
-        $value = new JsonObject($properties, $path);
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $value = new JsonObject($properties);
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $keywordHandler = new UnknownKeywordHandler('https://example.com#/a', 'a', $properties['a']);
         $validator = new ObjectSchemaValidator('https://example.com', [$keywordHandler]);
-        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $path);
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $pointer);
 
-        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['b' => $keyword]));
+        $this->assertEquals([$processedSchema], $value->processAsSchema($identifier, ['b' => $keyword], $pointer));
     }
 }

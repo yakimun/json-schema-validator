@@ -43,21 +43,23 @@ final class TitleKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['title' => $this->keyword], $identifier);
         $keywordHandler = new TitleKeywordHandler('https://example.com#/title', 'a');
-        $this->keyword->process(['title' => new JsonString('a', new JsonPointer('title'))], $context);
+        $this->keyword->process(['title' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['title' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['title' => new JsonNull(new JsonPointer('title'))], $context);
+        $this->keyword->process(['title' => new JsonNull()], $pointer, $context);
     }
 }

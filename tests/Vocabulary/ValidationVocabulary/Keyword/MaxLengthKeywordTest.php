@@ -43,31 +43,36 @@ final class MaxLengthKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxLength' => $this->keyword], $identifier);
         $keywordHandler = new MaxLengthKeywordHandler('https://example.com#/maxLength', 1);
-        $this->keyword->process(['maxLength' => new JsonInteger(1, new JsonPointer('maxLength'))], $context);
+        $this->keyword->process(['maxLength' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxLength' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxLength' => new JsonNull(new JsonPointer('maxLength'))], $context);
+        $this->keyword->process(['maxLength' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeInteger(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxLength' => $this->keyword], $identifier);
+        $value = new JsonInteger(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxLength' => new JsonInteger(-1, new JsonPointer('maxLength'))], $context);
+        $this->keyword->process(['maxLength' => $value], $pointer, $context);
     }
 }

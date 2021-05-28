@@ -8,6 +8,7 @@ use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonArray;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\ArrayTypeKeywordHandler;
@@ -15,52 +16,57 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\S
 
 final class TypeKeyword implements Keyword
 {
+    private const NAME = 'type';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'type';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['type'];
-        $identifier = (string)$context->getIdentifier()->addTokens('type');
+        $property = $properties[self::NAME];
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
 
         if ($property instanceof JsonString) {
-            $context->addKeywordHandler(new StringTypeKeywordHandler($identifier, $this->getType($property)));
+            $type = $this->getType($property, $path);
+            $context->addKeywordHandler(new StringTypeKeywordHandler((string)$keywordIdentifier, $type));
 
             return;
         }
 
         if ($property instanceof JsonArray) {
-            $context->addKeywordHandler(new ArrayTypeKeywordHandler($identifier, $this->getTypes($property)));
+            $types = $this->getTypes($property, $path);
+            $context->addKeywordHandler(new ArrayTypeKeywordHandler((string)$keywordIdentifier, $types));
 
             return;
         }
 
-        $message = sprintf('The value must be either a string or an array. Path: "%s".', (string)$property->getPath());
-        throw new InvalidSchemaException($message);
+        $format = 'The value must be either a string or an array. Path: "%s".';
+        throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
     }
 
     /**
      * @param JsonString $property
      * @return 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'
      */
-    private function getType(JsonString $property): string
+    private function getType(JsonString $property, JsonPointer $path): string
     {
         $type = $property->getValue();
 
         if (!in_array($type, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
             $format = 'The value must be equal to "null", "boolean", "object", "array", "number", "string", or '
                 . '"integer". Path: "%s".';
-            throw new InvalidSchemaException(sprintf($format, (string)$property->getPath()));
+            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
 
         return $type;
@@ -68,30 +74,34 @@ final class TypeKeyword implements Keyword
 
     /**
      * @param JsonArray $property
+     * @param JsonPointer $path
      * @return list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'>
      */
-    private function getTypes(JsonArray $property): array
+    private function getTypes(JsonArray $property, JsonPointer $path): array
     {
-        $types = [];
-        $existingItems = [];
+        $keywordPath = $path->addTokens(self::NAME);
 
-        foreach ($property->getItems() as $item) {
+        $types = [];
+        $existingPaths = [];
+
+        foreach ($property->getItems() as $index => $item) {
+            $itemPath = $keywordPath->addTokens((string)$index);
+
             if (!$item instanceof JsonString) {
-                $message = sprintf('The element must be a string. Path: "%s".', (string)$item->getPath());
+                $message = sprintf('The element must be a string. Path: "%s".', (string)$itemPath);
                 throw new InvalidSchemaException($message);
             }
 
-            $type = $this->getType($item);
-            $existingItem = $existingItems[$type] ?? null;
+            $type = $this->getType($item, $path);
+            $existingPath = $existingPaths[$type] ?? null;
 
-            if ($existingItem) {
+            if ($existingPath) {
                 $format = 'The elements must be unique. Paths: "%s" and "%s".';
-                $message = sprintf($format, (string)$existingItem->getPath(), (string)$item->getPath());
-                throw new InvalidSchemaException($message);
+                throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
             }
 
             $types[] = $type;
-            $existingItems[$type] = $item;
+            $existingPaths[$type] = $itemPath;
         }
 
         return $types;

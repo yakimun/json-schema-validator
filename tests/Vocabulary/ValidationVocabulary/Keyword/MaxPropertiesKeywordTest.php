@@ -43,31 +43,36 @@ final class MaxPropertiesKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
         $keywordHandler = new MaxPropertiesKeywordHandler('https://example.com#/maxProperties', 1);
-        $this->keyword->process(['maxProperties' => new JsonInteger(1, new JsonPointer('maxProperties'))], $context);
+        $this->keyword->process(['maxProperties' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxProperties' => new JsonNull(new JsonPointer('maxProperties'))], $context);
+        $this->keyword->process(['maxProperties' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeInteger(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
+        $value = new JsonInteger(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maxProperties' => new JsonInteger(-1, new JsonPointer('maxProperties'))], $context);
+        $this->keyword->process(['maxProperties' => $value], $pointer, $context);
     }
 }

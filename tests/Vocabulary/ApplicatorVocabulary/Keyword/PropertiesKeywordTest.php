@@ -54,10 +54,10 @@ final class PropertiesKeywordTest extends TestCase
      */
     public function testProcess(array $properties, array $expected): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['properties' => $this->keyword], $identifier);
-        $value = new JsonObject($properties, new JsonPointer('properties'));
-        $this->keyword->process(['properties' => $value], $context);
+        $this->keyword->process(['properties' => new JsonObject($properties)], $pointer, $context);
 
         $validators = [];
 
@@ -81,8 +81,8 @@ final class PropertiesKeywordTest extends TestCase
         $pointer1 = new JsonPointer('properties', 'a');
         $pointer2 = new JsonPointer('properties', 'b');
 
-        $jsonObject1 = new JsonObject([], $pointer1);
-        $jsonObject2 = new JsonObject([], $pointer2);
+        $jsonObject1 = new JsonObject([]);
+        $jsonObject2 = new JsonObject([]);
 
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
@@ -108,12 +108,13 @@ final class PropertiesKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(JsonValue $value): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['properties' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['properties' => $value], $context);
+        $this->keyword->process(['properties' => $value], $pointer, $context);
     }
 
     /**
@@ -121,11 +122,9 @@ final class PropertiesKeywordTest extends TestCase
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('properties');
-
         return [
-            [new JsonNull($path)],
-            [new JsonObject(['a' => new JsonNull(new JsonPointer('properties', 'a'))], $path)]
+            [new JsonNull()],
+            [new JsonObject(['a' => new JsonNull()])],
         ];
     }
 }

@@ -5,29 +5,35 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword;
 
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\AdditionalPropertiesKeywordHandler;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class AdditionalPropertiesKeyword implements Keyword
 {
+    private const NAME = 'additionalProperties';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'additionalProperties';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $identifier = $context->getIdentifier()->addTokens('additionalProperties');
-        $validator = $context->createValidator($properties['additionalProperties'], $identifier);
-        $context->addKeywordHandler(new AdditionalPropertiesKeywordHandler((string)$identifier, $validator));
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+        $keywordPath = $path->addTokens(self::NAME);
+
+        $validator = $context->createValidator($properties[self::NAME], $keywordIdentifier, $keywordPath);
+        $context->addKeywordHandler(new AdditionalPropertiesKeywordHandler((string)$keywordIdentifier, $validator));
     }
 }

@@ -7,42 +7,47 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
 use Yakimun\JsonSchemaValidator\Json\JsonInteger;
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\MinPropertiesKeywordHandler;
 
 final class MinPropertiesKeyword implements Keyword
 {
+    private const NAME = 'minProperties';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'minProperties';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['minProperties'];
-        $identifier = (string)$context->getIdentifier()->addTokens('minProperties');
+        $property = $properties[self::NAME];
 
         if (!$property instanceof JsonInteger) {
-            $message = sprintf('The value must be an integer. Path: "%s".', (string)$property->getPath());
+            $message = sprintf('The value must be an integer. Path: "%s".', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         $minProperties = $property->getValue();
 
         if ($minProperties < 0) {
-            $message = sprintf('The value must be a non-negative integer. Path: "%s".', (string)$property->getPath());
-            throw new InvalidSchemaException($message);
+            $format = 'The value must be a non-negative integer. Path: "%s".';
+            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
 
-        $context->addKeywordHandler(new MinPropertiesKeywordHandler($identifier, $minProperties));
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+
+        $context->addKeywordHandler(new MinPropertiesKeywordHandler((string)$keywordIdentifier, $minProperties));
     }
 }

@@ -54,10 +54,11 @@ final class DependentSchemasKeywordTest extends TestCase
      */
     public function testProcess(array $properties, array $expected): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['dependentSchemas' => $this->keyword], $identifier);
-        $value = new JsonObject($properties, new JsonPointer('dependentSchemas'));
-        $this->keyword->process(['dependentSchemas' => $value], $context);
+        $value = new JsonObject($properties);
+        $this->keyword->process(['dependentSchemas' => $value], $pointer, $context);
 
         $validators = [];
 
@@ -81,8 +82,8 @@ final class DependentSchemasKeywordTest extends TestCase
         $pointer1 = new JsonPointer('dependentSchemas', 'a');
         $pointer2 = new JsonPointer('dependentSchemas', 'b');
 
-        $jsonObject1 = new JsonObject([], $pointer1);
-        $jsonObject2 = new JsonObject([], $pointer2);
+        $jsonObject1 = new JsonObject([]);
+        $jsonObject2 = new JsonObject([]);
 
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
@@ -108,12 +109,13 @@ final class DependentSchemasKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(JsonValue $value): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['dependentSchemas' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['dependentSchemas' => $value], $context);
+        $this->keyword->process(['dependentSchemas' => $value], $pointer, $context);
     }
 
     /**
@@ -121,11 +123,9 @@ final class DependentSchemasKeywordTest extends TestCase
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('dependentSchemas');
-
         return [
-            [new JsonNull($path)],
-            [new JsonObject(['a' => new JsonNull(new JsonPointer('dependentSchemas', 'a'))], $path)]
+            [new JsonNull()],
+            [new JsonObject(['a' => new JsonNull()])],
         ];
     }
 }

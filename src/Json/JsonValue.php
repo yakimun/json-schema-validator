@@ -12,12 +12,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 interface JsonValue
 {
     /**
-     * @return JsonPointer
-     * @psalm-mutation-free
-     */
-    public function getPath(): JsonPointer;
-
-    /**
      * @param JsonValue $value
      * @return bool
      * @psalm-mutation-free
@@ -25,8 +19,10 @@ interface JsonValue
     public function equals(JsonValue $value): bool;
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array;
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array;
 }

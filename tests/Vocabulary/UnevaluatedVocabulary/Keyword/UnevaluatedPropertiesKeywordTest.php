@@ -48,14 +48,16 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer('unevaluatedProperties');
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('unevaluatedProperties');
+        $identifier = new SchemaIdentifier($uri, $pointer);
+        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
         $absoluteLocation = 'https://example.com#/unevaluatedProperties';
         $validator = new ObjectSchemaValidator($absoluteLocation, []);
         $keywordHandler = new UnevaluatedPropertiesKeywordHandler($absoluteLocation, $validator);
-        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
+        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
         $context = new SchemaContext(['unevaluatedProperties' => $this->keyword], $identifier);
-        $this->keyword->process(['unevaluatedProperties' => new JsonObject([], $pointer)], $context);
+        $this->keyword->process(['unevaluatedProperties' => new JsonObject([])], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
@@ -63,12 +65,13 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['unevaluatedProperties' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('unevaluatedProperties'));
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['unevaluatedProperties' => $value], $context);
+        $this->keyword->process(['unevaluatedProperties' => $value], $pointer, $context);
     }
 }

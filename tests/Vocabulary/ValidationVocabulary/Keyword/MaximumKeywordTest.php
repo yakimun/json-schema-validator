@@ -47,31 +47,35 @@ final class MaximumKeywordTest extends TestCase
 
     public function testProcessWithIntegerValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maximum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMaximumKeywordHandler('https://example.com#/maximum', 1);
-        $this->keyword->process(['maximum' => new JsonInteger(1, new JsonPointer('maximum'))], $context);
+        $this->keyword->process(['maximum' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maximum' => $this->keyword], $identifier);
         $keywordHandler = new FloatMaximumKeywordHandler('https://example.com#/maximum', 1.5);
-        $this->keyword->process(['maximum' => new JsonFloat(1.5, new JsonPointer('maximum'))], $context);
+        $this->keyword->process(['maximum' => new JsonFloat(1.5)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['maximum' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['maximum' => new JsonNull(new JsonPointer('maximum'))], $context);
+        $this->keyword->process(['maximum' => $value], $pointer, $context);
     }
 }

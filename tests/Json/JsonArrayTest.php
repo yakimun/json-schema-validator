@@ -31,21 +31,12 @@ final class JsonArrayTest extends TestCase
 
     protected function setUp(): void
     {
-        $items = [new JsonNull(new JsonPointer('a', '0')), new JsonBoolean(true, new JsonPointer('a', '1'))];
-
-        $this->value = new JsonArray($items, new JsonPointer('a'));
+        $this->value = new JsonArray([new JsonNull(), new JsonBoolean(true)]);
     }
 
     public function testGetItems(): void
     {
-        $items = [new JsonNull(new JsonPointer('a', '0')), new JsonBoolean(true, new JsonPointer('a', '1'))];
-
-        $this->assertEquals($items, $this->value->getItems());
-    }
-
-    public function testGetPath(): void
-    {
-        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
+        $this->assertEquals([new JsonNull(), new JsonBoolean(true)], $this->value->getItems());
     }
 
     /**
@@ -64,30 +55,30 @@ final class JsonArrayTest extends TestCase
      */
     public function valueProvider(): array
     {
-        $path = new JsonPointer('b');
-        $jsonNull = new JsonNull(new JsonPointer('b', '0'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b', '1'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
-            [new JsonArray([$jsonNull, $jsonBoolean], $path), true],
-            [new JsonArray([], $path), false],
-            [new JsonArray([$jsonNull], $path), false],
-            [new JsonArray([$jsonBoolean, $jsonNull], $path), false],
-            [new JsonArray([$jsonNull, $jsonBoolean, $jsonNull], $path), false],
-            [new JsonNull($path), false],
+            [new JsonArray([$jsonNull, $jsonBoolean]), true],
+            [new JsonArray([]), false],
+            [new JsonArray([$jsonNull]), false],
+            [new JsonArray([$jsonBoolean, $jsonNull]), false],
+            [new JsonArray([$jsonNull, $jsonBoolean, $jsonNull]), false],
+            [new JsonNull(), false],
         ];
     }
 
     public function testProcessAsSchema(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
-        $keywords = ['foo' => $this->createStub(Keyword::class)];
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
+        $keywords = ['a' => $this->createStub(Keyword::class)];
 
         $this->expectException(InvalidSchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->value->processAsSchema($identifier, $keywords);
+        $this->value->processAsSchema($identifier, $keywords, $pointer);
     }
 }

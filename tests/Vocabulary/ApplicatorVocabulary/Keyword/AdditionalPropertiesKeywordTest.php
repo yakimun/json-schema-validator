@@ -48,14 +48,16 @@ final class AdditionalPropertiesKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer('additionalProperties');
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('additionalProperties');
+        $identifier = new SchemaIdentifier($uri, $pointer);
+        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
         $absoluteLocation = 'https://example.com#/additionalProperties';
         $validator = new ObjectSchemaValidator($absoluteLocation, []);
         $keywordHandler = new AdditionalPropertiesKeywordHandler($absoluteLocation, $validator);
-        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
+        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
         $context = new SchemaContext(['additionalProperties' => $this->keyword], $identifier);
-        $this->keyword->process(['additionalProperties' => new JsonObject([], $pointer)], $context);
+        $this->keyword->process(['additionalProperties' => new JsonObject([])], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
@@ -63,12 +65,13 @@ final class AdditionalPropertiesKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['additionalProperties' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('additionalProperties'));
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['additionalProperties' => $value], $context);
+        $this->keyword->process(['additionalProperties' => $value], $pointer, $context);
     }
 }

@@ -21,19 +21,11 @@ final class JsonObject implements JsonValue
     private $properties;
 
     /**
-     * @var JsonPointer
-     * @readonly
-     */
-    private $path;
-
-    /**
      * @param array<string, JsonValue> $properties
-     * @param JsonPointer $path
      */
-    public function __construct(array $properties, JsonPointer $path)
+    public function __construct(array $properties)
     {
         $this->properties = $properties;
-        $this->path = $path;
     }
 
     /**
@@ -43,15 +35,6 @@ final class JsonObject implements JsonValue
     public function getProperties(): array
     {
         return $this->properties;
-    }
-
-    /**
-     * @return JsonPointer
-     * @psalm-mutation-free
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
     }
 
     /**
@@ -75,21 +58,23 @@ final class JsonObject implements JsonValue
     }
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
         if (!$this->properties) {
             $validator = new ObjectSchemaValidator((string)$identifier, []);
 
-            return [new ProcessedSchema($validator, $identifier, [], [], $this->path)];
+            return [new ProcessedSchema($validator, $identifier, [], [], $path)];
         }
 
         $context = new SchemaContext($keywords, $identifier);
 
         foreach (array_intersect_key($keywords, $this->properties) as $keyword) {
-            $keyword->process($this->properties, $context);
+            $keyword->process($this->properties, $path, $context);
         }
 
         foreach (array_diff_key($this->properties, $keywords) as $name => $value) {
@@ -102,7 +87,7 @@ final class JsonObject implements JsonValue
         $references = $context->getReferences();
 
         $validator = new ObjectSchemaValidator((string)$identifier, $context->getKeywordHandlers());
-        $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $this->path);
+        $processedSchema = new ProcessedSchema($validator, $identifier, $anchors, $references, $path);
 
         /** @var non-empty-list<ProcessedSchema> $processedSchemas */
         $processedSchemas = array_merge([$processedSchema], $context->getProcessedSchemas());

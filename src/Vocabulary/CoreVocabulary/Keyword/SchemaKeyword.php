@@ -15,42 +15,48 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class SchemaKeyword implements Keyword
 {
+    private const NAME = '$schema';
+
+    private const ID_NAME = '$id';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return '$schema';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['$schema'];
-
-        $path = $property->getPath();
+        $property = $properties[self::NAME];
 
         if (!$property instanceof JsonString) {
-            throw new InvalidSchemaException(sprintf('The value must be a string. Path: "%s".', (string)$path));
+            $message = sprintf('The value must be a string. Path: "%s".', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
         $schema = new Uri($property->getValue());
 
         if ($schema->getScheme() === '') {
-            throw new InvalidSchemaException(sprintf('The value must be a URI. Path: "%s".', (string)$path));
+            $message = sprintf('The value must be a URI. Path: "%s".', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
         if ($schema !== UriNormalizer::normalize($schema)) {
-            throw new InvalidSchemaException(sprintf('The value must be a normalized URI. Path: "%s".', (string)$path));
+            $message = sprintf('The value must be a normalized URI. Path: "%s".', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
-        if (!($properties['$id'] ?? null) && !$path->equals(new JsonPointer('$schema'))) {
+        if (!($properties[self::ID_NAME] ?? null) && !$path->equals(new JsonPointer())) {
             $format = 'The keyword must not appear in non-resource root schema objects. Path: "%s".';
-            throw new InvalidSchemaException(sprintf($format, (string)$path));
+            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
     }
 }

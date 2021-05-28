@@ -21,18 +21,11 @@ final class JsonInteger implements JsonValue
     private $value;
 
     /**
-     * @var JsonPointer
-     */
-    private $path;
-
-    /**
      * @param int $value
-     * @param JsonPointer $path
      */
-    public function __construct(int $value, JsonPointer $path)
+    public function __construct(int $value)
     {
         $this->value = $value;
-        $this->path = $path;
     }
 
     /**
@@ -41,14 +34,6 @@ final class JsonInteger implements JsonValue
     public function getValue(): int
     {
         return $this->value;
-    }
-
-    /**
-     * @return JsonPointer
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
     }
 
     /**
@@ -61,12 +46,14 @@ final class JsonInteger implements JsonValue
     }
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
-        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$this->path);
+        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path);
         throw new InvalidSchemaException($message);
     }
 }

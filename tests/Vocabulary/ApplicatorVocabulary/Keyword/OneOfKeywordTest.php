@@ -56,10 +56,10 @@ final class OneOfKeywordTest extends TestCase
      */
     public function testProcess(array $items, array $expected): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['oneOf' => $this->keyword], $identifier);
-        $value = new JsonArray($items, new JsonPointer('oneOf'));
-        $this->keyword->process(['oneOf' => $value], $context);
+        $this->keyword->process(['oneOf' => new JsonArray($items)], $pointer, $context);
 
         $validators = [];
 
@@ -83,8 +83,8 @@ final class OneOfKeywordTest extends TestCase
         $pointer1 = new JsonPointer('oneOf', '0');
         $pointer2 = new JsonPointer('oneOf', '1');
 
-        $jsonObject1 = new JsonObject([], $pointer1);
-        $jsonObject2 = new JsonObject([], $pointer2);
+        $jsonObject1 = new JsonObject([]);
+        $jsonObject2 = new JsonObject([]);
 
         $identifier1 = new SchemaIdentifier($uri, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2);
@@ -108,12 +108,13 @@ final class OneOfKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(JsonValue $value): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['oneOf' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['oneOf' => $value], $context);
+        $this->keyword->process(['oneOf' => $value], $pointer, $context);
     }
 
     /**
@@ -121,12 +122,10 @@ final class OneOfKeywordTest extends TestCase
      */
     public function invalidValueProvider(): array
     {
-        $path = new JsonPointer('oneOf');
-
         return [
-            [new JsonNull($path)],
-            [new JsonArray([], $path)],
-            [new JsonArray([new JsonNull(new JsonPointer('oneOf', '0'))], $path)]
+            [new JsonNull()],
+            [new JsonArray([])],
+            [new JsonArray([new JsonNull()])],
         ];
     }
 }

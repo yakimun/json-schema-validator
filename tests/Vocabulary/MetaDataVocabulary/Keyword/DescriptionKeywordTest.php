@@ -43,21 +43,23 @@ final class DescriptionKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['description' => $this->keyword], $identifier);
         $keywordHandler = new DescriptionKeywordHandler('https://example.com#/description', 'a');
-        $this->keyword->process(['description' => new JsonString('a', new JsonPointer('description'))], $context);
+        $this->keyword->process(['description' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['description' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['description' => new JsonNull(new JsonPointer('description'))], $context);
+        $this->keyword->process(['description' => new JsonNull()], $pointer, $context);
     }
 }

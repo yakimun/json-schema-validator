@@ -43,12 +43,14 @@ final class ThenKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer('then');
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('then');
+        $identifier = new SchemaIdentifier($uri, $pointer);
+        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
         $validator = new ObjectSchemaValidator('https://example.com#/then', []);
-        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
+        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
         $context = new SchemaContext(['then' => $this->keyword], $identifier);
-        $this->keyword->process(['then' => new JsonObject([], $pointer)], $context);
+        $this->keyword->process(['then' => new JsonObject([])], $pointer, $context);
 
         $this->assertEmpty($context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
@@ -56,14 +58,11 @@ final class ThenKeywordTest extends TestCase
 
     public function testProcessWithIf(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['then' => $this->keyword], $identifier);
         $expectedContext = new SchemaContext(['then' => $this->keyword], $identifier);
-        $properties = [
-            'if' => new JsonObject([], new JsonPointer('if')),
-            'then' => new JsonObject([], new JsonPointer('then')),
-        ];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['if' => new JsonObject([]), 'then' => new JsonObject([])], $pointer, $context);
 
         $this->assertEquals($expectedContext, $context);
     }

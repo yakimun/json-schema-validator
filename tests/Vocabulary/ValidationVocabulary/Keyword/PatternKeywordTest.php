@@ -43,21 +43,24 @@ final class PatternKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['pattern' => $this->keyword], $identifier);
         $keywordHandler = new PatternKeywordHandler('https://example.com#/pattern', '/.*a.*/');
-        $this->keyword->process(['pattern' => new JsonString('a', new JsonPointer('pattern'))], $context);
+        $this->keyword->process(['pattern' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['pattern' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['pattern' => new JsonNull(new JsonPointer('pattern'))], $context);
+        $this->keyword->process(['pattern' => $value], $pointer, $context);
     }
 }

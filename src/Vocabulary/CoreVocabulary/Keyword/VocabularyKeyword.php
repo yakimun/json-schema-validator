@@ -16,51 +16,53 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class VocabularyKeyword implements Keyword
 {
+    private const NAME = '$vocabulary';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return '$vocabulary';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $property = $properties['$vocabulary'];
-
-        $path = $property->getPath();
+        $property = $properties[self::NAME];
 
         if (!$property instanceof JsonObject) {
-            throw new InvalidSchemaException(sprintf('The value must be an object. Path: "%s".', (string)$path));
+            $message = sprintf('The value must be an object. Path: "%s".', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
         foreach ($property->getProperties() as $key => $value) {
             $uri = new Uri($key);
 
             if ($uri->getScheme() === '') {
-                $message = sprintf('The property names in the object must be URIs. Path: "%s".', (string)$path);
-                throw new InvalidSchemaException($message);
+                $format = 'The property names in the object must be URIs. Path: "%s".';
+                throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME, $key)));
             }
 
             if ($uri !== UriNormalizer::normalize($uri)) {
                 $format = 'The property names in the object must be normalized URIs. Path: "%s".';
-                throw new InvalidSchemaException(sprintf($format, (string)$path));
+                throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME, $key)));
             }
 
             if (!$value instanceof JsonBoolean) {
-                $message = sprintf('The values of the object properties must be booleans. Path: "%s".', (string)$path);
-                throw new InvalidSchemaException($message);
+                $format = 'The values of the object properties must be booleans. Path: "%s".';
+                throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME, $key)));
             }
         }
 
-        if (!$path->equals(new JsonPointer('$vocabulary'))) {
-            $message = sprintf('The keyword must not appear in subschemas. Path: "%s".', (string)$path);
-            throw new InvalidSchemaException($message);
+        if (!$path->equals(new JsonPointer())) {
+            $format = 'The keyword must not appear in subschemas. Path: "%s".';
+            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
     }
 }

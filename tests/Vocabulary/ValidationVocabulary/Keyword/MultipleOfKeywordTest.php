@@ -47,51 +47,59 @@ final class MultipleOfKeywordTest extends TestCase
 
     public function testProcessWithIntegerValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMultipleOfKeywordHandler('https://example.com#/multipleOf', 1);
-        $this->keyword->process(['multipleOf' => new JsonInteger(1, new JsonPointer('multipleOf'))], $context);
+        $this->keyword->process(['multipleOf' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
         $keywordHandler = new FloatMultipleOfKeywordHandler('https://example.com#/multipleOf', 1.5);
-        $this->keyword->process(['multipleOf' => new JsonFloat(1.5, new JsonPointer('multipleOf'))], $context);
+        $this->keyword->process(['multipleOf' => new JsonFloat(1.5)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonNull(new JsonPointer('multipleOf'))], $context);
+        $this->keyword->process(['multipleOf' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeInteger(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
+        $value = new JsonInteger(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonInteger(-1, new JsonPointer('multipleOf'))], $context);
+        $this->keyword->process(['multipleOf' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeFloat(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['multipleOf' => $this->keyword], $identifier);
+        $value = new JsonFloat(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['multipleOf' => new JsonFloat(-1, new JsonPointer('multipleOf'))], $context);
+        $this->keyword->process(['multipleOf' => $value], $pointer, $context);
     }
 }

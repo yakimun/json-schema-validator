@@ -41,20 +41,22 @@ final class CommentKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$comment' => $this->keyword], $identifier);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => new JsonString('a', new JsonPointer('$comment'))], $context);
+        $this->keyword->process(['$comment' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals(new SchemaContext(['$comment' => $this->keyword], $identifier), $context);
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$comment' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
@@ -62,6 +64,6 @@ final class CommentKeywordTest extends TestCase
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => new JsonNull(new JsonPointer('$comment'))], $context);
+        $this->keyword->process(['$comment' => new JsonNull()], $pointer, $context);
     }
 }

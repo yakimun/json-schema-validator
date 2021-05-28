@@ -43,22 +43,23 @@ final class ContentEncodingKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['contentEncoding' => $this->keyword], $identifier);
         $keywordHandler = new ContentEncodingKeywordHandler('https://example.com#/contentEncoding', 'a');
-        $properties = ['contentEncoding' => new JsonString('a', new JsonPointer('contentEncoding'))];
-        $this->keyword->process($properties, $context);
+        $this->keyword->process(['contentEncoding' => new JsonString('a')], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['contentEncoding' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['contentEncoding' => new JsonNull(new JsonPointer('contentEncoding'))], $context);
+        $this->keyword->process(['contentEncoding' => new JsonNull()], $pointer, $context);
     }
 }

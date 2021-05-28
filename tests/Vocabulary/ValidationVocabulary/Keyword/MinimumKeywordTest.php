@@ -47,31 +47,35 @@ final class MinimumKeywordTest extends TestCase
 
     public function testProcessWithIntegerValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minimum' => $this->keyword], $identifier);
         $keywordHandler = new IntegerMinimumKeywordHandler('https://example.com#/minimum', 1);
-        $this->keyword->process(['minimum' => new JsonInteger(1, new JsonPointer('minimum'))], $context);
+        $this->keyword->process(['minimum' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minimum' => $this->keyword], $identifier);
         $keywordHandler = new FloatMinimumKeywordHandler('https://example.com#/minimum', 1.5);
-        $this->keyword->process(['minimum' => new JsonFloat(1.5, new JsonPointer('minimum'))], $context);
+        $this->keyword->process(['minimum' => new JsonFloat(1.5)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minimum' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minimum' => new JsonNull(new JsonPointer('minimum'))], $context);
+        $this->keyword->process(['minimum' => $value], $pointer, $context);
     }
 }

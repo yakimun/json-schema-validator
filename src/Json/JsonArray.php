@@ -21,18 +21,11 @@ final class JsonArray implements JsonValue
     private $items;
 
     /**
-     * @var JsonPointer
-     */
-    private $path;
-
-    /**
      * @param list<JsonValue> $items
-     * @param JsonPointer $path
      */
-    public function __construct(array $items, JsonPointer $path)
+    public function __construct(array $items)
     {
         $this->items = $items;
-        $this->path = $path;
     }
 
     /**
@@ -41,14 +34,6 @@ final class JsonArray implements JsonValue
     public function getItems(): array
     {
         return $this->items;
-    }
-
-    /**
-     * @return JsonPointer
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
     }
 
     /**
@@ -71,12 +56,14 @@ final class JsonArray implements JsonValue
     }
 
     /**
+     * @param SchemaIdentifier $identifier
      * @param non-empty-array<string, Keyword> $keywords
+     * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
-    public function processAsSchema(SchemaIdentifier $identifier, array $keywords): array
+    public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
-        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$this->path);
+        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path);
         throw new InvalidSchemaException($message);
     }
 }

@@ -51,13 +51,14 @@ final class DynamicRefKeywordTest extends TestCase
      */
     public function testProcess(string $value, string $expected): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com/a/b'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('$dynamicRef');
+        $identifier = new SchemaIdentifier(new Uri('https://example.com/a/b'), $pointer);
         $context = new SchemaContext(['$dynamicRef' => $this->keyword], $identifier);
-        $path = new JsonPointer('$dynamicRef');
         $keywordHandler = new DynamicRefKeywordHandler('https://example.com/a/b#/$dynamicRef', $expected);
-        $this->keyword->process(['$dynamicRef' => new JsonString($value, $path)], $context);
+        $this->keyword->process(['$dynamicRef' => new JsonString($value)], $pointer, $context);
 
-        $this->assertEquals([new SchemaReference(new Uri($expected), $path)], $context->getReferences());
+        $this->assertEquals([new SchemaReference(new Uri($expected), $keywordPointer)], $context->getReferences());
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
@@ -79,11 +80,12 @@ final class DynamicRefKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['$dynamicRef' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['$dynamicRef' => new JsonNull(new JsonPointer('$dynamicRef'))], $context);
+        $this->keyword->process(['$dynamicRef' => new JsonNull()], $pointer, $context);
     }
 }

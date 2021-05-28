@@ -43,22 +43,24 @@ final class ExamplesKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['examples' => $this->keyword], $identifier);
-        $values = [new JsonNull(new JsonPointer('examples', '0'))];
+        $values = [new JsonNull()];
         $keywordHandler = new ExamplesKeywordHandler('https://example.com#/examples', $values);
-        $this->keyword->process(['examples' => new JsonArray($values, new JsonPointer('examples'))], $context);
+        $this->keyword->process(['examples' => new JsonArray($values)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['examples' => $this->keyword], $identifier);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['examples' => new JsonNull(new JsonPointer('examples'))], $context);
+        $this->keyword->process(['examples' => new JsonNull()], $pointer, $context);
     }
 }

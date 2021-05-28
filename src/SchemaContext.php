@@ -132,11 +132,12 @@ final class SchemaContext
     /**
      * @param JsonValue $value
      * @param SchemaIdentifier $identifier
+     * @param JsonPointer $path
      * @return SchemaValidator
      */
-    public function createValidator(JsonValue $value, SchemaIdentifier $identifier): SchemaValidator
+    public function createValidator(JsonValue $value, SchemaIdentifier $identifier, JsonPointer $path): SchemaValidator
     {
-        $processedSchemas = $value->processAsSchema($identifier, $this->keywords);
+        $processedSchemas = $value->processAsSchema($identifier, $this->keywords, $path);
         $this->processedSchemas = array_merge($this->processedSchemas, $processedSchemas);
 
         return $processedSchemas[0]->getValidator();

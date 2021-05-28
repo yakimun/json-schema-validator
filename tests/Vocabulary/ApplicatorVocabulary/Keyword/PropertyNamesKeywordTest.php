@@ -48,14 +48,16 @@ final class PropertyNamesKeywordTest extends TestCase
     public function testProcess(): void
     {
         $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer('propertyNames');
+        $pointer = new JsonPointer();
+        $keywordPointer = new JsonPointer('propertyNames');
+        $identifier = new SchemaIdentifier($uri, $pointer);
+        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
         $absoluteLocation = 'https://example.com#/propertyNames';
         $validator = new ObjectSchemaValidator($absoluteLocation, []);
         $keywordHandler = new PropertyNamesKeywordHandler($absoluteLocation, $validator);
-        $processedSchema = new ProcessedSchema($validator, new SchemaIdentifier($uri, $pointer), [], [], $pointer);
-        $identifier = new SchemaIdentifier($uri, new JsonPointer());
+        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
         $context = new SchemaContext(['propertyNames' => $this->keyword], $identifier);
-        $this->keyword->process(['propertyNames' => new JsonObject([], $pointer)], $context);
+        $this->keyword->process(['propertyNames' => new JsonObject([])], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
         $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
@@ -63,12 +65,13 @@ final class PropertyNamesKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['propertyNames' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('propertyNames'));
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['propertyNames' => $value], $context);
+        $this->keyword->process(['propertyNames' => $value], $pointer, $context);
     }
 }

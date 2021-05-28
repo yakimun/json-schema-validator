@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword;
 
 use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
@@ -17,50 +18,63 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 
 final class IfKeyword implements Keyword
 {
+    private const NAME = 'if';
+
+    private const THEN_NAME = 'then';
+
+    private const ELSE_NAME = 'else';
+
     /**
      * @return string
      * @psalm-mutation-free
      */
     public function getName(): string
     {
-        return 'if';
+        return self::NAME;
     }
 
     /**
      * @param non-empty-array<string, JsonValue> $properties
+     * @param JsonPointer $path
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
     {
-        $identifier = $context->getIdentifier()->addTokens('if');
-        $validator = $context->createValidator($properties['if'], $identifier);
+        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+        $keywordPath = $path->addTokens(self::NAME);
 
-        $thenProperty = $properties['then'] ?? null;
+        $validator = $context->createValidator($properties[self::NAME], $keywordIdentifier, $keywordPath);
+
+        $thenProperty = $properties[self::THEN_NAME] ?? null;
 
         if ($thenProperty) {
-            $thenIdentifier = $context->getIdentifier()->addTokens('then');
-            $thenValidator = $context->createValidator($thenProperty, $thenIdentifier);
+            $thenKeywordIdentifier = $context->getIdentifier()->addTokens(self::THEN_NAME);
+            $thenKeywordPath = $path->addTokens(self::THEN_NAME);
+
+            $thenValidator = $context->createValidator($thenProperty, $thenKeywordIdentifier, $thenKeywordPath);
         } else {
-            $thenIdentifier = null;
+            $thenKeywordIdentifier = null;
             $thenValidator = null;
         }
 
-        $elseProperty = $properties['else'] ?? null;
+        $elseProperty = $properties[self::ELSE_NAME] ?? null;
 
         if ($elseProperty) {
-            $elseIdentifier = $context->getIdentifier()->addTokens('else');
-            $elseValidator = $context->createValidator($elseProperty, $elseIdentifier);
+            $elseKeywordIdentifier = $context->getIdentifier()->addTokens(self::ELSE_NAME);
+            $elseKeywordPath = $path->addTokens(self::ELSE_NAME);
+
+            $elseValidator = $context->createValidator($elseProperty, $elseKeywordIdentifier, $elseKeywordPath);
         } else {
-            $elseIdentifier = null;
+            $elseKeywordIdentifier = null;
             $elseValidator = null;
         }
 
         $context->addKeywordHandler($this->createKeywordHandler(
-            $identifier,
+            $keywordIdentifier,
             $validator,
-            $thenIdentifier,
+            $thenKeywordIdentifier,
             $thenValidator,
-            $elseIdentifier,
+            $elseKeywordIdentifier,
             $elseValidator,
         ));
     }

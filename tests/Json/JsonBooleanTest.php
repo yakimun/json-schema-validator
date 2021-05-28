@@ -31,7 +31,7 @@ final class JsonBooleanTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->value = new JsonBoolean(true, new JsonPointer('a'));
+        $this->value = new JsonBoolean(true);
     }
 
     public function testGetValue(): void
@@ -39,27 +39,21 @@ final class JsonBooleanTest extends TestCase
         $this->assertEquals(true, $this->value->getValue());
     }
 
-    public function testGetPath(): void
-    {
-        $this->assertEquals(new JsonPointer('a'), $this->value->getPath());
-    }
-
     public function testEquals(): void
     {
-        $path = new JsonPointer('b');
-
-        $this->assertTrue($this->value->equals(new JsonBoolean(true, $path)));
-        $this->assertFalse($this->value->equals(new JsonBoolean(false, $path)));
-        $this->assertFalse($this->value->equals(new JsonNull($path)));
+        $this->assertTrue($this->value->equals(new JsonBoolean(true)));
+        $this->assertFalse($this->value->equals(new JsonBoolean(false)));
+        $this->assertFalse($this->value->equals(new JsonNull()));
     }
 
     public function testProcessAsSchema(): void
     {
-        $keywords = ['foo' => $this->createStub(Keyword::class)];
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $keywords = ['a' => $this->createStub(Keyword::class)];
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $validator = new BooleanSchemaValidator('https://example.com', true);
-        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], new JsonPointer('a'));
+        $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $pointer);
 
-        $this->assertEquals([$processedSchema], $this->value->processAsSchema($identifier, $keywords));
+        $this->assertEquals([$processedSchema], $this->value->processAsSchema($identifier, $keywords, $pointer));
     }
 }

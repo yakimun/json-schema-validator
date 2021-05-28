@@ -40,11 +40,12 @@ final class ConstKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['const' => $this->keyword], $identifier);
-        $value = new JsonNull(new JsonPointer('const'));
+        $value = new JsonNull();
         $keywordHandler = new ConstKeywordHandler('https://example.com#/const', $value);
-        $this->keyword->process(['const' => $value], $context);
+        $this->keyword->process(['const' => $value], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }

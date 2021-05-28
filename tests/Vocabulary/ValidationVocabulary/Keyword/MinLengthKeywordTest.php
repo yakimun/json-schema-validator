@@ -43,31 +43,36 @@ final class MinLengthKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minLength' => $this->keyword], $identifier);
         $keywordHandler = new MinLengthKeywordHandler('https://example.com#/minLength', 1);
-        $this->keyword->process(['minLength' => new JsonInteger(1, new JsonPointer('minLength'))], $context);
+        $this->keyword->process(['minLength' => new JsonInteger(1)], $pointer, $context);
 
         $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minLength' => $this->keyword], $identifier);
+        $value = new JsonNull();
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minLength' => new JsonNull(new JsonPointer('minLength'))], $context);
+        $this->keyword->process(['minLength' => $value], $pointer, $context);
     }
 
     public function testProcessWithNegativeInteger(): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $pointer = new JsonPointer();
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $context = new SchemaContext(['minLength' => $this->keyword], $identifier);
+        $value = new JsonInteger(-1);
 
         $this->expectException(InvalidSchemaException::class);
 
-        $this->keyword->process(['minLength' => new JsonInteger(-1, new JsonPointer('minLength'))], $context);
+        $this->keyword->process(['minLength' => $value], $pointer, $context);
     }
 }

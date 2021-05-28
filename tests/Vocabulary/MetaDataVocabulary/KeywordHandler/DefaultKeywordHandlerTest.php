@@ -6,7 +6,6 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\MetaDataVocabulary\Keywor
 
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordHandler\DefaultKeywordHandler;
 
 /**
@@ -18,8 +17,7 @@ final class DefaultKeywordHandlerTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $value = new JsonNull(new JsonPointer('default'));
-        $keywordHandler = new DefaultKeywordHandler('https://example.com#/default', $value);
+        $keywordHandler = new DefaultKeywordHandler('https://example.com#/default', new JsonNull());
 
         $this->assertInstanceOf(DefaultKeywordHandler::class, $keywordHandler);
     }

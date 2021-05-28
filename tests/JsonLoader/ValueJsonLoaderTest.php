@@ -14,7 +14,6 @@ use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\JsonLoader\ValueJsonLoader
@@ -33,14 +32,14 @@ final class ValueJsonLoaderTest extends TestCase
     {
         $loader = new ValueJsonLoader(null);
 
-        $this->assertEquals(new JsonNull(new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonNull(), $loader->load());
     }
 
     public function testLoadBoolean(): void
     {
         $loader = new ValueJsonLoader(true);
 
-        $this->assertEquals(new JsonBoolean(true, new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonBoolean(true), $loader->load());
     }
 
     /**
@@ -53,7 +52,7 @@ final class ValueJsonLoaderTest extends TestCase
     {
         $loader = new ValueJsonLoader((object)$properties);
 
-        $this->assertEquals(new JsonObject($expected, new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonObject($expected), $loader->load());
     }
 
     /**
@@ -61,8 +60,8 @@ final class ValueJsonLoaderTest extends TestCase
      */
     public function objectProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('a'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('b'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             [[], []],
@@ -81,7 +80,7 @@ final class ValueJsonLoaderTest extends TestCase
     {
         $loader = new ValueJsonLoader($value);
 
-        $this->assertEquals(new JsonArray($expected, new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonArray($expected), $loader->load());
     }
 
     /**
@@ -89,8 +88,8 @@ final class ValueJsonLoaderTest extends TestCase
      */
     public function arrayProvider(): array
     {
-        $jsonNull = new JsonNull(new JsonPointer('0'));
-        $jsonBoolean = new JsonBoolean(true, new JsonPointer('1'));
+        $jsonNull = new JsonNull();
+        $jsonBoolean = new JsonBoolean(true);
 
         return [
             [[], []],
@@ -132,21 +131,21 @@ final class ValueJsonLoaderTest extends TestCase
     {
         $loader = new ValueJsonLoader(1);
 
-        $this->assertEquals(new JsonInteger(1, new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonInteger(1), $loader->load());
     }
 
     public function testLoadFloat(): void
     {
         $loader = new ValueJsonLoader(1.5);
 
-        $this->assertEquals(new JsonFloat(1.5, new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonFloat(1.5), $loader->load());
     }
 
     public function testLoadString(): void
     {
         $loader = new ValueJsonLoader('a');
 
-        $this->assertEquals(new JsonString('a', new JsonPointer()), $loader->load());
+        $this->assertEquals(new JsonString('a'), $loader->load());
     }
 
     public function testLoadInvalidValue(): void
