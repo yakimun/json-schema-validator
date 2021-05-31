@@ -29,7 +29,7 @@ use Yakimun\JsonSchemaValidator\JsonLoader\StringJsonLoader;
  */
 final class StringJsonLoaderTest extends TestCase
 {
-    public function testLoadStringWithNull(): void
+    public function testLoadNull(): void
     {
         $loader = new StringJsonLoader('null');
 

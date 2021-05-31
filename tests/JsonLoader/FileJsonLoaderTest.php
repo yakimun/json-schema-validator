@@ -58,7 +58,7 @@ final class FileJsonLoaderTest extends TestCase
         unlink($this->filename);
     }
 
-    public function testLoadFileWithNull(): void
+    public function testLoadNull(): void
     {
         file_put_contents($this->filename, 'null');
 

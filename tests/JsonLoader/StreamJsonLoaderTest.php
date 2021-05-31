@@ -48,7 +48,7 @@ final class StreamJsonLoaderTest extends TestCase
         $this->loader = new StreamJsonLoader($this->stream);
     }
 
-    public function testLoadFileWithNull(): void
+    public function testLoadNull(): void
     {
         $this->stream->write('null');
         $this->stream->rewind();

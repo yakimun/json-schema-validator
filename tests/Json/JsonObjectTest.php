@@ -94,6 +94,7 @@ final class JsonObjectTest extends TestCase
     public function testProcessAsSchemaWithKnownKeyword(): void
     {
         $properties = ['a' => new JsonNull()];
+        $pointer = new JsonPointer();
 
         $keyword = $this->createMock(Keyword::class);
         $keyword
@@ -101,11 +102,11 @@ final class JsonObjectTest extends TestCase
             ->method('process')
             ->with(
                 $this->equalTo($properties),
+                $this->equalTo($pointer),
                 $this->anything(),
             );
 
         $value = new JsonObject($properties);
-        $pointer = new JsonPointer();
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
         $validator = new ObjectSchemaValidator('https://example.com', []);
         $processedSchema = new ProcessedSchema($validator, $identifier, [], [], $pointer);
