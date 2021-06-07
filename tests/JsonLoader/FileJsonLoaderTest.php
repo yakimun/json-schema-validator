@@ -46,7 +46,7 @@ final class FileJsonLoaderTest extends TestCase
         $filename = tempnam(sys_get_temp_dir(), 'jsv');
 
         if (!$filename) {
-            throw new \RuntimeException('The temporary file cannot be created.');
+            throw new \RuntimeException('Temporary file cannot be created');
         }
 
         $this->filename = $filename;
@@ -170,7 +170,7 @@ final class FileJsonLoaderTest extends TestCase
         $filename = tempnam(sys_get_temp_dir(), 'jsv');
 
         if (!$filename) {
-            throw new \RuntimeException('The temporary file cannot be created.');
+            throw new \RuntimeException('Temporary file cannot be created');
         }
 
         $loader = new FileJsonLoader($filename);

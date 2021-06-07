@@ -36,14 +36,14 @@ final class AnchorKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonString) {
-            throw new InvalidSchemaException(sprintf('The value must be a string. Path: "%s".', (string)$keywordPath));
+            throw new InvalidSchemaException(sprintf('Value must be string at "%s"', (string)$keywordPath));
         }
 
         $anchor = $property->getValue();
 
         if (!preg_match('/^[A-Za-z_][A-Za-z0-9-_.]*$/', $anchor)) {
-            $format = 'The value must start with a letter or underscore, followed by any number of letters, digits, '
-                . 'hyphens, underscores, and periods. Path: "%s".';
+            $format = 'Value must start with letter or underscore, followed by any number of letters, digits, hyphens, '
+                . 'underscores, and periods at "%s"';
             throw new InvalidSchemaException(sprintf($format, (string)$keywordPath));
         }
 

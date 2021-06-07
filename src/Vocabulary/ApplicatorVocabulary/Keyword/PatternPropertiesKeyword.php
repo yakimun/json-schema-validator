@@ -36,8 +36,7 @@ final class PatternPropertiesKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonObject) {
-            $message = sprintf('The value must be an object. Path: "%s".', (string)$keywordPath);
-            throw new InvalidSchemaException($message);
+            throw new InvalidSchemaException(sprintf('Value must be object at "%s"', (string)$keywordPath));
         }
 
         $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);

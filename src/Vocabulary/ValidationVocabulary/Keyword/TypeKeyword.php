@@ -51,8 +51,8 @@ final class TypeKeyword implements Keyword
             return;
         }
 
-        $format = 'The value must be either a string or an array. Path: "%s".';
-        throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
+        $message = sprintf('Value must be either string or array at "%s"', (string)$path->addTokens(self::NAME));
+        throw new InvalidSchemaException($message);
     }
 
     /**
@@ -64,8 +64,8 @@ final class TypeKeyword implements Keyword
         $type = $property->getValue();
 
         if (!in_array($type, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
-            $format = 'The value must be equal to "null", "boolean", "object", "array", "number", "string", or '
-                . '"integer". Path: "%s".';
+            $format = 'Value must be equal to "null", "boolean", "object", "array", "number", "string", or "integer" '
+                . 'at "%s"';
             throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
 
@@ -88,15 +88,14 @@ final class TypeKeyword implements Keyword
             $itemPath = $keywordPath->addTokens((string)$index);
 
             if (!$item instanceof JsonString) {
-                $message = sprintf('The element must be a string. Path: "%s".', (string)$itemPath);
-                throw new InvalidSchemaException($message);
+                throw new InvalidSchemaException(sprintf('Element must be string at "%s"', (string)$itemPath));
             }
 
             $type = $this->getType($item, $path);
             $existingPath = $existingPaths[$type] ?? null;
 
             if ($existingPath) {
-                $format = 'The elements must be unique. Paths: "%s" and "%s".';
+                $format = 'Elements must be unique at "%s" and "%s"';
                 throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
             }
 

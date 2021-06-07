@@ -36,15 +36,13 @@ final class PrefixItemsKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonArray) {
-            $message = sprintf('The value must be an array. Path: "%s".', (string)$keywordPath);
-            throw new InvalidSchemaException($message);
+            throw new InvalidSchemaException(sprintf('Value must be array at "%s"', (string)$keywordPath));
         }
 
         $items = $property->getItems();
 
         if (!$items) {
-            $message = sprintf('The value must be a non-empty array. Path: "%s".', (string)$keywordPath);
-            throw new InvalidSchemaException($message);
+            throw new InvalidSchemaException(sprintf('Value must be non-empty array at "%s"', (string)$keywordPath));
         }
 
         $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);

@@ -37,8 +37,7 @@ final class RequiredKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonArray) {
-            $message = sprintf('The value must be an array. Path: "%s".', (string)$keywordPath);
-            throw new InvalidSchemaException($message);
+            throw new InvalidSchemaException(sprintf('Value must be array at "%s"', (string)$keywordPath));
         }
 
         $requiredProperties = [];
@@ -48,15 +47,14 @@ final class RequiredKeyword implements Keyword
             $itemPath = $keywordPath->addTokens((string)$index);
 
             if (!$item instanceof JsonString) {
-                $message = sprintf('The element must be a string. Path: "%s".', (string)$itemPath);
-                throw new InvalidSchemaException($message);
+                throw new InvalidSchemaException(sprintf('Element must be string at "%s"', (string)$itemPath));
             }
 
             $requiredProperty = $item->getValue();
             $existingPath = $existingPaths[$requiredProperty] ?? null;
 
             if ($existingPath) {
-                $format = 'The elements must be unique. Paths: "%s" and "%s".';
+                $format = 'Elements must be unique at "%s" and "%s"';
                 throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
             }
 

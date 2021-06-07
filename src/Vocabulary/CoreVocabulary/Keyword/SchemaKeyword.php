@@ -38,24 +38,24 @@ final class SchemaKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonString) {
-            $message = sprintf('The value must be a string. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be string at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         $schema = new Uri($property->getValue());
 
         if ($schema->getScheme() === '') {
-            $message = sprintf('The value must be a URI. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be URI at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         if ($schema !== UriNormalizer::normalize($schema)) {
-            $message = sprintf('The value must be a normalized URI. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be normalized URI at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         if (!($properties[self::ID_NAME] ?? null) && !$path->equals(new JsonPointer())) {
-            $format = 'The keyword must not appear in non-resource root schema objects. Path: "%s".';
+            $format = 'Keyword must not appear in non-resource root schema objects at "%s"';
             throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
         }
     }

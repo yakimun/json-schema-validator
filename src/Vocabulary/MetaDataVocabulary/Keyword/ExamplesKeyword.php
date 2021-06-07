@@ -35,7 +35,7 @@ final class ExamplesKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonArray) {
-            $message = sprintf('The value must be an array. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be array at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 

@@ -63,7 +63,6 @@ final class JsonArray implements JsonValue
      */
     public function processAsSchema(SchemaIdentifier $identifier, array $keywords, JsonPointer $path): array
     {
-        $message = sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path);
-        throw new InvalidSchemaException($message);
+        throw new InvalidSchemaException(sprintf('Schema must be object or boolean at "%s"', (string)$path));
     }
 }

@@ -35,7 +35,7 @@ final class FormatKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonString) {
-            $message = sprintf('The value must be a string. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be string at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 

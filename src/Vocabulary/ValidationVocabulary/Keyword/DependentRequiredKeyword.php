@@ -38,7 +38,7 @@ final class DependentRequiredKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonObject) {
-            throw new InvalidSchemaException(sprintf('The value must be an object. Path: "%s".', (string)$keywordPath));
+            throw new InvalidSchemaException(sprintf('Value must be object at "%s"', (string)$keywordPath));
         }
 
         $dependentRequiredProperties = [];
@@ -47,7 +47,7 @@ final class DependentRequiredKeyword implements Keyword
             $objectPropertyPath = $keywordPath->addTokens($key);
 
             if (!$objectProperty instanceof JsonArray) {
-                $message = sprintf('The property must be an array. Path: "%s".', (string)$objectPropertyPath);
+                $message = sprintf('Property must be array at "%s"', (string)$objectPropertyPath);
                 throw new InvalidSchemaException($message);
             }
 
@@ -58,15 +58,14 @@ final class DependentRequiredKeyword implements Keyword
                 $itemPath = $objectPropertyPath->addTokens((string)$index);
 
                 if (!$item instanceof JsonString) {
-                    $message = sprintf('The property must be a string. Path: "%s".', (string)$itemPath);
-                    throw new InvalidSchemaException($message);
+                    throw new InvalidSchemaException(sprintf('Property must be string at "%s"', (string)$itemPath));
                 }
 
                 $dependentRequiredProperty = $item->getValue();
                 $existingPath = $existingPaths[$dependentRequiredProperty] ?? null;
 
                 if ($existingPath) {
-                    $format = 'The elements must be unique. Paths: "%s" and "%s".';
+                    $format = 'Elements must be unique at "%s" and "%s"';
                     throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
                 }
 

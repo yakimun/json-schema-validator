@@ -51,7 +51,6 @@ final class MaximumKeyword implements Keyword
             return;
         }
 
-        $message = sprintf('The value must be a number. Path: "%s".', (string)$path->addTokens(self::NAME));
-        throw new InvalidSchemaException($message);
+        throw new InvalidSchemaException(sprintf('Value must be number at "%s"', (string)$path->addTokens(self::NAME)));
     }
 }

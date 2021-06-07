@@ -77,8 +77,8 @@ final class ValueJsonLoader implements JsonLoader
             return new JsonString($value);
         }
 
-        $format = 'The value must be a null, a boolean, an object, an array, an int, a float, or a string. Path: "%s".';
-        throw new InvalidValueException(sprintf($format, (string)$path));
+        $message = sprintf('Value must be null, boolean, object, array, int, float, or string at "%s"', (string)$path);
+        throw new InvalidValueException($message);
     }
 
     /**
@@ -110,12 +110,14 @@ final class ValueJsonLoader implements JsonLoader
 
         /** @var null|scalar|object|array<array-key, mixed> $item */
         foreach ($value as $index => $item) {
+            $stringIndex = (string)$index;
+
             if ($index !== $expectedIndex) {
-                $format = 'The array keys must be integers starting from 0 with no gaps in between. Path: "%s".';
-                throw new InvalidValueException(sprintf($format, (string)$path));
+                $format = 'Array keys must be integers starting from 0 with no gaps in between at "%s"';
+                throw new InvalidValueException(sprintf($format, (string)$path->addTokens($stringIndex)));
             }
 
-            $items[] = $this->convert($item, $path->addTokens((string)$index));
+            $items[] = $this->convert($item, $path->addTokens($stringIndex));
             $expectedIndex++;
         }
 

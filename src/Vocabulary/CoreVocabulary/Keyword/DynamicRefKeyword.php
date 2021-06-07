@@ -39,7 +39,7 @@ final class DynamicRefKeyword implements Keyword
         $keywordPath = $path->addTokens(self::NAME);
 
         if (!$property instanceof JsonString) {
-            throw new InvalidSchemaException(sprintf('The value must be a string. Path: "%s".', (string)$keywordPath));
+            throw new InvalidSchemaException(sprintf('Value must be string at "%s"', (string)$keywordPath));
         }
 
         $identifier = $context->getIdentifier();

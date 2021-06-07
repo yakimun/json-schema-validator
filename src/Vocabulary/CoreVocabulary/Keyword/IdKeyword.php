@@ -37,15 +37,15 @@ final class IdKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonString) {
-            $message = sprintf('The value must be a string. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be string at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         $id = new Uri($property->getValue());
 
         if ($id->getFragment() !== '') {
-            $format = 'The value must resolve to an absolute URI. Path: "%s".';
-            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
+            $message = sprintf('Value must resolve to absolute URI at "%s"', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
         $uri = UriResolver::resolve($context->getIdentifier()->getUri(), $id);

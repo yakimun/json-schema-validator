@@ -35,7 +35,7 @@ final class DeprecatedKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonBoolean) {
-            $message = sprintf('The value must be a boolean. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be boolean at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 

@@ -31,10 +31,13 @@ final class StringJsonLoader implements JsonLoader
     public function load(): JsonValue
     {
         try {
-            $loader = new ValueJsonLoader(json_decode($this->json, false, 512, JSON_THROW_ON_ERROR));
+            /** @var null|scalar|object|array<array-key, mixed> $value */
+            $value = json_decode($this->json, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            throw new InvalidValueException('The value must be a JSON document.');
+            throw new InvalidValueException(sprintf('Value must be valid JSON document: %s', $e->getMessage()), 0, $e);
         }
+
+        $loader = new ValueJsonLoader($value);
 
         return $loader->load();
     }

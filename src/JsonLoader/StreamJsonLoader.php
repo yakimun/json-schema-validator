@@ -30,11 +30,13 @@ final class StreamJsonLoader implements JsonLoader
     public function load(): JsonValue
     {
         try {
-            $loader = new StringJsonLoader($this->stream->getContents());
+            $json = $this->stream->getContents();
         } catch (\RuntimeException $e) {
-            $message = sprintf('The stream must be readable without errors. Error: "%s".', $e->getMessage());
-            throw new InvalidValueException($message);
+            $message = sprintf('Stream must be readable without errors: %s', $e->getMessage());
+            throw new InvalidValueException($message, 0, $e);
         }
+
+        $loader = new StringJsonLoader($json);
 
         return $loader->load();
     }

@@ -32,7 +32,7 @@ final class FileJsonLoader implements JsonLoader
         $filename = realpath($this->filename);
 
         if (!$filename) {
-            throw new InvalidValueException('The file must be readable without errors.');
+            throw new InvalidValueException(sprintf('File "%s" must be readable without errors', $this->filename));
         }
 
         $loader = new StreamJsonLoader(new LazyOpenStream($filename, 'r'));

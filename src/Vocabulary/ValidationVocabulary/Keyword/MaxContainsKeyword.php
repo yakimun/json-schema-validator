@@ -35,15 +35,15 @@ final class MaxContainsKeyword implements Keyword
         $property = $properties[self::NAME];
 
         if (!$property instanceof JsonInteger) {
-            $message = sprintf('The value must be an integer. Path: "%s".', (string)$path->addTokens(self::NAME));
+            $message = sprintf('Value must be integer at "%s"', (string)$path->addTokens(self::NAME));
             throw new InvalidSchemaException($message);
         }
 
         $maxContains = $property->getValue();
 
         if ($maxContains < 0) {
-            $format = 'The value must be a non-negative integer. Path: "%s".';
-            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
+            $message = sprintf('Value must be non-negative integer at "%s"', (string)$path->addTokens(self::NAME));
+            throw new InvalidSchemaException($message);
         }
 
         if (!($properties['contains'] ?? null)) {
