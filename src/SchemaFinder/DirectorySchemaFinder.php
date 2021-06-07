@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yakimun\JsonSchemaValidator\SchemaLoader;
+namespace Yakimun\JsonSchemaValidator\SchemaFinder;
 
 use GuzzleHttp\Psr7\UriResolver;
 use Psr\Http\Message\UriInterface;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader;
+use Yakimun\JsonSchemaValidator\JsonLoader\JsonLoader;
 
-final class DirectorySchemaLoader implements SchemaLoader
+final class DirectorySchemaFinder implements SchemaFinder
 {
     /**
      * @var UriInterface
@@ -35,19 +35,13 @@ final class DirectorySchemaLoader implements SchemaLoader
 
     /**
      * @param UriInterface $uri
-     * @return JsonValue|null
+     * @return JsonLoader|null
      */
-    public function load(UriInterface $uri): ?JsonValue
+    public function find(UriInterface $uri): ?JsonLoader
     {
         $directory = realpath($this->directory);
         $filename = realpath($this->directory . UriResolver::relativize($this->uri, $uri));
 
-        if (!$directory || !$filename || strpos($filename, $directory) !== 0) {
-            return null;
-        }
-
-        $loader = new FileJsonLoader($filename);
-
-        return $loader->load();
+        return $directory && $filename && strpos($filename, $directory) === 0 ? new FileJsonLoader($filename) : null;
     }
 }
