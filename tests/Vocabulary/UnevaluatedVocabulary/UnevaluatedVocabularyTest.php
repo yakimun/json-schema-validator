@@ -17,11 +17,11 @@ final class UnevaluatedVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new UnevaluatedVocabulary();
-        $keywords = [
+        $expected = [
             new UnevaluatedItemsKeyword(),
             new UnevaluatedPropertiesKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

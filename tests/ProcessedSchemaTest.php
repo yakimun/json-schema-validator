@@ -10,73 +10,82 @@ use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaReference;
-use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
  */
 final class ProcessedSchemaTest extends TestCase
 {
     /**
-     * @var JsonPointer
+     * @var SchemaValidator
      */
-    private $pointer;
+    private SchemaValidator $validator;
 
     /**
      * @var SchemaIdentifier
      */
-    private $identifier;
+    private SchemaIdentifier $identifier;
 
     /**
-     * @var BooleanSchemaValidator
+     * @var SchemaReference
      */
-    private $validator;
+    private SchemaReference $anchor;
+
+    /**
+     * @var SchemaReference
+     */
+    private SchemaReference $reference;
+
+    /**
+     * @var ProcessedSchema
+     */
+    private ProcessedSchema $processedSchema;
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer);
-        $this->validator = new BooleanSchemaValidator('https://example.com', true);
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+
+        $this->validator = $this->createStub(SchemaValidator::class);
+        $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+        $this->anchor = new SchemaReference($uri->withFragment('a'), $pointer->addTokens('$anchor'));
+        $this->reference = new SchemaReference($uri, $pointer->addTokens('$ref'));
+
+        $anchors = [$this->anchor];
+        $references = [$this->reference];
+
+        $this->processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, $references);
     }
 
     public function testGetValidator(): void
     {
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
+        $expected = $this->validator;
 
-        $this->assertEquals($this->validator, $processedSchema->getValidator());
+        $this->assertSame($expected, $this->processedSchema->getValidator());
     }
 
     public function testGetIdentifier(): void
     {
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
+        $expected = $this->identifier;
 
-        $this->assertEquals($this->identifier, $processedSchema->getIdentifier());
+        $this->assertSame($expected, $this->processedSchema->getIdentifier());
     }
 
     public function testGetAnchors(): void
     {
-        $anchors = [new SchemaReference(new Uri('https://example.com#foo'), new JsonPointer('a'))];
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, [], $this->pointer);
+        $expected = [$this->anchor];
 
-        $this->assertEquals($anchors, $processedSchema->getAnchors());
+        $this->assertSame($expected, $this->processedSchema->getAnchors());
     }
 
     public function testGetReferences(): void
     {
-        $references = [new SchemaReference(new Uri('https://example.com#/a'), new JsonPointer('a'))];
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], $references, $this->pointer);
+        $expected = [$this->reference];
 
-        $this->assertEquals($references, $processedSchema->getReferences());
-    }
-
-    public function testGetPath(): void
-    {
-        $processedSchema = new ProcessedSchema($this->validator, $this->identifier, [], [], $this->pointer);
-
-        $this->assertEquals($this->pointer, $processedSchema->getPath());
+        $this->assertSame($expected, $this->processedSchema->getReferences());
     }
 }

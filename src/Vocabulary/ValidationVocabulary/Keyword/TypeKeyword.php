@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonArray;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\ArrayTypeKeywordHandler;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\StringTypeKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\ArrayTypeKeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator;
 
 final class TypeKeyword implements Keyword
 {
@@ -28,81 +23,52 @@ final class TypeKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
+        /** @var scalar|object|list<mixed>|null $property */
         $property = $properties[self::NAME];
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
 
-        if ($property instanceof JsonString) {
-            $type = $this->getType($property, $path);
-            $context->addKeywordHandler(new StringTypeKeywordHandler((string)$keywordIdentifier, $type));
+        if (is_string($property)) {
+            if (!in_array($property, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
+                $message = 'The value must be equal to "null", "boolean", "object", "array", "number", "string", or '
+                    . '"integer".';
+                throw $context->createException($message, self::NAME);
+            }
+
+            $context->addKeywordValidator(new StringTypeKeywordValidator($property));
 
             return;
         }
 
-        if ($property instanceof JsonArray) {
-            $types = $this->getTypes($property, $path);
-            $context->addKeywordHandler(new ArrayTypeKeywordHandler((string)$keywordIdentifier, $types));
+        if (is_array($property)) {
+            $types = [];
+
+            foreach (array_values($property) as $index => $item) {
+                if (!is_string($item)) {
+                    throw $context->createException('The element must be a string.', self::NAME, (string)$index);
+                }
+
+                if (!in_array($item, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
+                    $message = 'The element must be equal to "null", "boolean", "object", "array", "number", "string", '
+                        . 'or "integer".';
+                    throw $context->createException($message, self::NAME, (string)$index);
+                }
+
+                $types[] = $item;
+            }
+
+            if (array_unique($types) !== $types) {
+                throw $context->createException('Elements must be unique.', self::NAME);
+            }
+
+            $context->addKeywordValidator(new ArrayTypeKeywordValidator($types));
 
             return;
         }
 
-        $message = sprintf('Value must be either string or array at "%s"', (string)$path->addTokens(self::NAME));
-        throw new InvalidSchemaException($message);
-    }
-
-    /**
-     * @param JsonString $property
-     * @return 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'
-     */
-    private function getType(JsonString $property, JsonPointer $path): string
-    {
-        $type = $property->getValue();
-
-        if (!in_array($type, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
-            $format = 'Value must be equal to "null", "boolean", "object", "array", "number", "string", or "integer" '
-                . 'at "%s"';
-            throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
-        }
-
-        return $type;
-    }
-
-    /**
-     * @param JsonArray $property
-     * @param JsonPointer $path
-     * @return list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'>
-     */
-    private function getTypes(JsonArray $property, JsonPointer $path): array
-    {
-        $keywordPath = $path->addTokens(self::NAME);
-
-        $types = [];
-        $existingPaths = [];
-
-        foreach ($property->getItems() as $index => $item) {
-            $itemPath = $keywordPath->addTokens((string)$index);
-
-            if (!$item instanceof JsonString) {
-                throw new InvalidSchemaException(sprintf('Element must be string at "%s"', (string)$itemPath));
-            }
-
-            $type = $this->getType($item, $path);
-            $existingPath = $existingPaths[$type] ?? null;
-
-            if ($existingPath) {
-                $format = 'Elements must be unique at "%s" and "%s"';
-                throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
-            }
-
-            $types[] = $type;
-            $existingPaths[$type] = $itemPath;
-        }
-
-        return $types;
+        throw $context->createException('The value must be either a string or an array.', self::NAME);
     }
 }

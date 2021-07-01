@@ -6,61 +6,64 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ValidationVocabulary\Keyw
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\UniqueItemsKeyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\UniqueItemsKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\UniqueItemsKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\UniqueItemsKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\UniqueItemsKeywordHandler
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\UniqueItemsKeywordValidator
  */
 final class UniqueItemsKeywordTest extends TestCase
 {
     /**
      * @var UniqueItemsKeyword
      */
-    private $keyword;
+    private UniqueItemsKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new UniqueItemsKeyword();
+
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['uniqueItems' => $this->keyword]);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('uniqueItems', $this->keyword->getName());
+        $this->assertSame('uniqueItems', $this->keyword->getName());
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['uniqueItems' => $this->keyword], $identifier);
-        $keywordHandler = new UniqueItemsKeywordHandler('https://example.com#/uniqueItems', true);
-        $this->keyword->process(['uniqueItems' => new JsonBoolean(true)], $pointer, $context);
+        $expected = [new UniqueItemsKeywordValidator(true)];
+        $this->keyword->process(['uniqueItems' => true], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['uniqueItems' => $this->keyword], $identifier);
-        $value = new JsonNull();
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['uniqueItems' => $value], $pointer, $context);
+        $this->keyword->process(['uniqueItems' => null], $this->context);
     }
 }

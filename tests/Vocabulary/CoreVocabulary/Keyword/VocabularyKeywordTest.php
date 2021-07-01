@@ -6,104 +6,113 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\VocabularyKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\VocabularyKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  */
 final class VocabularyKeywordTest extends TestCase
 {
     /**
      * @var VocabularyKeyword
      */
-    private $keyword;
+    private VocabularyKeyword $keyword;
+
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
+     * @var SchemaProcessor
+     */
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
         $this->keyword = new VocabularyKeyword();
+        $this->uri = new Uri('https://example.com');
+        $this->processor = new SchemaProcessor(['$schema' => $this->keyword]);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('$vocabulary', $this->keyword->getName());
+        $this->assertSame('$vocabulary', $this->keyword->getName());
     }
 
     /**
-     * @param array<string, JsonBoolean|JsonBoolean> $properties
-     *
+     * @param array<string, bool> $value
      * @dataProvider valueProvider
      */
-    public function testProcess(array $properties): void
+    public function testProcess(array $value): void
     {
         $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
-        $expectedContext = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
-        $this->keyword->process(['$vocabulary' => new JsonObject($properties)], $pointer, $context);
+        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
+        $context = new SchemaContext($this->processor, $identifier, $pointer);
+        $expected = clone $context;
 
-        $this->assertEquals($expectedContext, $context);
+        /**
+         * @psalm-suppress UnusedMethodCall
+         */
+        $this->keyword->process(['$vocabulary' => (object)$value], $context);
+
+        $this->assertEquals($expected, $context);
     }
 
     /**
-     * @return non-empty-list<array{array<string, JsonBoolean>}>
+     * @return non-empty-list<array{array<string, bool>}>
      */
     public function valueProvider(): array
     {
-        $jsonBoolean1 = new JsonBoolean(true);
-        $jsonBoolean2 = new JsonBoolean(false);
-
         return [
             [[]],
-            [['https://example.com/foo' => $jsonBoolean1]],
-            [['https://example.com/bar' => $jsonBoolean2]],
-            [['https://example.com/foo' => $jsonBoolean1, 'https://example.com/bar' => $jsonBoolean2]],
+            [['https://example.com/a' => true]],
+            [['https://example.com/a' => false]],
+            [['https://example.com/a' => true, 'https://example.com/b' => false]],
         ];
     }
 
     /**
-     * @param JsonNull|JsonObject $value
-     * @param JsonPointer $pointer
-     *
+     * @param object|null $value
+     * @param list<string> $tokens
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value, JsonPointer $pointer): void
+    public function testProcessWithInvalidValue(?object $value, array $tokens): void
     {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$vocabulary' => $this->keyword], $identifier);
+        $pointer = new JsonPointer(...$tokens);
+        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
+        $context = new SchemaContext($this->processor, $identifier, $pointer);
 
-        $this->expectException(InvalidSchemaException::class);
+        $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$vocabulary' => $value], $pointer, $context);
+        /**
+         * @psalm-suppress UnusedMethodCall
+         */
+        $this->keyword->process(['$vocabulary' => $value], $context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonObject, JsonPointer}>
+     * @return non-empty-list<array{object|null, list<string>}>
      */
     public function invalidValueProvider(): array
     {
-        $pointer = new JsonPointer();
-        $uri1 = 'https://example.com/foo/../bar';
-        $uri2 = 'https://example.com/foo';
-
         return [
-            [new JsonNull(), $pointer],
-            [new JsonObject(['foo' => new JsonBoolean(true)]), $pointer],
-            [new JsonObject([$uri1 => new JsonBoolean(true)]), $pointer],
-            [new JsonObject([$uri2 => new JsonNull()]), $pointer],
-            [new JsonObject([]), new JsonPointer('foo')],
+            [null, []],
+            [(object)['a' => true], []],
+            [(object)['https://example.com/a/../b' => true], []],
+            [(object)['https://example.com/a' => null], []],
+            [(object)[], ['a']],
         ];
     }
 }

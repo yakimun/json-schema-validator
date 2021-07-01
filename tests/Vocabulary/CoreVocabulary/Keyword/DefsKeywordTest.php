@@ -6,25 +6,23 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonObject;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DefsKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DefsKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
  */
 final class DefsKeywordTest extends TestCase
@@ -32,88 +30,91 @@ final class DefsKeywordTest extends TestCase
     /**
      * @var DefsKeyword
      */
-    private $keyword;
+    private DefsKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new DefsKeyword();
+
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['$defs' => $this->keyword]);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('$defs', $this->keyword->getName());
+        $this->assertSame('$defs', $this->keyword->getName());
     }
 
     /**
-     * @param array<string, JsonObject> $properties
+     * @param array<string, object> $properties
      * @param list<ProcessedSchema> $expected
-     *
-     * @dataProvider valueProvider
+     * @dataProvider propertyProvider
      */
     public function testProcess(array $properties, array $expected): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$defs' => $this->keyword], $identifier);
-        $this->keyword->process(['$defs' => new JsonObject($properties)], $pointer, $context);
+        $this->keyword->process(['$defs' => (object)$properties], $this->context);
 
-        $this->assertEquals($expected, $context->getProcessedSchemas());
+        $this->assertEquals($expected, $this->context->getProcessedSchemas());
     }
 
     /**
-     * @return non-empty-list<array{array<string, JsonObject>, list<ProcessedSchema>}>
+     * @return non-empty-list<array{array<string, object>, list<ProcessedSchema>}>
      */
-    public function valueProvider(): array
+    public function propertyProvider(): array
     {
+        $object1 = (object)[];
+        $object2 = (object)[];
+
         $uri = new Uri('https://example.com');
 
         $pointer1 = new JsonPointer('$defs', 'a');
         $pointer2 = new JsonPointer('$defs', 'b');
 
-        $jsonObject1 = new JsonObject([]);
-        $jsonObject2 = new JsonObject([]);
+        $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
+        $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);
 
-        $identifier1 = new SchemaIdentifier($uri, $pointer1);
-        $identifier2 = new SchemaIdentifier($uri, $pointer2);
+        $identifier1 = new SchemaIdentifier($uri, $pointer1, $pointer1);
+        $identifier2 = new SchemaIdentifier($uri, $pointer2, $pointer2);
 
-        $validator1 = new ObjectSchemaValidator('https://example.com#/$defs/a', []);
-        $validator2 = new ObjectSchemaValidator('https://example.com#/$defs/b', []);
-
-        $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], $pointer1);
-        $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], $pointer2);
+        $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], []);
+        $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], []);
 
         return [
             [[], []],
-            [['a' => $jsonObject1], [$processedSchema1]],
-            [['b' => $jsonObject2], [$processedSchema2]],
-            [['a' => $jsonObject1, 'b' => $jsonObject2], [$processedSchema1, $processedSchema2]],
+            [['a' => $object1], [$processedSchema1]],
+            [['b' => $object2], [$processedSchema2]],
+            [['a' => $object1, 'b' => $object2], [$processedSchema1, $processedSchema2]],
         ];
     }
 
     /**
-     * @param JsonNull|JsonObject $value
-     *
+     * @param object|null $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value): void
+    public function testProcessWithInvalidValue(?object $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$defs' => $this->keyword], $identifier);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['$defs' => $value], $pointer, $context);
+        $this->keyword->process(['$defs' => $value], $this->context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonObject}>
+     * @return non-empty-list<array{object|null}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [new JsonNull()],
-            [new JsonObject(['a' => new JsonNull()])],
+            [null],
+            [(object)['a' => null]],
         ];
     }
 }

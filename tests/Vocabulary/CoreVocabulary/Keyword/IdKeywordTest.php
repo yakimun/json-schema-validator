@@ -5,96 +5,112 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\IdKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\IdKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  */
 final class IdKeywordTest extends TestCase
 {
     /**
      * @var IdKeyword
      */
-    private $keyword;
+    private IdKeyword $keyword;
+
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new IdKeyword();
+        $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+
+        $processor = new SchemaProcessor(['$id' => $this->keyword]);
+        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $this->pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('$id', $this->keyword->getName());
+        $this->assertSame('$id', $this->keyword->getName());
     }
 
     /**
      * @param string $value
-     * @param string $expected
-     *
      * @dataProvider valueProvider
      */
-    public function testProcess(string $value, string $expected): void
+    public function testProcess(string $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com/a/b'), $pointer);
-        $context = new SchemaContext(['$id' => $this->keyword], $identifier);
-        $this->keyword->process(['$id' => new JsonString($value)], $pointer, $context);
+        $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $fragment = new JsonPointer();
+        $path = $this->pointer->addTokens('$id');
+        $expected = new SchemaIdentifier($uri, $fragment, $path);
+        $this->keyword->process(['$id' => $value], $this->context);
 
-        $this->assertEquals(new SchemaIdentifier(new Uri($expected), $pointer), $context->getIdentifier());
+        $this->assertEquals($expected, $this->context->getIdentifier());
     }
 
     /**
-     * @return non-empty-list<array{string, string}>
+     * @return non-empty-list<array{string}>
      */
     public function valueProvider(): array
     {
         return [
-            ['', 'https://example.com/a/b'],
-            ['https://example.org', 'https://example.org'],
-            ['/b', 'https://example.com/b'],
-            ['c', 'https://example.com/a/c'],
-            ['#', 'https://example.com/a/b'],
-            ['/c/../d', 'https://example.com/d'],
+            [''],
+            ['https://example.org'],
+            ['/a'],
+            ['a'],
+            ['#'],
+            ['/a/../b'],
         ];
     }
 
     /**
-     * @param JsonNull|JsonString $value
-     *
-     * @dataProvider valueWithInvalidValueProvider
+     * @param string|null $value
+     * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value): void
+    public function testProcessWithInvalidValue(?string $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$id' => $this->keyword], $identifier);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['$id' => $value], $pointer, $context);
+        $this->keyword->process(['$id' => $value], $this->context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonString}>
+     * @return non-empty-list<array{string|null}>
      */
-    public function valueWithInvalidValueProvider(): array
+    public function invalidValueProvider(): array
     {
         return [
-            [new JsonNull()],
-            [new JsonString('#a')],
+            ['#a'],
+            [null],
         ];
     }
 }

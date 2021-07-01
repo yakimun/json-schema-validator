@@ -6,13 +6,8 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
-use Yakimun\JsonSchemaValidator\SchemaReference;
-use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordHandler\RefKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\RefKeywordValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class RefKeyword implements Keyword
@@ -29,25 +24,20 @@ final class RefKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
-        $keywordPath = $path->addTokens(self::NAME);
 
-        if (!$property instanceof JsonString) {
-            throw new InvalidSchemaException(sprintf('Value must be string at "%s"', (string)$keywordPath));
+        if (!is_string($property)) {
+            throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $identifier = $context->getIdentifier();
-        $keywordIdentifier = $identifier->addTokens(self::NAME);
+        $ref = UriResolver::resolve($context->getIdentifier()->getUri(), new Uri($property));
 
-        $ref = UriResolver::resolve($identifier->getUri(), new Uri($property->getValue()));
-
-        $context->addReference(new SchemaReference($ref, $keywordPath));
-        $context->addKeywordHandler(new RefKeywordHandler((string)$keywordIdentifier, (string)$ref));
+        $context->addReference($ref, self::NAME);
+        $context->addKeywordValidator(new RefKeywordValidator($ref));
     }
 }

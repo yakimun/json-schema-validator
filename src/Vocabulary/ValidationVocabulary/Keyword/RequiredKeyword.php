@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonArray;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\RequiredKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\RequiredKeywordValidator;
 
 final class RequiredKeyword implements Keyword
 {
@@ -27,43 +22,31 @@ final class RequiredKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
-        $keywordPath = $path->addTokens(self::NAME);
 
-        if (!$property instanceof JsonArray) {
-            throw new InvalidSchemaException(sprintf('Value must be array at "%s"', (string)$keywordPath));
+        if (!is_array($property)) {
+            throw $context->createException('The value must be an array.', self::NAME);
         }
 
         $requiredProperties = [];
-        $existingPaths = [];
 
-        foreach ($property->getItems() as $index => $item) {
-            $itemPath = $keywordPath->addTokens((string)$index);
-
-            if (!$item instanceof JsonString) {
-                throw new InvalidSchemaException(sprintf('Element must be string at "%s"', (string)$itemPath));
+        foreach (array_values($property) as $index => $item) {
+            if (!is_string($item)) {
+                throw $context->createException('The element must be a string.', self::NAME, (string)$index);
             }
 
-            $requiredProperty = $item->getValue();
-            $existingPath = $existingPaths[$requiredProperty] ?? null;
-
-            if ($existingPath) {
-                $format = 'Elements must be unique at "%s" and "%s"';
-                throw new InvalidSchemaException(sprintf($format, (string)$existingPath, (string)$itemPath));
+            if (in_array($item, $requiredProperties, true)) {
+                throw $context->createException('Elements must be unique.', self::NAME);
             }
 
-            $requiredProperties[] = $requiredProperty;
-            $existingPaths[$requiredProperty] = $itemPath;
+            $requiredProperties[] = $item;
         }
 
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
-
-        $context->addKeywordHandler(new RequiredKeywordHandler((string)$keywordIdentifier, $requiredProperties));
+        $context->addKeywordValidator(new RequiredKeywordValidator($requiredProperties));
     }
 }

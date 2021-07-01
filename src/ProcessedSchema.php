@@ -14,47 +14,39 @@ final class ProcessedSchema
     /**
      * @var SchemaValidator
      */
-    private $validator;
+    private SchemaValidator $validator;
 
     /**
      * @var SchemaIdentifier
      */
-    private $identifier;
+    private SchemaIdentifier $identifier;
 
     /**
      * @var list<SchemaReference>
      */
-    private $anchors;
+    private array $anchors;
 
     /**
      * @var list<SchemaReference>
      */
-    private $references;
-
-    /**
-     * @var JsonPointer
-     */
-    private $path;
+    private array $references;
 
     /**
      * @param SchemaValidator $validator
      * @param SchemaIdentifier $identifier
      * @param list<SchemaReference> $anchors
      * @param list<SchemaReference> $references
-     * @param JsonPointer $path
      */
     public function __construct(
         SchemaValidator $validator,
         SchemaIdentifier $identifier,
         array $anchors,
-        array $references,
-        JsonPointer $path
+        array $references
     ) {
         $this->validator = $validator;
         $this->identifier = $identifier;
         $this->anchors = $anchors;
         $this->references = $references;
-        $this->path = $path;
     }
 
     /**
@@ -87,13 +79,5 @@ final class ProcessedSchema
     public function getReferences(): array
     {
         return $this->references;
-    }
-
-    /**
-     * @return JsonPointer
-     */
-    public function getPath(): JsonPointer
-    {
-        return $this->path;
     }
 }

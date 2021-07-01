@@ -6,124 +6,136 @@ namespace Yakimun\JsonSchemaValidator\Tests;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\SchemaReference;
-use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
+use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaContext
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
- * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
  */
 final class SchemaContextTest extends TestCase
 {
     /**
-     * @var non-empty-array<string, Keyword>
-     */
-    private $keywords;
-
-    /**
      * @var SchemaIdentifier
      */
-    private $identifier;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
-        $this->keywords = ['foo' => $this->createStub(Keyword::class)];
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer());
+        $processor = new SchemaProcessor(['a' => $this->createStub(Keyword::class)]);
+        $pointer = new JsonPointer();
+
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
+        $this->context = new SchemaContext($processor, $this->identifier, $pointer);
     }
 
     public function testGetIdentifier(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-
-        $this->assertEquals($this->identifier, $schemaContext->getIdentifier());
+        $this->assertSame($this->identifier, $this->context->getIdentifier());
     }
 
     public function testSetIdentifier(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-        $identifier = new SchemaIdentifier(new Uri('https://example.org'), new JsonPointer());
-        $schemaContext->setIdentifier($identifier);
+        $uri = new Uri('https://example.org');
+        $fragment = new JsonPointer();
+        $path = new JsonPointer('$id');
+        $expected = new SchemaIdentifier($uri, $fragment, $path);
+        $this->context->setIdentifier($uri, '$id');
 
-        $this->assertEquals($identifier, $schemaContext->getIdentifier());
+        $this->assertEquals($expected, $this->context->getIdentifier());
+    }
+
+    public function testGetPath(): void
+    {
+        $expected = new JsonPointer();
+
+        $this->assertEquals($expected, $this->context->getPath());
     }
 
     public function testGetAnchors(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-
-        $this->assertEquals([], $schemaContext->getAnchors());
+        $this->assertSame([], $this->context->getAnchors());
     }
 
     public function testAddAnchor(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-        $anchor = new SchemaReference(new Uri('https://example.com#foo'), new JsonPointer('a'));
-        $schemaContext->addAnchor($anchor);
+        $uri = new Uri('https://example.com#a');
+        $path = new JsonPointer('$anchor');
+        $expected = [new SchemaReference($uri, $path)];
+        $this->context->addAnchor($uri, '$anchor');
 
-        $this->assertEquals([$anchor], $schemaContext->getAnchors());
+        $this->assertEquals($expected, $this->context->getAnchors());
     }
 
     public function testGetReferences(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-
-        $this->assertEquals([], $schemaContext->getReferences());
+        $this->assertSame([], $this->context->getReferences());
     }
 
     public function testAddReference(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-        $reference = new SchemaReference(new Uri('https://example.com'), new JsonPointer('a'));
-        $schemaContext->addReference($reference);
+        $uri = new Uri('https://example.com');
+        $path = new JsonPointer('$ref');
+        $expected = [new SchemaReference($uri, $path)];
+        $this->context->addReference($uri, '$ref');
 
-        $this->assertEquals([$reference], $schemaContext->getReferences());
+        $this->assertEquals($expected, $this->context->getReferences());
     }
 
-    public function testGetKeywordHandlers(): void
+    public function testGetKeywordValidators(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-
-        $this->assertEquals([], $schemaContext->getKeywordHandlers());
+        $this->assertSame([], $this->context->getKeywordValidators());
     }
 
-    public function testAddKeywordHandler(): void
+    public function testAddKeywordValidator(): void
     {
-        $keywordHandler = $this->createStub(KeywordHandler::class);
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-        $schemaContext->addKeywordHandler($keywordHandler);
+        $validator = $this->createStub(KeywordValidator::class);
+        $expected = [$validator];
+        $this->context->addKeywordValidator($validator);
 
-        $this->assertEquals([$keywordHandler], $schemaContext->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     public function testGetProcessedSchemas(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
-
-        $this->assertEquals([], $schemaContext->getProcessedSchemas());
+        $this->assertSame([], $this->context->getProcessedSchemas());
     }
 
     public function testCreateValidator(): void
     {
-        $schemaContext = new SchemaContext($this->keywords, $this->identifier);
+        $uri = new Uri('https://example.com');
         $pointer = new JsonPointer('a');
-        $identifier = new SchemaIdentifier(new Uri('https://example.org'), $pointer);
-        $expectedValidator = new BooleanSchemaValidator('https://example.org#/a', true);
-        $expectedProcessedSchema = new ProcessedSchema($expectedValidator, $identifier, [], [], $pointer);
-        $validator = $schemaContext->createValidator(new JsonBoolean(true), $identifier, $pointer);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+        $expectedValidator = new ObjectSchemaValidator($uri, $pointer, []);
+        $expectedProcessedSchemas = [new ProcessedSchema($expectedValidator, $identifier, [], [])];
 
-        $this->assertEquals($expectedValidator, $validator);
-        $this->assertEquals([$expectedProcessedSchema], $schemaContext->getProcessedSchemas());
+        $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], 'a'));
+        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+    }
+
+    public function testCreateException(): void
+    {
+        $expected = new SchemaException('a', new JsonPointer('b'));
+
+        $this->assertEquals($expected, $this->context->createException('a', 'b'));
     }
 }

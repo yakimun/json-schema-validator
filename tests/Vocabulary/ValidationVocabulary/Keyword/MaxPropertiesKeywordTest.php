@@ -6,73 +6,71 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ValidationVocabulary\Keyw
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonInteger;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\MaxPropertiesKeyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\MaxPropertiesKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\MaxPropertiesKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\MaxPropertiesKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\MaxPropertiesKeywordHandler
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\MaxPropertiesKeywordValidator
  */
 final class MaxPropertiesKeywordTest extends TestCase
 {
     /**
      * @var MaxPropertiesKeyword
      */
-    private $keyword;
+    private MaxPropertiesKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new MaxPropertiesKeyword();
+
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['maxProperties' => $this->keyword]);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('maxProperties', $this->keyword->getName());
+        $this->assertSame('maxProperties', $this->keyword->getName());
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
-        $keywordHandler = new MaxPropertiesKeywordHandler('https://example.com#/maxProperties', 1);
-        $this->keyword->process(['maxProperties' => new JsonInteger(1)], $pointer, $context);
+        $expected = [new MaxPropertiesKeywordValidator(0)];
+        $this->keyword->process(['maxProperties' => 0], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
-        $value = new JsonNull();
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['maxProperties' => $value], $pointer, $context);
+        $this->keyword->process(['maxProperties' => null], $this->context);
     }
 
-    public function testProcessWithNegativeInteger(): void
+    public function testProcessWithNegativeValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['maxProperties' => $this->keyword], $identifier);
-        $value = new JsonInteger(-1);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['maxProperties' => $value], $pointer, $context);
+        $this->keyword->process(['maxProperties' => -1], $this->context);
     }
 }

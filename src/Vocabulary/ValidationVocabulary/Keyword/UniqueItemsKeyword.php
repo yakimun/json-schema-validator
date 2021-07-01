@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\UniqueItemsKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\UniqueItemsKeywordValidator;
 
 final class UniqueItemsKeyword implements Keyword
 {
@@ -26,21 +22,17 @@ final class UniqueItemsKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
 
-        if (!$property instanceof JsonBoolean) {
-            $message = sprintf('Value must be boolean at "%s"', (string)$path->addTokens(self::NAME));
-            throw new InvalidSchemaException($message);
+        if (!is_bool($property)) {
+            throw $context->createException('The value must be a boolean.', self::NAME);
         }
 
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
-
-        $context->addKeywordHandler(new UniqueItemsKeywordHandler((string)$keywordIdentifier, $property->getValue()));
+        $context->addKeywordValidator(new UniqueItemsKeywordValidator($property));
     }
 }

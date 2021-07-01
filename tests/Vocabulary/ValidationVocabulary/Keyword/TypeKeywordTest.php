@@ -6,59 +6,64 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ValidationVocabulary\Keyw
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonArray;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\TypeKeyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\ArrayTypeKeywordHandler;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\StringTypeKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\ArrayTypeKeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\TypeKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\ArrayTypeKeywordHandler
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\StringTypeKeywordHandler
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\ArrayTypeKeywordValidator
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator
  */
 final class TypeKeywordTest extends TestCase
 {
     /**
      * @var TypeKeyword
      */
-    private $keyword;
+    private TypeKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new TypeKeyword();
+
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['type' => $this->keyword]);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('type', $this->keyword->getName());
+        $this->assertSame('type', $this->keyword->getName());
     }
 
     /**
-     * @param 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer' $type
-     *
+     * @param 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer' $value
      * @dataProvider stringTypeProvider
      */
-    public function testProcessWithStringValue(string $type): void
+    public function testProcessWithStringValue(string $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $keywordHandler = new StringTypeKeywordHandler('https://example.com#/type', $type);
-        $this->keyword->process(['type' => new JsonString($type)], $pointer, $context);
+        $expected = [new StringTypeKeywordValidator($value)];
+        $this->keyword->process(['type' => $value], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     /**
@@ -78,26 +83,15 @@ final class TypeKeywordTest extends TestCase
     }
 
     /**
-     * @param list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'> $types
-     *
+     * @param list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'> $value
      * @dataProvider arrayTypeProvider
      */
-    public function testProcessWithArrayValue(array $types): void
+    public function testProcessWithArrayValue(array $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $keywordHandler = new ArrayTypeKeywordHandler('https://example.com#/type', $types);
+        $expected = [new ArrayTypeKeywordValidator($value)];
+        $this->keyword->process(['type' => $value], $this->context);
 
-        $items = [];
-
-        foreach ($types as $type) {
-            $items[] = new JsonString($type);
-        }
-
-        $this->keyword->process(['type' => new JsonArray($items)], $pointer, $context);
-
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     /**
@@ -119,49 +113,36 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $value = new JsonNull();
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['type' => $value], $pointer, $context);
+        $this->keyword->process(['type' => null], $this->context);
     }
 
     public function testProcessWithInvalidStringType(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $value = new JsonString('a');
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['type' => $value], $pointer, $context);
+        $this->keyword->process(['type' => 'a'], $this->context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $value = new JsonArray([new JsonNull()]);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
+        $this->keyword->process(['type' => [null]], $this->context);
+    }
 
-        $this->keyword->process(['type' => $value], $pointer, $context);
+    public function testProcessWithInvalidArrayItemType(): void
+    {
+        $this->expectException(SchemaException::class);
+
+        $this->keyword->process(['type' => ['a']], $this->context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['type' => $this->keyword], $identifier);
-        $value = new JsonArray([new JsonString('null'), new JsonString('null')]);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['type' => $value], $pointer, $context);
+        $this->keyword->process(['type' => ['null', 'null']], $this->context);
     }
 }

@@ -6,64 +6,69 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\CommentKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\CommentKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  */
 final class CommentKeywordTest extends TestCase
 {
     /**
      * @var CommentKeyword
      */
-    private $keyword;
+    private CommentKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new CommentKeyword();
+
+        $pointer = new JsonPointer();
+
+        $processor = new SchemaProcessor(['$comment' => $this->keyword]);
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('$comment', $this->keyword->getName());
+        $this->assertSame('$comment', $this->keyword->getName());
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$comment' => $this->keyword], $identifier);
+        $expected = clone $this->context;
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => new JsonString('a')], $pointer, $context);
+        $this->keyword->process(['$comment' => 'a'], $this->context);
 
-        $this->assertEquals(new SchemaContext(['$comment' => $this->keyword], $identifier), $context);
+        $this->assertEquals($expected, $this->context);
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$comment' => $this->keyword], $identifier);
-
-        $this->expectException(InvalidSchemaException::class);
+        $this->expectException(SchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => new JsonNull()], $pointer, $context);
+        $this->keyword->process(['$comment' => null], $this->context);
     }
 }

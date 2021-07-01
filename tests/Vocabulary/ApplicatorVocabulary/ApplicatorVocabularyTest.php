@@ -29,7 +29,7 @@ final class ApplicatorVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new ApplicatorVocabulary();
-        $keywords = [
+        $expected = [
             new AllOfKeyword(),
             new AnyOfKeyword(),
             new OneOfKeyword(),
@@ -46,6 +46,6 @@ final class ApplicatorVocabularyTest extends TestCase
             new PropertyNamesKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

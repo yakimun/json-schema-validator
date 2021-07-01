@@ -6,72 +6,79 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ApplicatorVocabulary\Keyw
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\PropertyNamesKeyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\PropertyNamesKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator\PropertyNamesKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\PropertyNamesKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordHandler\PropertyNamesKeywordHandler
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator\PropertyNamesKeywordValidator
  */
 final class PropertyNamesKeywordTest extends TestCase
 {
     /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
      * @var PropertyNamesKeyword
      */
-    private $keyword;
+    private PropertyNamesKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
+        $this->uri = new Uri('https://example.com');
         $this->keyword = new PropertyNamesKeyword();
+
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['propertyNames' => $this->keyword]);
+        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('propertyNames', $this->keyword->getName());
+        $this->assertSame('propertyNames', $this->keyword->getName());
     }
 
     public function testProcess(): void
     {
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $keywordPointer = new JsonPointer('propertyNames');
-        $identifier = new SchemaIdentifier($uri, $pointer);
-        $keywordIdentifier = new SchemaIdentifier($uri, $keywordPointer);
-        $absoluteLocation = 'https://example.com#/propertyNames';
-        $validator = new ObjectSchemaValidator($absoluteLocation, []);
-        $keywordHandler = new PropertyNamesKeywordHandler($absoluteLocation, $validator);
-        $processedSchema = new ProcessedSchema($validator, $keywordIdentifier, [], [], $keywordPointer);
-        $context = new SchemaContext(['propertyNames' => $this->keyword], $identifier);
-        $this->keyword->process(['propertyNames' => new JsonObject([])], $pointer, $context);
+        $pointer = new JsonPointer('propertyNames');
+        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
+        $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
+        $expectedKeywordValidators = [new PropertyNamesKeywordValidator($validator)];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [])];
+        $this->keyword->process(['propertyNames' => (object)[]], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
-        $this->assertEquals([$processedSchema], $context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['propertyNames' => $this->keyword], $identifier);
-        $value = new JsonNull();
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['propertyNames' => $value], $pointer, $context);
+        $this->keyword->process(['propertyNames' => null], $this->context);
     }
 }

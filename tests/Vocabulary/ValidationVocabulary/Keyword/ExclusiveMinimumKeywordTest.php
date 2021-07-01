@@ -6,76 +6,74 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\ValidationVocabulary\Keyw
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonFloat;
-use Yakimun\JsonSchemaValidator\Json\JsonInteger;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\ExclusiveMinimumKeyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\FloatExclusiveMinimumKeywordHandler;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\IntegerExclusiveMinimumKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatExclusiveMinimumKeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\IntExclusiveMinimumKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\ExclusiveMinimumKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonFloat
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\FloatExclusiveMinimumKeywordHandler
- * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\IntegerExclusiveMinimumKeywordHandler
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatExclusiveMinimumKeywordValidator
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\IntExclusiveMinimumKeywordValidator
  */
 final class ExclusiveMinimumKeywordTest extends TestCase
 {
     /**
      * @var ExclusiveMinimumKeyword
      */
-    private $keyword;
+    private ExclusiveMinimumKeyword $keyword;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new ExclusiveMinimumKeyword();
+
+        $uri = new Uri('https://example.com');
+        $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['exclusiveMinimum' => $this->keyword]);
+        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('exclusiveMinimum', $this->keyword->getName());
+        $this->assertSame('exclusiveMinimum', $this->keyword->getName());
     }
 
-    public function testProcessWithIntegerValue(): void
+    public function testProcessWithIntValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
-        $keywordHandler = new IntegerExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1);
-        $this->keyword->process(['exclusiveMinimum' => new JsonInteger(1)], $pointer, $context);
+        $expected = [new IntExclusiveMinimumKeywordValidator(0)];
+        $this->keyword->process(['exclusiveMinimum' => 0], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
-        $keywordHandler = new FloatExclusiveMinimumKeywordHandler('https://example.com#/exclusiveMinimum', 1.5);
-        $this->keyword->process(['exclusiveMinimum' => new JsonFloat(1.5)], $pointer, $context);
+        $expected = [new FloatExclusiveMinimumKeywordValidator(0)];
+        $this->keyword->process(['exclusiveMinimum' => 0.0], $this->context);
 
-        $this->assertEquals([$keywordHandler], $context->getKeywordHandlers());
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['exclusiveMinimum' => $this->keyword], $identifier);
-        $value = new JsonNull();
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['exclusiveMinimum' => $value], $pointer, $context);
+        $this->keyword->process(['exclusiveMinimum' => null], $this->context);
     }
 }

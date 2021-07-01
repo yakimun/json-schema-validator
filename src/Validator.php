@@ -14,7 +14,7 @@ final class Validator
     /**
      * @var non-empty-array<string, SchemaValidator>
      */
-    private $schemaValidators;
+    private array $schemaValidators;
 
     /**
      * @param non-empty-array<string, SchemaValidator> $schemaValidators

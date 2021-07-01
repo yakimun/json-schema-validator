@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
-use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordHandler\ContentEncodingKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\ContentEncodingKeywordValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ContentEncodingKeyword implements Keyword
@@ -26,22 +22,17 @@ final class ContentEncodingKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
 
-        if (!$property instanceof JsonString) {
-            $message = sprintf('Value must be string at "%s"', (string)$path->addTokens(self::NAME));
-            throw new InvalidSchemaException($message);
+        if (!is_string($property)) {
+            throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
-
-        $keywordHandler = new ContentEncodingKeywordHandler((string)$keywordIdentifier, $property->getValue());
-        $context->addKeywordHandler($keywordHandler);
+        $context->addKeywordValidator(new ContentEncodingKeywordValidator($property));
     }
 }

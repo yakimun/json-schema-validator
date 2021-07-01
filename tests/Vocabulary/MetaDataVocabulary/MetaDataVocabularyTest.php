@@ -22,7 +22,7 @@ final class MetaDataVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new MetaDataVocabulary();
-        $keywords = [
+        $expected = [
             new TitleKeyword(),
             new DescriptionKeyword(),
             new DefaultKeyword(),
@@ -32,6 +32,6 @@ final class MetaDataVocabularyTest extends TestCase
             new ExamplesKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

@@ -4,28 +4,38 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+
 /**
  * @psalm-immutable
  */
 final class BooleanSchemaValidator implements SchemaValidator
 {
     /**
-     * @var string
+     * @var UriInterface
      */
-    private $absoluteLocation;
+    private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $fragment;
 
     /**
      * @var bool
      */
-    private $value;
+    private bool $value;
 
     /**
-     * @param string $absoluteLocation
+     * @param UriInterface $uri
+     * @param JsonPointer $fragment
      * @param bool $value
      */
-    public function __construct(string $absoluteLocation, bool $value)
+    public function __construct(UriInterface $uri, JsonPointer $fragment, bool $value)
     {
-        $this->absoluteLocation = $absoluteLocation;
+        $this->uri = $uri;
+        $this->fragment = $fragment;
         $this->value = $value;
     }
 }

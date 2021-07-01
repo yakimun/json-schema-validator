@@ -14,12 +14,12 @@ final class SchemaReference
     /**
      * @var UriInterface
      */
-    private $uri;
+    private UriInterface $uri;
 
     /**
      * @var JsonPointer
      */
-    private $path;
+    private JsonPointer $path;
 
     /**
      * @param UriInterface $uri

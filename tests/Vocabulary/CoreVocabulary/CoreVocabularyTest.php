@@ -24,7 +24,7 @@ final class CoreVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new CoreVocabulary();
-        $keywords = [
+        $expected = [
             new SchemaKeyword(),
             new VocabularyKeyword(),
             new IdKeyword(),
@@ -36,6 +36,6 @@ final class CoreVocabularyTest extends TestCase
             new CommentKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

@@ -16,7 +16,8 @@ final class ValidatorTest extends TestCase
     public function testConstruct(): void
     {
         $validator = new Validator(['https://example.com' => $this->createStub(SchemaValidator::class)]);
+        $expected = Validator::class;
 
-        $this->assertInstanceOf(Validator::class, $validator);
+        $this->assertInstanceOf($expected, $validator);
     }
 }

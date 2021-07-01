@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 
@@ -16,85 +17,45 @@ use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 final class SchemaIdentifierTest extends TestCase
 {
     /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
      * @var SchemaIdentifier
      */
-    private $identifier;
+    private SchemaIdentifier $identifier;
 
     protected function setUp(): void
     {
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer('a'));
+        $this->uri = new Uri('https://example/com');
+        $this->pointer = new JsonPointer('a');
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
     }
 
     public function testGetUri(): void
     {
-        $this->assertEquals(new Uri('https://example.com'), $this->identifier->getUri());
+        $expected = $this->uri;
+
+        $this->assertEquals($expected, $this->identifier->getUri());
     }
 
     public function testGetFragment(): void
     {
-        $this->assertEquals(new JsonPointer('a'), $this->identifier->getFragment());
+        $expected = $this->pointer;
+
+        $this->assertEquals($expected, $this->identifier->getFragment());
     }
 
-    /**
-     * @param list<string> $initialTokens
-     * @param list<string> $tokens
-     * @param list<string> $expected
-     *
-     * @dataProvider tokenProvider
-     */
-    public function testAddTokens(array $initialTokens, array $tokens, array $expected): void
+    public function testGetPath(): void
     {
-        $fragment = new JsonPointer(...$initialTokens);
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $fragment);
-        $expectedIdentifier = new SchemaIdentifier(new Uri('https://example.com'), $fragment);
-        $expectedNewIdentifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer(...$expected));
+        $expected = $this->pointer;
 
-        $this->assertEquals($expectedNewIdentifier, $identifier->addTokens(...$tokens));
-        $this->assertEquals($expectedIdentifier, $identifier);
-    }
-
-    /**
-     * @return non-empty-list<array{list<string>, list<string>, list<string>}>
-     */
-    public function tokenProvider(): array
-    {
-        return [
-            [[], [], []],
-            [['a'], [], ['a']],
-            [['a', 'b'], [], ['a', 'b']],
-            [[], ['a'], ['a']],
-            [[], ['a', 'b'], ['a', 'b']],
-            [['a'], ['b'], ['a', 'b']],
-            [['a', 'b'], ['c'], ['a', 'b', 'c']],
-            [['a'], ['b', 'c'], ['a', 'b', 'c']],
-            [['a', 'b'], ['c', 'd'], ['a', 'b', 'c', 'd']],
-        ];
-    }
-
-    /**
-     * @param list<string> $tokens
-     * @param string $expected
-     *
-     * @dataProvider tokenWithStringProvider
-     */
-    public function testToString(array $tokens, string $expected): void
-    {
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), new JsonPointer(...$tokens));
-
-        $this->assertEquals('https://example.com' . $expected, $identifier);
-    }
-
-    /**
-     * @return non-empty-list<array{list<string>, string}>
-     */
-    public function tokenWithStringProvider(): array
-    {
-        return [
-            [[], ''],
-            [['a'], '#/a'],
-            [['a', 'b'], '#/a/b'],
-            [['~'], '#/~0'],
-            [['/'], '#/~1'],
-        ];
+        $this->assertEquals($expected, $this->identifier->getPath());
     }
 }

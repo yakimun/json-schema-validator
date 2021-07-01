@@ -6,12 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
-use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class IdKeyword implements Keyword
@@ -28,27 +23,23 @@ final class IdKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
 
-        if (!$property instanceof JsonString) {
-            $message = sprintf('Value must be string at "%s"', (string)$path->addTokens(self::NAME));
-            throw new InvalidSchemaException($message);
+        if (!is_string($property)) {
+            throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $id = new Uri($property->getValue());
+        $id = new Uri($property);
 
         if ($id->getFragment() !== '') {
-            $message = sprintf('Value must resolve to absolute URI at "%s"', (string)$path->addTokens(self::NAME));
-            throw new InvalidSchemaException($message);
+            throw $context->createException('The value must resolve to an absolute URI.', self::NAME);
         }
 
-        $uri = UriResolver::resolve($context->getIdentifier()->getUri(), $id);
-        $context->setIdentifier(new SchemaIdentifier($uri, new JsonPointer()));
+        $context->setIdentifier(UriResolver::resolve($context->getIdentifier()->getUri(), $id), self::NAME);
     }
 }

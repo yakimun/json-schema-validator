@@ -29,7 +29,7 @@ final class ApplicatorVocabulary implements Vocabulary
     /**
      * @var non-empty-list<Keyword>
      */
-    private $keywords;
+    private array $keywords;
 
     public function __construct()
     {

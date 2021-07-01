@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonFloat;
-use Yakimun\JsonSchemaValidator\Json\JsonInteger;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\FloatMultipleOfKeywordHandler;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\IntegerMultipleOfKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatMultipleOfKeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\IntMultipleOfKeywordValidator;
 
 final class MultipleOfKeyword implements Keyword
 {
@@ -28,41 +23,34 @@ final class MultipleOfKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
+        /** @var scalar|object|list<mixed>|null $property */
         $property = $properties[self::NAME];
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
 
-        if ($property instanceof JsonInteger) {
-            $multipleOf = $property->getValue();
-
-            if ($multipleOf <= 0) {
-                $format = 'Value must be strictly greater than 0 at "%s"';
-                throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
+        if (is_int($property)) {
+            if ($property <= 0) {
+                throw $context->createException('The value must be strictly greater than 0.', self::NAME);
             }
 
-            $context->addKeywordHandler(new IntegerMultipleOfKeywordHandler((string)$keywordIdentifier, $multipleOf));
+            $context->addKeywordValidator(new IntMultipleOfKeywordValidator($property));
 
             return;
         }
 
-        if ($property instanceof JsonFloat) {
-            $multipleOf = $property->getValue();
-
-            if ($multipleOf <= 0) {
-                $format = 'Value must be strictly greater than 0 at "%s"';
-                throw new InvalidSchemaException(sprintf($format, (string)$path->addTokens(self::NAME)));
+        if (is_float($property)) {
+            if ($property <= 0) {
+                throw $context->createException('The value must be strictly greater than 0.', self::NAME);
             }
 
-            $context->addKeywordHandler(new FloatMultipleOfKeywordHandler((string)$keywordIdentifier, $multipleOf));
+            $context->addKeywordValidator(new FloatMultipleOfKeywordValidator($property));
 
             return;
         }
 
-        throw new InvalidSchemaException(sprintf('Value must be number at "%s"', (string)$path->addTokens(self::NAME)));
+        throw $context->createException('The value must be a number.', self::NAME);
     }
 }

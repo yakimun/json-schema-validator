@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonFloat;
-use Yakimun\JsonSchemaValidator\Json\JsonInteger;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\FloatMinimumKeywordHandler;
-use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordHandler\IntegerMinimumKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatMinimumKeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\IntMinimumKeywordValidator;
 
 final class MinimumKeyword implements Keyword
 {
@@ -28,29 +23,26 @@ final class MinimumKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
+        /** @var scalar|object|list<mixed>|null $property */
         $property = $properties[self::NAME];
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
 
-        if ($property instanceof JsonInteger) {
-            $keywordHandler = new IntegerMinimumKeywordHandler((string)$keywordIdentifier, $property->getValue());
-            $context->addKeywordHandler($keywordHandler);
+        if (is_int($property)) {
+            $context->addKeywordValidator(new IntMinimumKeywordValidator($property));
 
             return;
         }
 
-        if ($property instanceof JsonFloat) {
-            $keywordHandler = new FloatMinimumKeywordHandler((string)$keywordIdentifier, $property->getValue());
-            $context->addKeywordHandler($keywordHandler);
+        if (is_float($property)) {
+            $context->addKeywordValidator(new FloatMinimumKeywordValidator($property));
 
             return;
         }
 
-        throw new InvalidSchemaException(sprintf('Value must be number at "%s"', (string)$path->addTokens(self::NAME)));
+        throw $context->createException('The value must be a number.', self::NAME);
     }
 }

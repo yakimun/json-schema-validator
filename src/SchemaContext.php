@@ -4,52 +4,60 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator;
 
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
-use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 final class SchemaContext
 {
     /**
-     * @var non-empty-array<string, Keyword>
+     * @var SchemaProcessor
      * @readonly
      */
-    private $keywords;
+    private SchemaProcessor $processor;
 
     /**
      * @var SchemaIdentifier
      */
-    private $identifier;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var JsonPointer
+     * @readonly
+     */
+    private JsonPointer $path;
 
     /**
      * @var list<SchemaReference>
      */
-    private $anchors = [];
+    private array $anchors = [];
 
     /**
      * @var list<SchemaReference>
      */
-    private $references = [];
+    private array $references = [];
 
     /**
-     * @var list<KeywordHandler>
+     * @var list<KeywordValidator>
      */
-    private $keywordHandlers = [];
+    private array $keywordValidators = [];
 
     /**
      * @var list<ProcessedSchema>
      */
-    private $processedSchemas = [];
+    private array $processedSchemas = [];
 
     /**
-     * @param non-empty-array<string, Keyword> $keywords
+     * @param SchemaProcessor $processor
      * @param SchemaIdentifier $identifier
+     * @param JsonPointer $path
      */
-    public function __construct(array $keywords, SchemaIdentifier $identifier)
+    public function __construct(SchemaProcessor $processor, SchemaIdentifier $identifier, JsonPointer $path)
     {
-        $this->keywords = $keywords;
+        $this->processor = $processor;
         $this->identifier = $identifier;
+        $this->path = $path;
     }
 
     /**
@@ -62,11 +70,21 @@ final class SchemaContext
     }
 
     /**
-     * @param SchemaIdentifier $identifier
+     * @param UriInterface $identifier
+     * @param string $token
      */
-    public function setIdentifier(SchemaIdentifier $identifier): void
+    public function setIdentifier(UriInterface $identifier, string $token): void
     {
-        $this->identifier = $identifier;
+        $this->identifier = new SchemaIdentifier($identifier, new JsonPointer(), $this->path->addTokens($token));
+    }
+
+    /**
+     * @return JsonPointer
+     * @psalm-mutation-free
+     */
+    public function getPath(): JsonPointer
+    {
+        return $this->path;
     }
 
     /**
@@ -79,11 +97,12 @@ final class SchemaContext
     }
 
     /**
-     * @param SchemaReference $anchor
+     * @param UriInterface $anchor
+     * @param string $token
      */
-    public function addAnchor(SchemaReference $anchor): void
+    public function addAnchor(UriInterface $anchor, string $token): void
     {
-        $this->anchors[] = $anchor;
+        $this->anchors[] = new SchemaReference($anchor, $this->path->addTokens($token));
     }
 
     /**
@@ -96,28 +115,29 @@ final class SchemaContext
     }
 
     /**
-     * @param SchemaReference $ref
+     * @param UriInterface $reference
+     * @param string $token
      */
-    public function addReference(SchemaReference $ref): void
+    public function addReference(UriInterface $reference, string $token): void
     {
-        $this->references[] = $ref;
+        $this->references[] = new SchemaReference($reference, $this->path->addTokens($token));
     }
 
     /**
-     * @return list<KeywordHandler>
+     * @return list<KeywordValidator>
      * @psalm-mutation-free
      */
-    public function getKeywordHandlers(): array
+    public function getKeywordValidators(): array
     {
-        return $this->keywordHandlers;
+        return $this->keywordValidators;
     }
 
     /**
-     * @param KeywordHandler $keywordHandler
+     * @param KeywordValidator $keywordValidator
      */
-    public function addKeywordHandler(KeywordHandler $keywordHandler): void
+    public function addKeywordValidator(KeywordValidator $keywordValidator): void
     {
-        $this->keywordHandlers[] = $keywordHandler;
+        $this->keywordValidators[] = $keywordValidator;
     }
 
     /**
@@ -130,16 +150,32 @@ final class SchemaContext
     }
 
     /**
-     * @param JsonValue $value
-     * @param SchemaIdentifier $identifier
-     * @param JsonPointer $path
+     * @param mixed $schema
+     * @param string ...$tokens
      * @return SchemaValidator
+     * @no-named-arguments
      */
-    public function createValidator(JsonValue $value, SchemaIdentifier $identifier, JsonPointer $path): SchemaValidator
+    public function createValidator($schema, string ...$tokens): SchemaValidator
     {
-        $processedSchemas = $value->processAsSchema($identifier, $this->keywords, $path);
-        $this->processedSchemas = array_merge($this->processedSchemas, $processedSchemas);
+        $uri = $this->identifier->getUri();
+        $fragment = $this->identifier->getFragment()->addTokens(...$tokens);
+        $path = $this->path->addTokens(...$tokens);
+
+        $processedSchemas = $this->processor->process($schema, $uri, $fragment, $path);
+        $this->processedSchemas = [...$this->processedSchemas, ...$processedSchemas];
 
         return $processedSchemas[0]->getValidator();
+    }
+
+    /**
+     * @param string $message
+     * @param string ...$tokens
+     * @return SchemaException
+     * @no-named-arguments
+     * @psalm-mutation-free
+     */
+    public function createException(string $message, string ...$tokens): SchemaException
+    {
+        return new SchemaException($message, $this->path->addTokens(...$tokens));
     }
 }

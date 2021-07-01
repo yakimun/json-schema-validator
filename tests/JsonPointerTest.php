@@ -15,90 +15,56 @@ final class JsonPointerTest extends TestCase
     /**
      * @param list<string> $initialTokens
      * @param list<string> $tokens
-     * @param list<string> $expected
-     *
      * @dataProvider tokenProvider
      */
-    public function testAddTokens(array $initialTokens, array $tokens, array $expected): void
+    public function testAddTokens(array $initialTokens, array $tokens): void
     {
-        $jsonPointer = new JsonPointer(...$initialTokens);
+        $pointer = new JsonPointer(...$initialTokens);
+        $expectedPointer = new JsonPointer(...$initialTokens, ...$tokens);
+        $expectedInitialPointer = clone $pointer;
 
-        $this->assertEquals(new JsonPointer(...$expected), $jsonPointer->addTokens(...$tokens));
-        $this->assertEquals(new JsonPointer(...$initialTokens), $jsonPointer);
+        $this->assertEquals($expectedPointer, $pointer->addTokens(...$tokens));
+        $this->assertEquals($expectedInitialPointer, $pointer);
     }
 
     /**
-     * @return non-empty-list<array{list<string>, list<string>, list<string>}>
+     * @return non-empty-list<array{list<string>, list<string>}>
      */
     public function tokenProvider(): array
     {
         return [
-            [[], [], []],
-            [['a'], [], ['a']],
-            [['a', 'b'], [], ['a', 'b']],
-            [[], ['a'], ['a']],
-            [[], ['a', 'b'], ['a', 'b']],
-            [['a'], ['b'], ['a', 'b']],
-            [['a', 'b'], ['c'], ['a', 'b', 'c']],
-            [['a'], ['b', 'c'], ['a', 'b', 'c']],
-            [['a', 'b'], ['c', 'd'], ['a', 'b', 'c', 'd']],
-        ];
-    }
-
-    /**
-     * @param list<string> $tokens1
-     * @param list<string> $tokens2
-     * @param bool $expected
-     *
-     * @dataProvider tokenWithEqualityProvider
-     */
-    public function testEquals(array $tokens1, array $tokens2, bool $expected): void
-    {
-        $pointer = new JsonPointer(...$tokens1);
-
-        $this->assertEquals($expected, $pointer->equals(new JsonPointer(...$tokens2)));
-    }
-
-    /**
-     * @return non-empty-list<array{list<string>, list<string>, bool}>
-     */
-    public function tokenWithEqualityProvider(): array
-    {
-        return [
-            [[], [], true],
-            [['a'], ['a'], true],
-            [['a', 'b'], ['a', 'b'], true],
-            [['a'], [], false],
-            [[], ['a'], false],
-            [['a'], ['b'], false],
-            [['a'], ['a', 'b'], false],
-            [['a', 'b'], ['a'], false],
-            [['a', 'b'], ['b', 'a'], false],
+            [[], []],
+            [['a'], []],
+            [['a', 'b'], []],
+            [[], ['a']],
+            [[], ['a', 'b']],
+            [['a'], ['b']],
+            [['a', 'b'], ['c']],
+            [['a'], ['b', 'c']],
+            [['a', 'b'], ['c', 'd']],
         ];
     }
 
     /**
      * @param list<string> $tokens
-     * @param string $expected
-     *
-     * @dataProvider tokenWithStringProvider
+     * @dataProvider emptinessCheckTokenProvider
      */
-    public function testToString(array $tokens, string $expected): void
+    public function testIsEmpty(array $tokens): void
     {
-        $this->assertEquals($expected, new JsonPointer(...$tokens));
+        $pointer = new JsonPointer(...$tokens);
+        $expected = empty($tokens);
+
+        $this->assertSame($expected, $pointer->isEmpty());
     }
 
     /**
-     * @return non-empty-list<array{list<string>, string}>
+     * @return non-empty-list<array{list<string>}>
      */
-    public function tokenWithStringProvider(): array
+    public function emptinessCheckTokenProvider(): array
     {
         return [
-            [[], ''],
-            [['a'], '/a'],
-            [['a', 'b'], '/a/b'],
-            [['~'], '/~0'],
-            [['/'], '/~1'],
+            [[]],
+            [['a']],
         ];
     }
 }

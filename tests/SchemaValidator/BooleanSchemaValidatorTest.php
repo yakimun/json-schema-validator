@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\SchemaValidator;
 
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  */
 final class BooleanSchemaValidatorTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $this->assertInstanceOf(BooleanSchemaValidator::class, new BooleanSchemaValidator('https://example.com', true));
+        $validator = new BooleanSchemaValidator(new Uri('https://example.com'), new JsonPointer(), true);
+        $expected = BooleanSchemaValidator::class;
+
+        $this->assertInstanceOf($expected, $validator);
     }
 }

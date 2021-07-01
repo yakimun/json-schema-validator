@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
-use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class AnchorKeyword implements Keyword
@@ -26,28 +21,23 @@ final class AnchorKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
         $property = $properties[self::NAME];
-        $keywordPath = $path->addTokens(self::NAME);
 
-        if (!$property instanceof JsonString) {
-            throw new InvalidSchemaException(sprintf('Value must be string at "%s"', (string)$keywordPath));
+        if (!is_string($property)) {
+            throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $anchor = $property->getValue();
-
-        if (!preg_match('/^[A-Za-z_][A-Za-z0-9-_.]*$/', $anchor)) {
-            $format = 'Value must start with letter or underscore, followed by any number of letters, digits, hyphens, '
-                . 'underscores, and periods at "%s"';
-            throw new InvalidSchemaException(sprintf($format, (string)$keywordPath));
+        if (!preg_match('/^[A-Za-z_][A-Za-z0-9-_.]*$/', $property)) {
+            $message = 'The value must start with a letter or underscore, followed by any number of letters, digits, ' .
+                'hyphens, underscores, and periods.';
+            throw $context->createException($message, self::NAME);
         }
 
-        $anchor = new SchemaReference($context->getIdentifier()->getUri()->withFragment($anchor), $keywordPath);
-        $context->addAnchor($anchor);
+        $context->addAnchor($context->getIdentifier()->getUri()->withFragment($property), self::NAME);
     }
 }

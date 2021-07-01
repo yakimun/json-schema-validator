@@ -35,7 +35,7 @@ final class ValidationVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new ValidationVocabulary();
-        $keywords = [
+        $expected = [
             new TypeKeyword(),
             new EnumKeyword(),
             new ConstKeyword(),
@@ -58,6 +58,6 @@ final class ValidationVocabularyTest extends TestCase
             new DependentRequiredKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

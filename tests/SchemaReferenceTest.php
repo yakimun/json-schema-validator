@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaReference;
 
@@ -16,22 +17,38 @@ use Yakimun\JsonSchemaValidator\SchemaReference;
 final class SchemaReferenceTest extends TestCase
 {
     /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
      * @var SchemaReference
      */
-    private $reference;
+    private SchemaReference $reference;
 
     protected function setUp(): void
     {
-        $this->reference = new SchemaReference(new Uri('https://example.com'), new JsonPointer('a'));
+        $this->uri = new Uri('https://example/com');
+        $this->pointer = new JsonPointer('a');
+        $this->reference = new SchemaReference($this->uri, $this->pointer);
     }
 
     public function testGetUri(): void
     {
-        $this->assertEquals(new Uri('https://example.com'), $this->reference->getUri());
+        $expected = $this->uri;
+
+        $this->assertEquals($expected, $this->reference->getUri());
     }
 
     public function testGetPath(): void
     {
-        $this->assertEquals(new JsonPointer('a'), $this->reference->getPath());
+        $expected = $this->pointer;
+
+        $this->assertEquals($expected, $this->reference->getPath());
     }
 }

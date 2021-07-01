@@ -6,23 +6,22 @@ namespace Yakimun\JsonSchemaValidator\Tests\Vocabulary\CoreVocabulary\Keyword;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\Exception\InvalidSchemaException;
-use Yakimun\JsonSchemaValidator\Json\JsonNull;
-use Yakimun\JsonSchemaValidator\Json\JsonString;
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
+use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonNull
- * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
+ * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
+ * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
  */
 final class AnchorKeywordTest extends TestCase
@@ -30,32 +29,50 @@ final class AnchorKeywordTest extends TestCase
     /**
      * @var AnchorKeyword
      */
-    private $keyword;
+    private AnchorKeyword $keyword;
+
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaContext
+     */
+    private SchemaContext $context;
 
     protected function setUp(): void
     {
         $this->keyword = new AnchorKeyword();
+        $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+
+        $processor = new SchemaProcessor(['$anchor' => $this->keyword]);
+        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+
+        $this->context = new SchemaContext($processor, $identifier, $this->pointer);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('$anchor', $this->keyword->getName());
+        $this->assertSame('$anchor', $this->keyword->getName());
     }
 
     /**
      * @param string $value
-     *
      * @dataProvider valueProvider
      */
     public function testProcess(string $value): void
     {
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $keywordPointer = new JsonPointer('$anchor');
-        $context = new SchemaContext(['$anchor' => $this->keyword], new SchemaIdentifier($uri, $pointer));
-        $this->keyword->process(['$anchor' => new JsonString($value)], $pointer, $context);
+        $expected = [new SchemaReference($this->uri->withFragment($value), $this->pointer->addTokens('$anchor'))];
+        $this->keyword->process(['$anchor' => $value], $this->context);
 
-        $this->assertEquals([new SchemaReference($uri->withFragment($value), $keywordPointer)], $context->getAnchors());
+        $this->assertEquals($expected, $this->context->getAnchors());
     }
 
     /**
@@ -78,33 +95,29 @@ final class AnchorKeywordTest extends TestCase
     }
 
     /**
-     * @param JsonNull|JsonString $value
-     *
-     * @dataProvider valueProviderWithInvalidValue
+     * @param string|null $value
+     * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(JsonValue $value): void
+    public function testProcessWithInvalidValue(?string $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer);
-        $context = new SchemaContext(['$anchor' => $this->keyword], $identifier);
+        $this->expectException(SchemaException::class);
 
-        $this->expectException(InvalidSchemaException::class);
-
-        $this->keyword->process(['$anchor' => $value], $pointer, $context);
+        $this->keyword->process(['$anchor' => $value], $this->context);
     }
 
     /**
-     * @return non-empty-list<array{JsonNull|JsonString}>
+     * @return non-empty-list<array{string|null}>
      */
-    public function valueProviderWithInvalidValue(): array
+    public function invalidValueProvider(): array
     {
         return [
-            [new JsonNull()],
-            [new JsonString('-')],
-            [new JsonString('')],
-            [new JsonString('.')],
-            [new JsonString('*')],
-            [new JsonString('A*')],
+            [''],
+            ['0'],
+            ['-'],
+            ['.'],
+            ['*'],
+            ['A*'],
+            [null],
         ];
     }
 }

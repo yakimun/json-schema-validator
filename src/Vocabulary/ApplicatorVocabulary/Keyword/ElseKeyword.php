@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
+use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator\ElseKeywordValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ElseKeyword implements Keyword
@@ -25,19 +24,15 @@ final class ElseKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
-        if ($properties[self::IF_NAME] ?? null) {
-            return;
+        $validator = $context->createValidator($properties[self::NAME], self::NAME);
+
+        if (array_key_exists(self::IF_NAME, $properties)) {
+            $context->addKeywordValidator(new ElseKeywordValidator($validator));
         }
-
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
-        $keywordPath = $path->addTokens(self::NAME);
-
-        $context->createValidator($properties[self::NAME], $keywordIdentifier, $keywordPath);
     }
 }

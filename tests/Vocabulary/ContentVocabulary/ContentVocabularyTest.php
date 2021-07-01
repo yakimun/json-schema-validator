@@ -18,12 +18,12 @@ final class ContentVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new ContentVocabulary();
-        $keywords = [
+        $expected = [
             new ContentEncodingKeyword(),
             new ContentMediaTypeKeyword(),
             new ContentSchemaKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

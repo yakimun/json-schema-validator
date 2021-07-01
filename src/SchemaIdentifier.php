@@ -6,33 +6,40 @@ namespace Yakimun\JsonSchemaValidator;
 
 use Psr\Http\Message\UriInterface;
 
+/**
+ * @psalm-immutable
+ */
 final class SchemaIdentifier
 {
     /**
      * @var UriInterface
-     * @readonly
      */
-    private $uri;
+    private UriInterface $uri;
 
     /**
      * @var JsonPointer
-     * @readonly
      */
-    private $fragment;
+    private JsonPointer $fragment;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $path;
 
     /**
      * @param UriInterface $uri
      * @param JsonPointer $fragment
+     * @param JsonPointer $path
      */
-    public function __construct(UriInterface $uri, JsonPointer $fragment)
+    public function __construct(UriInterface $uri, JsonPointer $fragment, JsonPointer $path)
     {
         $this->uri = $uri;
         $this->fragment = $fragment;
+        $this->path = $path;
     }
 
     /**
      * @return UriInterface
-     * @psalm-mutation-free
      */
     public function getUri(): UriInterface
     {
@@ -41,7 +48,6 @@ final class SchemaIdentifier
 
     /**
      * @return JsonPointer
-     * @psalm-mutation-free
      */
     public function getFragment(): JsonPointer
     {
@@ -49,21 +55,10 @@ final class SchemaIdentifier
     }
 
     /**
-     * @param string ...$tokens
-     * @return self
-     * @no-named-arguments
-     * @psalm-mutation-free
+     * @return JsonPointer
      */
-    public function addTokens(string ...$tokens): self
+    public function getPath(): JsonPointer
     {
-        return new self($this->uri, $this->fragment->addTokens(...$tokens));
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return (string)$this->uri->withFragment((string)$this->fragment);
+        return $this->path;
     }
 }

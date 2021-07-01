@@ -18,7 +18,7 @@ final class ContentVocabulary implements Vocabulary
     /**
      * @var non-empty-list<Keyword>
      */
-    private $keywords;
+    private array $keywords;
 
     public function __construct()
     {

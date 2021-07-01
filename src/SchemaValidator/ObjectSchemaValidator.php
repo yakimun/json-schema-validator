@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\SchemaValidator;
 
-use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
+use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
  * @psalm-immutable
@@ -12,22 +14,29 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordHandler;
 final class ObjectSchemaValidator implements SchemaValidator
 {
     /**
-     * @var string
+     * @var UriInterface
      */
-    private $absoluteLocation;
+    private UriInterface $uri;
 
     /**
-     * @var list<KeywordHandler>
+     * @var JsonPointer
      */
-    private $keywordHandlers;
+    private JsonPointer $fragment;
 
     /**
-     * @param string $absoluteLocation
-     * @param list<KeywordHandler> $keywordHandlers
+     * @var list<KeywordValidator>
      */
-    public function __construct(string $absoluteLocation, array $keywordHandlers)
+    private array $keywordValidators;
+
+    /**
+     * @param UriInterface $uri
+     * @param JsonPointer $fragment
+     * @param list<KeywordValidator> $keywordValidators
+     */
+    public function __construct(UriInterface $uri, JsonPointer $fragment, array $keywordValidators)
     {
-        $this->absoluteLocation = $absoluteLocation;
-        $this->keywordHandlers = $keywordHandlers;
+        $this->uri = $uri;
+        $this->fragment = $fragment;
+        $this->keywordValidators = $keywordValidators;
     }
 }

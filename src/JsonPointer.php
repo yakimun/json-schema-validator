@@ -12,7 +12,7 @@ final class JsonPointer
     /**
      * @var list<string>
      */
-    private $tokens;
+    private array $tokens;
 
     /**
      * @param string ...$tokens
@@ -30,29 +30,14 @@ final class JsonPointer
      */
     public function addTokens(string ...$tokens): self
     {
-        return new self(...array_merge($this->tokens, $tokens));
+        return new self(...$this->tokens, ...$tokens);
     }
 
     /**
-     * @param self $pointer
      * @return bool
      */
-    public function equals(self $pointer): bool
+    public function isEmpty(): bool
     {
-        return $this->tokens === $pointer->tokens;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        $string = '';
-
-        foreach ($this->tokens as $token) {
-            $string .= '/' . str_replace(['~', '/'], ['~0', '~1'], $token);
-        }
-
-        return $string;
+        return empty($this->tokens);
     }
 }

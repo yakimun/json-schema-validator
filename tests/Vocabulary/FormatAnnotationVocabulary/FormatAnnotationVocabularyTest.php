@@ -16,10 +16,10 @@ final class FormatAnnotationVocabularyTest extends TestCase
     public function testGetKeywords(): void
     {
         $vocabulary = new FormatAnnotationVocabulary();
-        $keywords = [
+        $expected = [
             new FormatKeyword(),
         ];
 
-        $this->assertEquals($keywords, $vocabulary->getKeywords());
+        $this->assertEquals($expected, $vocabulary->getKeywords());
     }
 }

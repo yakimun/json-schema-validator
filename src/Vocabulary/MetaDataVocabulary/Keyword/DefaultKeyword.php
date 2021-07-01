@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\Keyword;
 
-use Yakimun\JsonSchemaValidator\Json\JsonValue;
-use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordHandler\DefaultKeywordHandler;
+use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\DefaultKeywordValidator;
 
 final class DefaultKeyword implements Keyword
 {
@@ -24,14 +22,14 @@ final class DefaultKeyword implements Keyword
     }
 
     /**
-     * @param non-empty-array<string, JsonValue> $properties
-     * @param JsonPointer $path
+     * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */
-    public function process(array $properties, JsonPointer $path, SchemaContext $context): void
+    public function process(array $properties, SchemaContext $context): void
     {
-        $keywordIdentifier = $context->getIdentifier()->addTokens(self::NAME);
+        /** @var scalar|object|list<mixed>|null $property */
+        $property = $properties[self::NAME];
 
-        $context->addKeywordHandler(new DefaultKeywordHandler((string)$keywordIdentifier, $properties[self::NAME]));
+        $context->addKeywordValidator(new DefaultKeywordValidator($property));
     }
 }
