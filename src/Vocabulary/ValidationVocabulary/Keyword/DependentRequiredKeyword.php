@@ -37,19 +37,20 @@ final class DependentRequiredKeyword implements Keyword
 
         foreach (get_object_vars($property) as $key => $objectProperty) {
             if (!is_array($objectProperty)) {
-                throw $context->createException('The property must be an array.', self::NAME, $key);
+                throw $context->createException('Object property values must be arrays.', self::NAME);
             }
 
             $dependentRequiredProperties[$key] = [];
 
             /** @var scalar|object|list<mixed>|null $item */
-            foreach (array_values($objectProperty) as $index => $item) {
+            foreach (array_values($objectProperty) as $item) {
                 if (!is_string($item)) {
-                    throw $context->createException('The element must be a string.', self::NAME, $key, (string)$index);
+                    $message = 'Object property values must contain only string elements.';
+                    throw $context->createException($message, self::NAME);
                 }
 
                 if (in_array($item, $dependentRequiredProperties[$key], true)) {
-                    throw $context->createException('Elements must be unique.', self::NAME, $key);
+                    throw $context->createException('Object property values must be unique.', self::NAME);
                 }
 
                 $dependentRequiredProperties[$key][] = $item;

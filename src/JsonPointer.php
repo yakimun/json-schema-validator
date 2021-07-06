@@ -40,4 +40,18 @@ final class JsonPointer
     {
         return empty($this->tokens);
     }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        $string = '';
+
+        foreach ($this->tokens as $token) {
+            $string .= '/' . str_replace(['~', '/'], ['~0', '~1'], $token);
+        }
+
+        return $string;
+    }
 }

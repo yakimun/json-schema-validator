@@ -134,7 +134,7 @@ final class SchemaContextTest extends TestCase
 
     public function testCreateException(): void
     {
-        $expected = new SchemaException('a', new JsonPointer('b'));
+        $expected = new SchemaException('a Path: "/b".');
 
         $this->assertEquals($expected, $this->context->createException('a', 'b'));
     }

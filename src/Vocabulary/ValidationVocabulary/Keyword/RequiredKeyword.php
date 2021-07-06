@@ -35,13 +35,13 @@ final class RequiredKeyword implements Keyword
 
         $requiredProperties = [];
 
-        foreach (array_values($property) as $index => $item) {
+        foreach (array_values($property) as $item) {
             if (!is_string($item)) {
-                throw $context->createException('The element must be a string.', self::NAME, (string)$index);
+                throw $context->createException('Array elements must be strings.', self::NAME);
             }
 
             if (in_array($item, $requiredProperties, true)) {
-                throw $context->createException('Elements must be unique.', self::NAME);
+                throw $context->createException('Array elements must be unique.', self::NAME);
             }
 
             $requiredProperties[] = $item;

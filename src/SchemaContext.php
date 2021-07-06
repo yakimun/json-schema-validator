@@ -169,13 +169,13 @@ final class SchemaContext
 
     /**
      * @param string $message
-     * @param string ...$tokens
+     * @param string $token
      * @return SchemaException
      * @no-named-arguments
      * @psalm-mutation-free
      */
-    public function createException(string $message, string ...$tokens): SchemaException
+    public function createException(string $message, string $token): SchemaException
     {
-        return new SchemaException($message, $this->path->addTokens(...$tokens));
+        return new SchemaException(sprintf('%s Path: "%s".', $message, (string)$this->path->addTokens($token)));
     }
 }

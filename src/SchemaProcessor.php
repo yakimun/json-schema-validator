@@ -78,6 +78,6 @@ final class SchemaProcessor
             return [new ProcessedSchema(new BooleanSchemaValidator($uri, $fragment, $schema), $identifier, [], [])];
         }
 
-        throw new SchemaException('The schema must be an object or a boolean.', $path);
+        throw new SchemaException(sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path));
     }
 }

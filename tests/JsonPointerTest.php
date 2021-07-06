@@ -67,4 +67,28 @@ final class JsonPointerTest extends TestCase
             [['a']],
         ];
     }
+
+    /**
+     * @param list<string> $tokens
+     * @param string $expected
+     * @dataProvider tokenWithStringProvider
+     */
+    public function testToString(array $tokens, string $expected): void
+    {
+        $this->assertSame($expected, (string)new JsonPointer(...$tokens));
+    }
+
+    /**
+     * @return non-empty-list<array{list<string>, string}>
+     */
+    public function tokenWithStringProvider(): array
+    {
+        return [
+            [[], ''],
+            [['a'], '/a'],
+            [['a', 'b'], '/a/b'],
+            [['~'], '/~0'],
+            [['/'], '/~1'],
+        ];
+    }
 }

@@ -44,20 +44,18 @@ final class VocabularyKeyword implements Keyword
             $uri = new Uri($key);
 
             if ($uri->getScheme() === '') {
-                throw $context->createException('The property names in the object must be URIs.', self::NAME, $key);
+                throw $context->createException('Property names in the object must be URIs.', self::NAME);
             }
 
             /**
              * @psalm-suppress ImpureMethodCall
              */
             if ($uri !== UriNormalizer::normalize($uri)) {
-                $message = 'The property names in the object must be normalized URIs.';
-                throw $context->createException($message, self::NAME, $key);
+                throw $context->createException('Property names in the object must be normalized URIs.', self::NAME);
             }
 
             if (!is_bool($value)) {
-                $message = 'The values of the object properties must be booleans.';
-                throw $context->createException($message, self::NAME, $key);
+                throw $context->createException('Object property values must be boolean.', self::NAME);
             }
         }
     }
