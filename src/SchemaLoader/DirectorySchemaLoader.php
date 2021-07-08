@@ -57,7 +57,8 @@ final class DirectorySchemaLoader implements SchemaLoader
             /** @var scalar|object|list<mixed>|null $schema */
             $schema = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            throw new SchemaLoaderException('The value must be a valid JSON document.', 0, $e);
+            $message = sprintf('The value must be a valid JSON document. Error: "%s".', $e->getMessage());
+            throw new SchemaLoaderException($message, 0, $e);
         }
 
         return new SchemaLoaderResult($schema);

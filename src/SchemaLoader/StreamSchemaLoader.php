@@ -47,14 +47,16 @@ final class StreamSchemaLoader implements SchemaLoader
         try {
             $json = $this->stream->getContents();
         } catch (\RuntimeException $e) {
-            throw new SchemaLoaderException('The stream must be readable.', 0, $e);
+            $message = sprintf('The stream must be readable. Error: "%s".', $e->getMessage());
+            throw new SchemaLoaderException($message, 0, $e);
         }
 
         try {
             /** @var scalar|object|list<mixed>|null $schema */
             $schema = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
-            throw new SchemaLoaderException('The value must be a valid JSON document.', 0, $e);
+            $message = sprintf('The value must be a valid JSON document. Error: "%s".', $e->getMessage());
+            throw new SchemaLoaderException($message, 0, $e);
         }
 
         return new SchemaLoaderResult($schema);

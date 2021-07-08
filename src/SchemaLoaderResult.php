@@ -10,7 +10,7 @@ namespace Yakimun\JsonSchemaValidator;
 final class SchemaLoaderResult
 {
     /**
-     * @var mixed
+     * @var scalar|object|list<mixed>|null
      */
     private $schema;
 
@@ -23,7 +23,7 @@ final class SchemaLoaderResult
     }
 
     /**
-     * @return mixed
+     * @return scalar|object|list<mixed>|null
      */
     public function getSchema()
     {
