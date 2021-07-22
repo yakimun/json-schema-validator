@@ -68,10 +68,7 @@ final class SchemaProcessor
 
             $processedSchema = new ProcessedSchema($validator, $processedIdentifier, $anchors, $references);
 
-            $processedSchemas = [$processedSchema, ...$context->getProcessedSchemas()];
-
-            /** @var non-empty-list<ProcessedSchema> $processedSchemas */
-            return $processedSchemas;
+            return [$processedSchema, ...$context->getProcessedSchemas()];
         }
 
         if (is_bool($schema)) {
