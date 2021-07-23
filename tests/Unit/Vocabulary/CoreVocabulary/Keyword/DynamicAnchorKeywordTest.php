@@ -57,7 +57,7 @@ final class DynamicAnchorKeywordTest extends TestCase
         $processor = new SchemaProcessor(['$dynamicAnchor' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $this->pointer);
+        $this->context = new SchemaContext($processor, $this->pointer, [$identifier]);
     }
 
     public function testGetName(): void

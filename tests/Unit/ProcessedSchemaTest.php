@@ -58,7 +58,7 @@ final class ProcessedSchemaTest extends TestCase
         $anchors = [$this->anchor];
         $references = [$this->reference];
 
-        $this->processedSchema = new ProcessedSchema($this->validator, $this->identifier, $anchors, $references);
+        $this->processedSchema = new ProcessedSchema($this->validator, [$this->identifier], $anchors, $references);
     }
 
     public function testGetValidator(): void
@@ -68,11 +68,11 @@ final class ProcessedSchemaTest extends TestCase
         $this->assertSame($expected, $this->processedSchema->getValidator());
     }
 
-    public function testGetIdentifier(): void
+    public function testGetIdentifiers(): void
     {
-        $expected = $this->identifier;
+        $expected = [$this->identifier];
 
-        $this->assertSame($expected, $this->processedSchema->getIdentifier());
+        $this->assertSame($expected, $this->processedSchema->getIdentifiers());
     }
 
     public function testGetAnchors(): void

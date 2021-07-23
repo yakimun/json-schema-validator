@@ -40,6 +40,8 @@ final class IdKeyword implements Keyword
             throw $context->createException('The value must resolve to an absolute URI.', self::NAME);
         }
 
-        $context->setIdentifier(UriResolver::resolve($context->getIdentifier()->getUri(), $id), self::NAME);
+        $identifiers = $context->getIdentifiers();
+
+        $context->addIdentifier(UriResolver::resolve(end($identifiers)->getUri(), $id), self::NAME);
     }
 }

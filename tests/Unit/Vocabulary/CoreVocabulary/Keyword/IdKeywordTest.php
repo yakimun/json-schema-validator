@@ -41,6 +41,11 @@ final class IdKeywordTest extends TestCase
     private JsonPointer $pointer;
 
     /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var SchemaContext
      */
     private SchemaContext $context;
@@ -52,9 +57,9 @@ final class IdKeywordTest extends TestCase
         $this->pointer = new JsonPointer();
 
         $processor = new SchemaProcessor(['$id' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $this->pointer);
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $this->context = new SchemaContext($processor, $this->pointer, [$this->identifier]);
     }
 
     public function testGetName(): void
@@ -69,12 +74,13 @@ final class IdKeywordTest extends TestCase
     public function testProcess(string $value): void
     {
         $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $_ = (string)$uri;
         $fragment = new JsonPointer();
         $path = $this->pointer->addTokens('$id');
-        $expected = new SchemaIdentifier($uri, $fragment, $path);
+        $expected = [$this->identifier, new SchemaIdentifier($uri, $fragment, $path)];
         $this->keyword->process(['$id' => $value], $this->context);
 
-        $this->assertEquals($expected, $this->context->getIdentifier());
+        $this->assertEquals($expected, $this->context->getIdentifiers());
     }
 
     /**
@@ -83,12 +89,37 @@ final class IdKeywordTest extends TestCase
     public function valueProvider(): array
     {
         return [
-            [''],
             ['https://example.org'],
             ['/a'],
             ['a'],
-            ['#'],
             ['/a/../b'],
+        ];
+    }
+
+    /**
+     * @param string $value
+     * @dataProvider currentUriValueProvider
+     */
+    public function testProcessWithCurrentUri(string $value): void
+    {
+        $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $_ = (string)$uri;
+        $fragment = new JsonPointer();
+        $path = $this->pointer->addTokens('$id');
+        $expected = [new SchemaIdentifier($uri, $fragment, $path)];
+        $this->keyword->process(['$id' => $value], $this->context);
+
+        $this->assertEquals($expected, $this->context->getIdentifiers());
+    }
+
+    /**
+     * @return non-empty-list<array{string}>
+     */
+    public function currentUriValueProvider(): array
+    {
+        return [
+            [''],
+            ['#'],
         ];
     }
 

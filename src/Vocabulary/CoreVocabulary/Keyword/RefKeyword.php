@@ -35,7 +35,9 @@ final class RefKeyword implements Keyword
             throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $ref = UriResolver::resolve($context->getIdentifier()->getUri(), new Uri($property));
+        $identifiers = $context->getIdentifiers();
+
+        $ref = UriResolver::resolve(end($identifiers)->getUri(), new Uri($property));
 
         $context->addReference($ref, self::NAME);
         $context->addKeywordValidator(new RefKeywordValidator($ref));

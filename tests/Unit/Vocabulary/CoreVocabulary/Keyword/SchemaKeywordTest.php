@@ -59,7 +59,7 @@ final class SchemaKeywordTest extends TestCase
     {
         $pointer = new JsonPointer();
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $identifier, $pointer);
+        $context = new SchemaContext($this->processor, $pointer, [$identifier]);
         $expected = clone $context;
 
         /**
@@ -90,7 +90,7 @@ final class SchemaKeywordTest extends TestCase
     {
         $pointer = new JsonPointer(...$tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $identifier, $pointer);
+        $context = new SchemaContext($this->processor, $pointer, [$identifier]);
 
         $this->expectException(SchemaException::class);
 

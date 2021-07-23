@@ -54,7 +54,7 @@ final class UnevaluatedItemsKeywordTest extends TestCase
         $processor = new SchemaProcessor(['unevaluatedItems' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
     public function testGetName(): void
@@ -68,7 +68,7 @@ final class UnevaluatedItemsKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new UnevaluatedItemsKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
         $this->keyword->process(['unevaluatedItems' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());

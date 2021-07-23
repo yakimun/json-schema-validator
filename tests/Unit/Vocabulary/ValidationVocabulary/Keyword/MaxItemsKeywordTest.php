@@ -44,7 +44,7 @@ final class MaxItemsKeywordTest extends TestCase
         $processor = new SchemaProcessor(['maxItems' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
     public function testGetName(): void

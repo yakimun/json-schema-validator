@@ -65,7 +65,7 @@ final class SchemaProcessorTest extends TestCase
         $this->processor = new SchemaProcessor(['a' => $this->keyword]);
     }
 
-    public function testProcessAsSchemaWithEmptyValue(): void
+    public function testProcessWithEmptyObjectSchema(): void
     {
         $this->keyword
             ->expects($this->never())
@@ -73,12 +73,12 @@ final class SchemaProcessorTest extends TestCase
 
         $schema = (object)[];
         $validator = new ObjectSchemaValidator($this->uri, $this->pointer, []);
-        $expected = [new ProcessedSchema($validator, $this->identifier, [], [])];
+        $expected = [new ProcessedSchema($validator, [$this->identifier], [], [])];
 
-        $this->assertEquals($expected, $this->processor->process($schema, $this->uri, $this->pointer, $this->pointer));
+        $this->assertEquals($expected, $this->processor->process($schema, [$this->identifier], $this->pointer));
     }
 
-    public function testProcessAsSchemaWithKnownKeyword(): void
+    public function testProcessWithKnownKeyword(): void
     {
         $properties = ['a' => null];
 
@@ -89,12 +89,12 @@ final class SchemaProcessorTest extends TestCase
 
         $schema = (object)$properties;
         $validator = new ObjectSchemaValidator($this->uri, $this->pointer, []);
-        $expected = [new ProcessedSchema($validator, $this->identifier, [], [])];
+        $expected = [new ProcessedSchema($validator, [$this->identifier], [], [])];
 
-        $this->assertEquals($expected, $this->processor->process($schema, $this->uri, $this->pointer, $this->pointer));
+        $this->assertEquals($expected, $this->processor->process($schema, [$this->identifier], $this->pointer));
     }
 
-    public function testProcessAsSchemaWithUnknownKeyword(): void
+    public function testProcessWithUnknownKeyword(): void
     {
         $this->keyword
             ->expects($this->never())
@@ -103,23 +103,23 @@ final class SchemaProcessorTest extends TestCase
         $schema = (object)['b' => null];
         $keywordValidator = new UnknownKeywordValidator('b', null);
         $validator = new ObjectSchemaValidator($this->uri, $this->pointer, [$keywordValidator]);
-        $expected = [new ProcessedSchema($validator, $this->identifier, [], [])];
+        $expected = [new ProcessedSchema($validator, [$this->identifier], [], [])];
 
-        $this->assertEquals($expected, $this->processor->process($schema, $this->uri, $this->pointer, $this->pointer));
+        $this->assertEquals($expected, $this->processor->process($schema, [$this->identifier], $this->pointer));
     }
 
-    public function testProcessAsSchema(): void
+    public function testProcessWithBooleanSchema(): void
     {
         $validator = new BooleanSchemaValidator($this->uri, $this->pointer, true);
-        $expected = [new ProcessedSchema($validator, $this->identifier, [], [])];
+        $expected = [new ProcessedSchema($validator, [$this->identifier], [], [])];
 
-        $this->assertEquals($expected, $this->processor->process(true, $this->uri, $this->pointer, $this->pointer));
+        $this->assertEquals($expected, $this->processor->process(true, [$this->identifier], $this->pointer));
     }
 
-    public function testProcessAsSchema2(): void
+    public function testProcessWithInvalidSchema(): void
     {
         $this->expectException(SchemaException::class);
 
-        $this->processor->process(null, $this->uri, $this->pointer, $this->pointer);
+        $this->processor->process(null, [$this->identifier], $this->pointer);
     }
 }

@@ -54,7 +54,7 @@ final class ThenKeywordTest extends TestCase
         $processor = new SchemaProcessor(['then' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
     public function testGetName(): void
@@ -68,7 +68,7 @@ final class ThenKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ThenKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
         $this->keyword->process(['if' => (object)[], 'then' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
@@ -80,7 +80,7 @@ final class ThenKeywordTest extends TestCase
         $pointer = new JsonPointer('then');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
         $this->keyword->process(['then' => (object)[]], $this->context);
 
         $this->assertEmpty($this->context->getKeywordValidators());

@@ -17,9 +17,9 @@ final class ProcessedSchema
     private SchemaValidator $validator;
 
     /**
-     * @var SchemaIdentifier
+     * @var non-empty-list<SchemaIdentifier>
      */
-    private SchemaIdentifier $identifier;
+    private array $identifiers;
 
     /**
      * @var list<SchemaReference>
@@ -33,18 +33,14 @@ final class ProcessedSchema
 
     /**
      * @param SchemaValidator $validator
-     * @param SchemaIdentifier $identifier
+     * @param non-empty-list<SchemaIdentifier> $identifiers
      * @param list<SchemaReference> $anchors
      * @param list<SchemaReference> $references
      */
-    public function __construct(
-        SchemaValidator $validator,
-        SchemaIdentifier $identifier,
-        array $anchors,
-        array $references
-    ) {
+    public function __construct(SchemaValidator $validator, array $identifiers, array $anchors, array $references)
+    {
         $this->validator = $validator;
-        $this->identifier = $identifier;
+        $this->identifiers = $identifiers;
         $this->anchors = $anchors;
         $this->references = $references;
     }
@@ -58,11 +54,11 @@ final class ProcessedSchema
     }
 
     /**
-     * @return SchemaIdentifier
+     * @return non-empty-list<SchemaIdentifier>
      */
-    public function getIdentifier(): SchemaIdentifier
+    public function getIdentifiers(): array
     {
-        return $this->identifier;
+        return $this->identifiers;
     }
 
     /**

@@ -54,9 +54,6 @@ final class StringSchemaLoaderTest extends TestCase
 
         $this->expectException(SchemaLoaderException::class);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
-        $loader->load($this->uri);
+        $_ = $loader->load($this->uri);
     }
 }

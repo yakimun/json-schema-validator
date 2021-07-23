@@ -42,7 +42,7 @@ final class CommentKeywordTest extends TestCase
         $processor = new SchemaProcessor(['$comment' => $this->keyword]);
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
     public function testGetName(): void

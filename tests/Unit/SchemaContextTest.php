@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
@@ -30,6 +31,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class SchemaContextTest extends TestCase
 {
     /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
+
+    /**
      * @var SchemaIdentifier
      */
     private SchemaIdentifier $identifier;
@@ -44,24 +50,9 @@ final class SchemaContextTest extends TestCase
         $processor = new SchemaProcessor(['a' => $this->createStub(Keyword::class)]);
         $pointer = new JsonPointer();
 
-        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
-        $this->context = new SchemaContext($processor, $this->identifier, $pointer);
-    }
-
-    public function testGetIdentifier(): void
-    {
-        $this->assertSame($this->identifier, $this->context->getIdentifier());
-    }
-
-    public function testSetIdentifier(): void
-    {
-        $uri = new Uri('https://example.org');
-        $fragment = new JsonPointer();
-        $path = new JsonPointer('$id');
-        $expected = new SchemaIdentifier($uri, $fragment, $path);
-        $this->context->setIdentifier($uri, '$id');
-
-        $this->assertEquals($expected, $this->context->getIdentifier());
+        $this->uri = new Uri('https://example.com');
+        $this->identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, [$this->identifier]);
     }
 
     public function testGetPath(): void
@@ -69,6 +60,35 @@ final class SchemaContextTest extends TestCase
         $expected = new JsonPointer();
 
         $this->assertEquals($expected, $this->context->getPath());
+    }
+
+    public function testGetIdentifiers(): void
+    {
+        $expected = [$this->identifier];
+
+        $this->assertSame($expected, $this->context->getIdentifiers());
+    }
+
+    public function testAddIdentifier(): void
+    {
+        $uri = new Uri('https://example.org');
+        $fragment = new JsonPointer();
+        $path = new JsonPointer('$id');
+        $expected = [$this->identifier, new SchemaIdentifier($uri, $fragment, $path)];
+        $this->context->addIdentifier($uri, '$id');
+
+        $this->assertEquals($expected, $this->context->getIdentifiers());
+    }
+
+    public function testAddIdentifierWithCurrentUri(): void
+    {
+        $uri = new Uri('https://example.com');
+        $fragment = new JsonPointer();
+        $path = new JsonPointer('$id');
+        $expected = [new SchemaIdentifier($uri, $fragment, $path)];
+        $this->context->addIdentifier($uri, '$id');
+
+        $this->assertEquals($expected, $this->context->getIdentifiers());
     }
 
     public function testGetAnchors(): void
@@ -126,7 +146,7 @@ final class SchemaContextTest extends TestCase
         $pointer = new JsonPointer('a');
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
         $expectedValidator = new ObjectSchemaValidator($uri, $pointer, []);
-        $expectedProcessedSchemas = [new ProcessedSchema($expectedValidator, $identifier, [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($expectedValidator, [$identifier], [], [])];
 
         $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], 'a'));
         $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());

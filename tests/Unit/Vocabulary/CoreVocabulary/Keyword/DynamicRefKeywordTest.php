@@ -58,7 +58,7 @@ final class DynamicRefKeywordTest extends TestCase
         $processor = new SchemaProcessor(['$dynamicRef' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
 
-        $this->context = new SchemaContext($processor, $identifier, $this->pointer);
+        $this->context = new SchemaContext($processor, $this->pointer, [$identifier]);
     }
 
     public function testGetName(): void

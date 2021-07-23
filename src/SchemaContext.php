@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator;
 
+use GuzzleHttp\Psr7\UriNormalizer;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
@@ -18,15 +19,15 @@ final class SchemaContext
     private SchemaProcessor $processor;
 
     /**
-     * @var SchemaIdentifier
-     */
-    private SchemaIdentifier $identifier;
-
-    /**
      * @var JsonPointer
      * @readonly
      */
     private JsonPointer $path;
+
+    /**
+     * @var non-empty-list<SchemaIdentifier>
+     */
+    private array $identifiers;
 
     /**
      * @var list<SchemaReference>
@@ -50,32 +51,14 @@ final class SchemaContext
 
     /**
      * @param SchemaProcessor $processor
-     * @param SchemaIdentifier $identifier
      * @param JsonPointer $path
+     * @param non-empty-list<SchemaIdentifier> $identifiers
      */
-    public function __construct(SchemaProcessor $processor, SchemaIdentifier $identifier, JsonPointer $path)
+    public function __construct(SchemaProcessor $processor, JsonPointer $path, array $identifiers)
     {
         $this->processor = $processor;
-        $this->identifier = $identifier;
         $this->path = $path;
-    }
-
-    /**
-     * @return SchemaIdentifier
-     * @psalm-mutation-free
-     */
-    public function getIdentifier(): SchemaIdentifier
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * @param UriInterface $identifier
-     * @param string $token
-     */
-    public function setIdentifier(UriInterface $identifier, string $token): void
-    {
-        $this->identifier = new SchemaIdentifier($identifier, new JsonPointer(), $this->path->addTokens($token));
+        $this->identifiers = $identifiers;
     }
 
     /**
@@ -85,6 +68,32 @@ final class SchemaContext
     public function getPath(): JsonPointer
     {
         return $this->path;
+    }
+
+    /**
+     * @return non-empty-list<SchemaIdentifier>
+     * @psalm-mutation-free
+     */
+    public function getIdentifiers(): array
+    {
+        return $this->identifiers;
+    }
+
+    /**
+     * @param UriInterface $identifier
+     * @param string $token
+     */
+    public function addIdentifier(UriInterface $identifier, string $token): void
+    {
+        $schemaIdentifier = new SchemaIdentifier($identifier, new JsonPointer(), $this->path->addTokens($token));
+
+        if (UriNormalizer::isEquivalent(end($this->identifiers)->getUri(), $identifier)) {
+            $this->identifiers = [$schemaIdentifier];
+
+            return;
+        }
+
+        $this->identifiers[] = $schemaIdentifier;
     }
 
     /**
@@ -157,11 +166,19 @@ final class SchemaContext
      */
     public function createValidator($schema, string ...$tokens): SchemaValidator
     {
-        $uri = $this->identifier->getUri();
-        $fragment = $this->identifier->getFragment()->addTokens(...$tokens);
+        $identifiers = [];
+
+        foreach ($this->identifiers as $identifier) {
+            $identifierUri = $identifier->getUri();
+            $identifierFragment = $identifier->getFragment()->addTokens(...$tokens);
+            $identifierPath = $identifier->getPath()->addTokens(...$tokens);
+
+            $identifiers[] = new SchemaIdentifier($identifierUri, $identifierFragment, $identifierPath);
+        }
+
         $path = $this->path->addTokens(...$tokens);
 
-        $processedSchemas = $this->processor->process($schema, $uri, $fragment, $path);
+        $processedSchemas = $this->processor->process($schema, $identifiers, $path);
         $this->processedSchemas = [...$this->processedSchemas, ...$processedSchemas];
 
         return $processedSchemas[0]->getValidator();
