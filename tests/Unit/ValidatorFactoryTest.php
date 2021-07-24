@@ -125,7 +125,7 @@ final class ValidatorFactoryTest extends TestCase
 
     public function testCreateValidatorWithEmptyObjectSchema(): void
     {
-        $expected = new Validator(['https://example.com' => new ObjectSchemaValidator($this->uri, $this->pointer, [])]);
+        $expected = new Validator(new ObjectSchemaValidator($this->uri, $this->pointer, []), []);
 
         $this->assertEquals($expected, $this->factory->createValidator((object)[], $this->uri));
     }
@@ -133,23 +133,20 @@ final class ValidatorFactoryTest extends TestCase
     public function testCreateValidatorWithNonEmptyObjectSchema(): void
     {
         $schema = (object)['type' => 'null'];
-        $validator = $this->factory->createValidator($schema, $this->uri);
         $keywordValidator = new StringTypeKeywordValidator('null');
-        $schemaValidator = new ObjectSchemaValidator($this->uri, $this->pointer, [$keywordValidator]);
-        $expected = new Validator([(string)$this->uri => $schemaValidator]);
+        $expected = new Validator(new ObjectSchemaValidator($this->uri, $this->pointer, [$keywordValidator]), []);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithIdentifier(): void
     {
         $schema = (object)['$id' => 'a'];
-        $validator = $this->factory->createValidator($schema, $this->uri);
         $uri = new Uri('https://example.com/a');
-        $schemaValidator = new ObjectSchemaValidator($uri, $this->pointer, []);
-        $expected = new Validator([(string)$this->uri => $schemaValidator, (string)$uri => $schemaValidator]);
+        $_ = (string)$uri;
+        $expected = new Validator(new ObjectSchemaValidator($uri, $this->pointer, []), []);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithNonUniqueIdentifiers(): void
@@ -164,13 +161,9 @@ final class ValidatorFactoryTest extends TestCase
     public function testCreateValidatorWithAnchor(): void
     {
         $schema = (object)['$anchor' => 'a'];
-        $validator = $this->factory->createValidator($schema, $this->uri);
-        $uri = new Uri('https://example.com#a');
-        $schemaValidator1 = new ObjectSchemaValidator($this->uri, $this->pointer, []);
-        $schemaValidator2 = new ObjectSchemaValidator($this->uri, $this->pointer, []);
-        $expected = new Validator([(string)$this->uri => $schemaValidator1, (string)$uri => $schemaValidator2]);
+        $expected = new Validator(new ObjectSchemaValidator($this->uri, $this->pointer, []), []);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithNonUniqueAnchors(): void
@@ -185,21 +178,19 @@ final class ValidatorFactoryTest extends TestCase
     public function testCreateValidatorWithReference(): void
     {
         $schema = (object)['$ref' => '#/$defs/a', '$defs' => (object)['a' => (object)[]]];
-        $validator = $this->factory->createValidator($schema, $this->uri);
         $uri = new Uri('https://example.com#/$defs/a');
         $pointer = new JsonPointer('$defs', 'a');
         $keywordValidator = new RefKeywordValidator($uri);
         $schemaValidator1 = new ObjectSchemaValidator($this->uri, $this->pointer, [$keywordValidator]);
         $schemaValidator2 = new ObjectSchemaValidator($this->uri, $pointer, []);
-        $expected = new Validator([(string)$this->uri => $schemaValidator1, (string)$uri => $schemaValidator2]);
+        $expected = new Validator($schemaValidator1, [(string)$uri => $schemaValidator2]);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithEqualReferences(): void
     {
         $schema = (object)['$ref' => '#/$defs/a', '$dynamicRef' => '#/$defs/a', '$defs' => (object)['a' => (object)[]]];
-        $validator = $this->factory->createValidator($schema, $this->uri);
         $uri = new Uri('https://example.com#/$defs/a');
         $pointer = new JsonPointer('$defs', 'a');
         $refKeywordValidator = new RefKeywordValidator($uri);
@@ -207,9 +198,9 @@ final class ValidatorFactoryTest extends TestCase
         $keywordValidators = [$refKeywordValidator, $dynamicRefKeywordValidator];
         $schemaValidator1 = new ObjectSchemaValidator($this->uri, $this->pointer, $keywordValidators);
         $schemaValidator2 = new ObjectSchemaValidator($this->uri, $pointer, []);
-        $expected = new Validator([(string)$this->uri => $schemaValidator1, (string)$uri => $schemaValidator2]);
+        $expected = new Validator($schemaValidator1, [(string)$uri => $schemaValidator2]);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithExternalReference(): void
@@ -224,13 +215,12 @@ final class ValidatorFactoryTest extends TestCase
 
         $factory = new ValidatorFactory([$loader]);
         $schema = (object)['$ref' => 'a'];
-        $validator = $factory->createValidator($schema, $this->uri);
         $keywordValidator = new RefKeywordValidator($uri);
         $schemaValidator1 = new ObjectSchemaValidator($this->uri, $this->pointer, [$keywordValidator]);
         $schemaValidator2 = new ObjectSchemaValidator($uri, $this->pointer, []);
-        $expected = new Validator([(string)$this->uri => $schemaValidator1, (string)$uri => $schemaValidator2]);
+        $expected = new Validator($schemaValidator1, [(string)$uri => $schemaValidator2]);
 
-        $this->assertEquals($expected, $validator);
+        $this->assertEquals($expected, $factory->createValidator($schema, $this->uri));
     }
 
     public function testCreateValidatorWithUnresolvableReference(): void
@@ -258,10 +248,17 @@ final class ValidatorFactoryTest extends TestCase
         $factory->createValidator($schema, $this->uri);
     }
 
+    public function testCreateValidatorWithUnusedSubschema(): void
+    {
+        $schema = (object)['$defs' => (object)['a' => (object)[]]];
+        $expected = new Validator(new ObjectSchemaValidator($this->uri, $this->pointer, []), []);
+
+        $this->assertEquals($expected, $this->factory->createValidator($schema, $this->uri));
+    }
+
     public function testCreateValidatorWithBooleanSchema(): void
     {
-        $schemaValidator = new BooleanSchemaValidator($this->uri, $this->pointer, true);
-        $expected = new Validator(['https://example.com' => $schemaValidator]);
+        $expected = new Validator(new BooleanSchemaValidator($this->uri, $this->pointer, true), []);
 
         $this->assertEquals($expected, $this->factory->createValidator(true, $this->uri));
     }

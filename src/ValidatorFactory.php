@@ -95,11 +95,11 @@ final class ValidatorFactory
 
         $schemaValidators = [];
 
-        foreach ($validators as $validatorUri => $validator) {
+        foreach (array_intersect_key($validators, $references) as $validatorUri => $validator) {
             $schemaValidators[$validatorUri] = $validator[0];
         }
 
-        return new Validator($schemaValidators);
+        return new Validator(reset($validators)[0], $schemaValidators);
     }
 
     /**

@@ -11,16 +11,19 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
  */
 final class Validator
 {
+    private SchemaValidator $schemaValidator;
+
     /**
-     * @var non-empty-array<string, SchemaValidator>
+     * @var array<string, SchemaValidator>
      */
     private array $schemaValidators;
 
     /**
-     * @param non-empty-array<string, SchemaValidator> $schemaValidators
+     * @param array<string, SchemaValidator> $schemaValidators
      */
-    public function __construct(array $schemaValidators)
+    public function __construct(SchemaValidator $schemaValidator, array $schemaValidators)
     {
+        $this->schemaValidator = $schemaValidator;
         $this->schemaValidators = $schemaValidators;
     }
 }
