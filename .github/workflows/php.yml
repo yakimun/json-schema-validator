@@ -64,6 +64,6 @@ jobs:
         XDEBUG_MODE: coverage
 
     - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v2.0.1
+      uses: codecov/codecov-action@v2.0.2
       with:
         flags: ${{ matrix.os }}-${{ matrix.php }}
