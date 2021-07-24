@@ -18,6 +18,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.3.4
+      with:
+        submodules: true
 
     - name: Setup PHP
       uses: shivammathur/setup-php@2.12.0
