@@ -30,7 +30,7 @@ final class SchemaContext
     private array $identifiers;
 
     /**
-     * @var list<SchemaReference>
+     * @var list<SchemaAnchor>
      */
     private array $anchors = [];
 
@@ -97,7 +97,7 @@ final class SchemaContext
     }
 
     /**
-     * @return list<SchemaReference>
+     * @return list<SchemaAnchor>
      * @psalm-mutation-free
      */
     public function getAnchors(): array
@@ -107,11 +107,12 @@ final class SchemaContext
 
     /**
      * @param UriInterface $anchor
+     * @param bool $dynamic
      * @param string $token
      */
-    public function addAnchor(UriInterface $anchor, string $token): void
+    public function addAnchor(UriInterface $anchor, bool $dynamic, string $token): void
     {
-        $this->anchors[] = new SchemaReference($anchor, $this->path->addTokens($token));
+        $this->anchors[] = new SchemaAnchor($anchor, $dynamic, $this->path->addTokens($token));
     }
 
     /**
@@ -188,7 +189,6 @@ final class SchemaContext
      * @param string $message
      * @param string $token
      * @return SchemaException
-     * @no-named-arguments
      * @psalm-mutation-free
      */
     public function createException(string $message, string $token): SchemaException

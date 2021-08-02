@@ -19,11 +19,19 @@ final class Validator
     private array $schemaValidators;
 
     /**
-     * @param array<string, SchemaValidator> $schemaValidators
+     * @var list<string>
      */
-    public function __construct(SchemaValidator $schemaValidator, array $schemaValidators)
+    private array $dynamicUris;
+
+    /**
+     * @param SchemaValidator $schemaValidator
+     * @param array<string, SchemaValidator> $schemaValidators
+     * @param list<string> $dynamicUris
+     */
+    public function __construct(SchemaValidator $schemaValidator, array $schemaValidators, array $dynamicUris)
     {
         $this->schemaValidator = $schemaValidator;
         $this->schemaValidators = $schemaValidators;
+        $this->dynamicUris = $dynamicUris;
     }
 }

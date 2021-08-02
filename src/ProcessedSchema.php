@@ -22,7 +22,7 @@ final class ProcessedSchema
     private array $identifiers;
 
     /**
-     * @var list<SchemaReference>
+     * @var list<SchemaAnchor>
      */
     private array $anchors;
 
@@ -34,7 +34,7 @@ final class ProcessedSchema
     /**
      * @param SchemaValidator $validator
      * @param non-empty-list<SchemaIdentifier> $identifiers
-     * @param list<SchemaReference> $anchors
+     * @param list<SchemaAnchor> $anchors
      * @param list<SchemaReference> $references
      */
     public function __construct(SchemaValidator $validator, array $identifiers, array $anchors, array $references)
@@ -62,7 +62,7 @@ final class ProcessedSchema
     }
 
     /**
-     * @return list<SchemaReference>
+     * @return list<SchemaAnchor>
      */
     public function getAnchors(): array
     {

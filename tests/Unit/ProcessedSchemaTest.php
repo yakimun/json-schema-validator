@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
+use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
@@ -15,6 +16,7 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 /**
  * @covers \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
  */
@@ -31,9 +33,9 @@ final class ProcessedSchemaTest extends TestCase
     private SchemaIdentifier $identifier;
 
     /**
-     * @var SchemaReference
+     * @var SchemaAnchor
      */
-    private SchemaReference $anchor;
+    private SchemaAnchor $anchor;
 
     /**
      * @var SchemaReference
@@ -52,7 +54,7 @@ final class ProcessedSchemaTest extends TestCase
 
         $this->validator = $this->createStub(SchemaValidator::class);
         $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-        $this->anchor = new SchemaReference($uri->withFragment('a'), $pointer->addTokens('$anchor'));
+        $this->anchor = new SchemaAnchor($uri->withFragment('a'), false, $pointer->addTokens('$anchor'));
         $this->reference = new SchemaReference($uri, $pointer->addTokens('$ref'));
 
         $anchors = [$this->anchor];

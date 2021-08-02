@@ -9,16 +9,17 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaProcessor;
-use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
@@ -69,7 +70,7 @@ final class AnchorKeywordTest extends TestCase
      */
     public function testProcess(string $value): void
     {
-        $expected = [new SchemaReference($this->uri->withFragment($value), $this->pointer->addTokens('$anchor'))];
+        $expected = [new SchemaAnchor($this->uri->withFragment($value), false, $this->pointer->addTokens('$anchor'))];
         $this->keyword->process(['$anchor' => $value], $this->context);
 
         $this->assertEquals($expected, $this->context->getAnchors());

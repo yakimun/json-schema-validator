@@ -41,7 +41,7 @@ final class DynamicAnchorKeyword implements Keyword
 
         $identifiers = $context->getIdentifiers();
 
-        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), self::NAME);
+        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), true, self::NAME);
         $context->addKeywordValidator(new DynamicAnchorKeywordValidator($property));
     }
 }

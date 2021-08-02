@@ -34,52 +34,73 @@ final class SchemaProcessor
     public function process($schema, array $identifiers, JsonPointer $path): array
     {
         if (is_object($schema)) {
-            $properties = get_object_vars($schema);
-
-            if (!$properties) {
-                $identifier = end($identifiers);
-                $uri = $identifier->getUri();
-                $fragment = $identifier->getFragment();
-
-                return [new ProcessedSchema(new ObjectSchemaValidator($uri, $fragment, []), $identifiers, [], [])];
-            }
-
-            $context = new SchemaContext($this, $path, $identifiers);
-
-            foreach (array_intersect_key($this->keywords, $properties) as $keyword) {
-                $keyword->process($properties, $context);
-            }
-
-            $keywordValidators = $context->getKeywordValidators();
-
-            /** @var scalar|object|list<mixed>|null $value */
-            foreach (array_diff_key($properties, $this->keywords) as $name => $value) {
-                $keywordValidators[] = new UnknownKeywordValidator($name, $value);
-            }
-
-            $processedIdentifiers = $context->getIdentifiers();
-
-            $processedIdentifier = end($processedIdentifiers);
-            $processedUri = $processedIdentifier->getUri();
-            $processedFragment = $processedIdentifier->getFragment();
-
-            $validator = new ObjectSchemaValidator($processedUri, $processedFragment, $keywordValidators);
-            $anchors = $context->getAnchors();
-            $references = $context->getReferences();
-
-            $processedSchema = new ProcessedSchema($validator, $processedIdentifiers, $anchors, $references);
-
-            return [$processedSchema, ...$context->getProcessedSchemas()];
+            return $this->processObject($schema, $identifiers, $path);
         }
 
         if (is_bool($schema)) {
+            return $this->processBoolean($schema, $identifiers);
+        }
+
+        throw new SchemaException(sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path));
+    }
+
+    /**
+     * @param object $schema
+     * @param non-empty-list<SchemaIdentifier> $identifiers
+     * @param JsonPointer $path
+     * @return non-empty-list<ProcessedSchema>
+     */
+    public function processObject(object $schema, array $identifiers, JsonPointer $path): array
+    {
+        $properties = get_object_vars($schema);
+
+        if (!$properties) {
             $identifier = end($identifiers);
             $uri = $identifier->getUri();
             $fragment = $identifier->getFragment();
 
-            return [new ProcessedSchema(new BooleanSchemaValidator($uri, $fragment, $schema), $identifiers, [], [])];
+            return [new ProcessedSchema(new ObjectSchemaValidator($uri, $fragment, []), $identifiers, [], [])];
         }
 
-        throw new SchemaException(sprintf('The schema must be an object or a boolean. Path: "%s".', (string)$path));
+        $context = new SchemaContext($this, $path, $identifiers);
+
+        foreach (array_intersect_key($this->keywords, $properties) as $keyword) {
+            $keyword->process($properties, $context);
+        }
+
+        $keywordValidators = $context->getKeywordValidators();
+
+        /** @var scalar|object|list<mixed>|null $value */
+        foreach (array_diff_key($properties, $this->keywords) as $name => $value) {
+            $keywordValidators[] = new UnknownKeywordValidator($name, $value);
+        }
+
+        $processedIdentifiers = $context->getIdentifiers();
+
+        $processedIdentifier = end($processedIdentifiers);
+        $processedUri = $processedIdentifier->getUri();
+        $processedFragment = $processedIdentifier->getFragment();
+
+        $validator = new ObjectSchemaValidator($processedUri, $processedFragment, $keywordValidators);
+        $anchors = $context->getAnchors();
+        $references = $context->getReferences();
+
+        $processedSchema = new ProcessedSchema($validator, $processedIdentifiers, $anchors, $references);
+
+        return [$processedSchema, ...$context->getProcessedSchemas()];
+    }
+
+    /**
+     * @param bool $schema
+     * @param non-empty-list<SchemaIdentifier> $identifiers
+     * @return non-empty-list<ProcessedSchema>
+     */
+    private function processBoolean(bool $schema, array $identifiers): array
+    {
+        $identifier = end($identifiers);
+        $uri = $identifier->getUri();
+        $fragment = $identifier->getFragment();
+
+        return [new ProcessedSchema(new BooleanSchemaValidator($uri, $fragment, $schema), $identifiers, [], [])];
     }
 }

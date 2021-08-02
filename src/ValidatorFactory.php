@@ -94,21 +94,26 @@ final class ValidatorFactory
         }
 
         $schemaValidators = [];
+        $dynamicUris = [];
 
         foreach (array_intersect_key($validators, $references) as $validatorUri => $validator) {
             $schemaValidators[$validatorUri] = $validator[0];
+
+            if ($validator[1]) {
+                $dynamicUris[] = $validatorUri;
+            }
         }
 
-        return new Validator(reset($validators)[0], $schemaValidators);
+        return new Validator(reset($validators)[0], $schemaValidators, $dynamicUris);
     }
 
     /**
      * @param mixed $schema
      * @param UriInterface $uri
-     * @param array<string, array{SchemaValidator, UriInterface, JsonPointer}> $validators
+     * @param array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}> $validators
      * @param array<string, array{UriInterface, UriInterface, JsonPointer}> $references
      * @return array{
-     *     non-empty-array<string, array{SchemaValidator, UriInterface, JsonPointer}>,
+     *     non-empty-array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}>,
      *     array<string, array{UriInterface, UriInterface, JsonPointer}>
      * }
      */
@@ -134,8 +139,8 @@ final class ValidatorFactory
                 if (array_key_exists($identifierUriString, $validators)) {
                     $uriString = (string)$uri;
                     $identifierPathString = (string)$identifierPath;
-                    $existingValidatorUriString = (string)$validators[$identifierUriString][1];
-                    $existingValidatorPathString = (string)$validators[$identifierUriString][2];
+                    $existingValidatorUriString = (string)$validators[$identifierUriString][2];
+                    $existingValidatorPathString = (string)$validators[$identifierUriString][3];
 
                     $format = 'The schemas "%s" and "%s" must have different identifiers. Paths: "%s" and "%s".';
                     $message = sprintf(
@@ -148,7 +153,7 @@ final class ValidatorFactory
                     throw new ValidatorFactoryException($message);
                 }
 
-                $validators[$identifierUriString] = [$validator, $uri, $identifierPath];
+                $validators[$identifierUriString] = [$validator, false, $uri, $identifierPath];
             }
 
             foreach ($processedSchema->getAnchors() as $anchor) {
@@ -158,14 +163,14 @@ final class ValidatorFactory
                 if (array_key_exists($anchorUriString, $validators)) {
                     $uriString = (string)$uri;
                     $anchorPathString = (string)$anchor->getPath();
-                    $existingValidatorPathString = (string)$validators[$anchorUriString][2];
+                    $existingValidatorPathString = (string)$validators[$anchorUriString][3];
 
                     $format = 'The "%s" schema must not contain the same anchors. Paths: "%s" and "%s".';
                     $message = sprintf($format, $uriString, $existingValidatorPathString, $anchorPathString);
                     throw new ValidatorFactoryException($message);
                 }
 
-                $validators[$anchorUriString] = [$validator, $uri, $anchorPath];
+                $validators[$anchorUriString] = [$validator, $anchor->isDynamic(), $uri, $anchorPath];
             }
 
             foreach ($processedSchema->getReferences() as $reference) {

@@ -9,10 +9,10 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaProcessor;
-use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DynamicAnchorKeyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\DynamicAnchorKeywordValidator;
 
@@ -20,6 +20,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DynamicAnchorKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
@@ -73,7 +74,7 @@ final class DynamicAnchorKeywordTest extends TestCase
     {
         $uri = $this->uri->withFragment($value);
         $path = $this->pointer->addTokens('$dynamicAnchor');
-        $expectedAnchors = [new SchemaReference($uri, $path)];
+        $expectedAnchors = [new SchemaAnchor($uri, true, $path)];
         $expectedValidators = [new DynamicAnchorKeywordValidator($value)];
         $this->keyword->process(['$dynamicAnchor' => $value], $this->context);
 

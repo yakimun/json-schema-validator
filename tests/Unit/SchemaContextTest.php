@@ -10,6 +10,7 @@ use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
+use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaProcessor;
@@ -23,6 +24,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
+ * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
@@ -100,8 +102,8 @@ final class SchemaContextTest extends TestCase
     {
         $uri = new Uri('https://example.com#a');
         $path = new JsonPointer('$anchor');
-        $expected = [new SchemaReference($uri, $path)];
-        $this->context->addAnchor($uri, '$anchor');
+        $expected = [new SchemaAnchor($uri, false, $path)];
+        $this->context->addAnchor($uri, false, '$anchor');
 
         $this->assertEquals($expected, $this->context->getAnchors());
     }

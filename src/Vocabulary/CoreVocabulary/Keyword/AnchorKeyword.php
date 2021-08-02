@@ -40,6 +40,6 @@ final class AnchorKeyword implements Keyword
 
         $identifiers = $context->getIdentifiers();
 
-        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), self::NAME);
+        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), false, self::NAME);
     }
 }
