@@ -47,11 +47,6 @@ final class MinLengthKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('minLength', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new MinLengthKeywordValidator(0)];

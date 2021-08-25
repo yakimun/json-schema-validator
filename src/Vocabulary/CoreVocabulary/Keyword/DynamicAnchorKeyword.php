@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class DynamicAnchorKeyword implements Keyword
 {
-    private const NAME = '$dynamicAnchor';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$dynamicAnchor';
 
     /**
      * @param non-empty-array<string, mixed> $properties

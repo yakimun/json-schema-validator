@@ -11,16 +11,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class IdKeyword implements Keyword
 {
-    private const NAME = '$id';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$id';
 
     /**
      * @param non-empty-array<string, mixed> $properties

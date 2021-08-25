@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class DependentSchemasKeyword implements Keyword
 {
-    private const NAME = 'dependentSchemas';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'dependentSchemas';
 
     /**
      * @param non-empty-array<string, mixed> $properties

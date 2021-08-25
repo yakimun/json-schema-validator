@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\E
 
 final class ExamplesKeyword implements Keyword
 {
-    private const NAME = 'examples';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'examples';
 
     /**
      * @param non-empty-array<string, mixed> $properties

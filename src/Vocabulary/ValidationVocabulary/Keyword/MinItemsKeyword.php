@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class MinItemsKeyword implements Keyword
 {
-    private const NAME = 'minItems';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'minItems';
 
     /**
      * @param non-empty-array<string, mixed> $properties

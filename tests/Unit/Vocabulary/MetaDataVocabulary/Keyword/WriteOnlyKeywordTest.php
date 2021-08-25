@@ -47,11 +47,6 @@ final class WriteOnlyKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('writeOnly', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new WriteOnlyKeywordValidator(true)];

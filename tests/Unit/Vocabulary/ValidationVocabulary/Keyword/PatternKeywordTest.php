@@ -47,11 +47,6 @@ final class PatternKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('pattern', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new PatternKeywordValidator('/.*a.*/')];

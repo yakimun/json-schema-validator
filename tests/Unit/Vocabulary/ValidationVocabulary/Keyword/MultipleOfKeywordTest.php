@@ -49,11 +49,6 @@ final class MultipleOfKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('multipleOf', $this->keyword->getName());
-    }
-
     public function testProcessWithIntValue(): void
     {
         $expected = [new IntMultipleOfKeywordValidator(1)];

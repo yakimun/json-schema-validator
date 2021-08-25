@@ -11,16 +11,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class ExclusiveMinimumKeyword implements Keyword
 {
-    private const NAME = 'exclusiveMinimum';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'exclusiveMinimum';
 
     /**
      * @param non-empty-array<string, mixed> $properties

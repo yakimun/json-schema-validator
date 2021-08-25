@@ -47,11 +47,6 @@ final class TitleKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('title', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new TitleKeywordValidator('a')];

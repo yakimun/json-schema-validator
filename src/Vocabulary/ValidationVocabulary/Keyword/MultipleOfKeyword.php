@@ -11,16 +11,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class MultipleOfKeyword implements Keyword
 {
-    private const NAME = 'multipleOf';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'multipleOf';
 
     /**
      * @param non-empty-array<string, mixed> $properties

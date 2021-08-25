@@ -16,21 +16,21 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class ContentVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new ContentEncodingKeyword(),
-            new ContentMediaTypeKeyword(),
-            new ContentSchemaKeyword(),
+            ContentEncodingKeyword::NAME => new ContentEncodingKeyword(),
+            ContentMediaTypeKeyword::NAME => new ContentMediaTypeKeyword(),
+            ContentSchemaKeyword::NAME => new ContentSchemaKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

@@ -20,25 +20,25 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class MetaDataVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new TitleKeyword(),
-            new DescriptionKeyword(),
-            new DefaultKeyword(),
-            new DeprecatedKeyword(),
-            new ReadOnlyKeyword(),
-            new WriteOnlyKeyword(),
-            new ExamplesKeyword(),
+            TitleKeyword::NAME => new TitleKeyword(),
+            DescriptionKeyword::NAME => new DescriptionKeyword(),
+            DefaultKeyword::NAME => new DefaultKeyword(),
+            DeprecatedKeyword::NAME => new DeprecatedKeyword(),
+            ReadOnlyKeyword::NAME => new ReadOnlyKeyword(),
+            WriteOnlyKeyword::NAME => new WriteOnlyKeyword(),
+            ExamplesKeyword::NAME => new ExamplesKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

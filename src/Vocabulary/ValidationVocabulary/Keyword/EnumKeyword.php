@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class EnumKeyword implements Keyword
 {
-    private const NAME = 'enum';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'enum';
 
     /**
      * @param non-empty-array<string, mixed> $properties

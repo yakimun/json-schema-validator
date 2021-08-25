@@ -14,15 +14,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
  */
 final class SchemaKeyword implements Keyword
 {
-    private const NAME = '$schema';
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$schema';
 
     /**
      * @param non-empty-array<string, mixed> $properties

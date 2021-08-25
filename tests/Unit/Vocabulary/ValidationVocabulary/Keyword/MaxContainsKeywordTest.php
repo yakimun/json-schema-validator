@@ -47,11 +47,6 @@ final class MaxContainsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('maxContains', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new MaxContainsKeywordValidator(0)];

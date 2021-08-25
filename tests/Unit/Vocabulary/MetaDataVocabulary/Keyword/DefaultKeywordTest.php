@@ -45,11 +45,6 @@ final class DefaultKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('default', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new DefaultKeywordValidator(null)];

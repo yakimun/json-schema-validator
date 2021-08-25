@@ -45,11 +45,6 @@ final class CommentKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$comment', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = clone $this->context;

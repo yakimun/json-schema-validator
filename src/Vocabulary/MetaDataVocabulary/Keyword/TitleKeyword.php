@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\T
 
 final class TitleKeyword implements Keyword
 {
-    private const NAME = 'title';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'title';
 
     /**
      * @param non-empty-array<string, mixed> $properties

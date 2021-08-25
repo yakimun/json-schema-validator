@@ -47,11 +47,6 @@ final class MaxItemsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('maxItems', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new MaxItemsKeywordValidator(0)];

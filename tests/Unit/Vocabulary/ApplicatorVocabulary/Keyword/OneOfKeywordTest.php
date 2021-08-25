@@ -51,11 +51,6 @@ final class OneOfKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('oneOf', $this->keyword->getName());
-    }
-
     /**
      * @param non-empty-list<object> $value
      * @param non-empty-list<ProcessedSchema> $expectedProcessedSchemas

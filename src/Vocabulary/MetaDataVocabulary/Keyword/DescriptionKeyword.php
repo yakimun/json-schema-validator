@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
 
 final class DescriptionKeyword implements Keyword
 {
-    private const NAME = 'description';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'description';
 
     /**
      * @param non-empty-array<string, mixed> $properties

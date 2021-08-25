@@ -9,16 +9,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class DefsKeyword implements Keyword
 {
-    private const NAME = '$defs';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$defs';
 
     /**
      * @param non-empty-array<string, mixed> $properties

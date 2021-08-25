@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ContainsKeyword implements Keyword
 {
-    private const NAME = 'contains';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'contains';
 
     /**
      * @param non-empty-array<string, mixed> $properties

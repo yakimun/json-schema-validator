@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ContentMediaTypeKeyword implements Keyword
 {
-    private const NAME = 'contentMediaType';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'contentMediaType';
 
     /**
      * @param non-empty-array<string, mixed> $properties

@@ -10,18 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ThenKeyword implements Keyword
 {
-    private const NAME = 'then';
-
-    private const IF_NAME = 'if';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'then';
 
     /**
      * @param non-empty-array<string, mixed> $properties
@@ -31,7 +20,7 @@ final class ThenKeyword implements Keyword
     {
         $validator = $context->createValidator($properties[self::NAME], self::NAME);
 
-        if (array_key_exists(self::IF_NAME, $properties)) {
+        if (array_key_exists(IfKeyword::NAME, $properties)) {
             $context->addKeywordValidator(new ThenKeywordValidator($validator));
         }
     }

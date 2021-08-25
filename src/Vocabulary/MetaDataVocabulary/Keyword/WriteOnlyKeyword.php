@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\W
 
 final class WriteOnlyKeyword implements Keyword
 {
-    private const NAME = 'writeOnly';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'writeOnly';
 
     /**
      * @param non-empty-array<string, mixed> $properties

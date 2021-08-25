@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\R
 
 final class ReadOnlyKeyword implements Keyword
 {
-    private const NAME = 'readOnly';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'readOnly';
 
     /**
      * @param non-empty-array<string, mixed> $properties

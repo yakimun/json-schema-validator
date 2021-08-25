@@ -12,16 +12,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class RefKeyword implements Keyword
 {
-    private const NAME = '$ref';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$ref';
 
     /**
      * @param non-empty-array<string, mixed> $properties

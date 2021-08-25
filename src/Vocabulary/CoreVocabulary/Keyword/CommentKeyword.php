@@ -12,15 +12,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
  */
 final class CommentKeyword implements Keyword
 {
-    private const NAME = '$comment';
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$comment';
 
     /**
      * @param non-empty-array<string, mixed> $properties

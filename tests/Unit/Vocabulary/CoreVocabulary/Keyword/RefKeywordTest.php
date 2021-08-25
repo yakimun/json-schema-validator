@@ -61,11 +61,6 @@ final class RefKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $this->pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$ref', $this->keyword->getName());
-    }
-
     /**
      * @param string $value
      * @dataProvider valueProvider

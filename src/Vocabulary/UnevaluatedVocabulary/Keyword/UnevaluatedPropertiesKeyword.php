@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnevaluatedVocabulary\KeywordValidato
 
 final class UnevaluatedPropertiesKeyword implements Keyword
 {
-    private const NAME = 'unevaluatedProperties';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'unevaluatedProperties';
 
     /**
      * @param non-empty-array<string, mixed> $properties

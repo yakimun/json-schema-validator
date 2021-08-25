@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
 
 final class DefaultKeyword implements Keyword
 {
-    private const NAME = 'default';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'default';
 
     /**
      * @param non-empty-array<string, mixed> $properties

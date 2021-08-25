@@ -62,11 +62,6 @@ final class IdKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $this->pointer, [$this->identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$id', $this->keyword->getName());
-    }
-
     /**
      * @param string $value
      * @dataProvider valueProvider

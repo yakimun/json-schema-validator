@@ -47,11 +47,6 @@ final class MinItemsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('minItems', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new MinItemsKeywordValidator(0)];

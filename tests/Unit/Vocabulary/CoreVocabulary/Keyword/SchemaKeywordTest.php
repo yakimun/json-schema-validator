@@ -46,11 +46,6 @@ final class SchemaKeywordTest extends TestCase
         $this->processor = new SchemaProcessor(['$schema' => $this->keyword]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$schema', $this->keyword->getName());
-    }
-
     /**
      * @param non-empty-array<string, string> $properties
      * @dataProvider propertyProvider

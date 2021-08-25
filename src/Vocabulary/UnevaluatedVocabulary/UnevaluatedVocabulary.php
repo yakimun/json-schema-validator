@@ -15,20 +15,20 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class UnevaluatedVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new UnevaluatedItemsKeyword(),
-            new UnevaluatedPropertiesKeyword(),
+            UnevaluatedItemsKeyword::NAME => new UnevaluatedItemsKeyword(),
+            UnevaluatedPropertiesKeyword::NAME => new UnevaluatedPropertiesKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

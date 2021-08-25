@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class ConstKeyword implements Keyword
 {
-    private const NAME = 'const';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'const';
 
     /**
      * @param non-empty-array<string, mixed> $properties

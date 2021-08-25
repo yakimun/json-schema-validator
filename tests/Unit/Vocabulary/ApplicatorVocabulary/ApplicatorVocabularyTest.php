@@ -30,20 +30,20 @@ final class ApplicatorVocabularyTest extends TestCase
     {
         $vocabulary = new ApplicatorVocabulary();
         $expected = [
-            new AllOfKeyword(),
-            new AnyOfKeyword(),
-            new OneOfKeyword(),
-            new NotKeyword(),
-            new IfKeyword(),
-            new ThenKeyword(),
-            new ElseKeyword(),
-            new DependentSchemasKeyword(),
-            new PrefixItemsKeyword(),
-            new ItemsKeyword(),
-            new ContainsKeyword(),
-            new PropertiesKeyword(),
-            new AdditionalPropertiesKeyword(),
-            new PropertyNamesKeyword(),
+            AllOfKeyword::NAME => new AllOfKeyword(),
+            AnyOfKeyword::NAME => new AnyOfKeyword(),
+            OneOfKeyword::NAME => new OneOfKeyword(),
+            NotKeyword::NAME => new NotKeyword(),
+            IfKeyword::NAME => new IfKeyword(),
+            ThenKeyword::NAME => new ThenKeyword(),
+            ElseKeyword::NAME => new ElseKeyword(),
+            DependentSchemasKeyword::NAME => new DependentSchemasKeyword(),
+            PrefixItemsKeyword::NAME => new PrefixItemsKeyword(),
+            ItemsKeyword::NAME => new ItemsKeyword(),
+            ContainsKeyword::NAME => new ContainsKeyword(),
+            PropertiesKeyword::NAME => new PropertiesKeyword(),
+            AdditionalPropertiesKeyword::NAME => new AdditionalPropertiesKeyword(),
+            PropertyNamesKeyword::NAME => new PropertyNamesKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

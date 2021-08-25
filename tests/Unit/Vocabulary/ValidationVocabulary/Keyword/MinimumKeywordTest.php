@@ -49,11 +49,6 @@ final class MinimumKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('minimum', $this->keyword->getName());
-    }
-
     public function testProcessWithIntValue(): void
     {
         $expected = [new IntMinimumKeywordValidator(0)];

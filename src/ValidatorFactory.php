@@ -50,8 +50,8 @@ final class ValidatorFactory
         $keywords = [];
 
         foreach ($vocabularies as $vocabulary) {
-            foreach ($vocabulary->getKeywords() as $keyword) {
-                $keywords[$keyword->getName()] = $keyword;
+            foreach ($vocabulary->getKeywords() as $name => $keyword) {
+                $keywords[$name] = $keyword;
             }
         }
 

@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class DependentRequiredKeyword implements Keyword
 {
-    private const NAME = 'dependentRequired';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'dependentRequired';
 
     /**
      * @param non-empty-array<string, mixed> $properties

@@ -57,11 +57,6 @@ final class NotKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('not', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $pointer = new JsonPointer('not');

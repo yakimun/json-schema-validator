@@ -49,11 +49,6 @@ final class ExclusiveMinimumKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('exclusiveMinimum', $this->keyword->getName());
-    }
-
     public function testProcessWithIntValue(): void
     {
         $expected = [new IntExclusiveMinimumKeywordValidator(0)];

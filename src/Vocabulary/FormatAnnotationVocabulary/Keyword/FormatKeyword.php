@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class FormatKeyword implements Keyword
 {
-    private const NAME = 'format';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'format';
 
     /**
      * @param non-empty-array<string, mixed> $properties

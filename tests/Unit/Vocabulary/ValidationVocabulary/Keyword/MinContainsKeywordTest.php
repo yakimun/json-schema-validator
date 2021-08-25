@@ -47,11 +47,6 @@ final class MinContainsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('minContains', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new MinContainsKeywordValidator(0)];

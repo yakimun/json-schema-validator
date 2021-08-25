@@ -18,8 +18,8 @@ final class UnevaluatedVocabularyTest extends TestCase
     {
         $vocabulary = new UnevaluatedVocabulary();
         $expected = [
-            new UnevaluatedItemsKeyword(),
-            new UnevaluatedPropertiesKeyword(),
+            UnevaluatedItemsKeyword::NAME => new UnevaluatedItemsKeyword(),
+            UnevaluatedPropertiesKeyword::NAME => new UnevaluatedPropertiesKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

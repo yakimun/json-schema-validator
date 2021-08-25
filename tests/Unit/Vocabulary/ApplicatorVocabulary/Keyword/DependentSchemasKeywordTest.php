@@ -51,11 +51,6 @@ final class DependentSchemasKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('dependentSchemas', $this->keyword->getName());
-    }
-
     /**
      * @param array<string, object> $value
      * @param array<string, ProcessedSchema> $processedSchemas

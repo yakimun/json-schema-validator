@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class MaxLengthKeyword implements Keyword
 {
-    private const NAME = 'maxLength';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'maxLength';
 
     /**
      * @param non-empty-array<string, mixed> $properties

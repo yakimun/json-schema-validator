@@ -47,11 +47,6 @@ final class RequiredKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('required', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new RequiredKeywordValidator(['a'])];

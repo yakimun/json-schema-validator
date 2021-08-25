@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ContentEncodingKeyword implements Keyword
 {
-    private const NAME = 'contentEncoding';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'contentEncoding';
 
     /**
      * @param non-empty-array<string, mixed> $properties

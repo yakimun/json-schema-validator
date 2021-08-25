@@ -27,32 +27,32 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class ApplicatorVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new AllOfKeyword(),
-            new AnyOfKeyword(),
-            new OneOfKeyword(),
-            new NotKeyword(),
-            new IfKeyword(),
-            new ThenKeyword(),
-            new ElseKeyword(),
-            new DependentSchemasKeyword(),
-            new PrefixItemsKeyword(),
-            new ItemsKeyword(),
-            new ContainsKeyword(),
-            new PropertiesKeyword(),
-            new AdditionalPropertiesKeyword(),
-            new PropertyNamesKeyword(),
+            AllOfKeyword::NAME => new AllOfKeyword(),
+            AnyOfKeyword::NAME => new AnyOfKeyword(),
+            OneOfKeyword::NAME => new OneOfKeyword(),
+            NotKeyword::NAME => new NotKeyword(),
+            IfKeyword::NAME => new IfKeyword(),
+            ThenKeyword::NAME => new ThenKeyword(),
+            ElseKeyword::NAME => new ElseKeyword(),
+            DependentSchemasKeyword::NAME => new DependentSchemasKeyword(),
+            PrefixItemsKeyword::NAME => new PrefixItemsKeyword(),
+            ItemsKeyword::NAME => new ItemsKeyword(),
+            ContainsKeyword::NAME => new ContainsKeyword(),
+            PropertiesKeyword::NAME => new PropertiesKeyword(),
+            AdditionalPropertiesKeyword::NAME => new AdditionalPropertiesKeyword(),
+            PropertyNamesKeyword::NAME => new PropertyNamesKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

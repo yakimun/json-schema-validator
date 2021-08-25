@@ -49,11 +49,6 @@ final class TypeKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('type', $this->keyword->getName());
-    }
-
     /**
      * @param 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer' $value
      * @dataProvider stringTypeProvider

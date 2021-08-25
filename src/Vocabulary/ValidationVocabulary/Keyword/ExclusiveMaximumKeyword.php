@@ -11,16 +11,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class ExclusiveMaximumKeyword implements Keyword
 {
-    private const NAME = 'exclusiveMaximum';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'exclusiveMaximum';
 
     /**
      * @param non-empty-array<string, mixed> $properties

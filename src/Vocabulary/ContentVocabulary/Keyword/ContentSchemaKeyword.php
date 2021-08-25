@@ -10,18 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class ContentSchemaKeyword implements Keyword
 {
-    private const NAME = 'contentSchema';
-
-    private const CONTENT_MEDIA_TYPE_NAME = 'contentMediaType';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'contentSchema';
 
     /**
      * @param non-empty-array<string, mixed> $properties
@@ -31,7 +20,7 @@ final class ContentSchemaKeyword implements Keyword
     {
         $validator = $context->createValidator($properties[self::NAME], self::NAME);
 
-        if (array_key_exists(self::CONTENT_MEDIA_TYPE_NAME, $properties)) {
+        if (array_key_exists(ContentMediaTypeKeyword::NAME, $properties)) {
             $context->addKeywordValidator(new ContentSchemaKeywordValidator($validator));
         }
     }

@@ -22,27 +22,27 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class CoreVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new SchemaKeyword(),
-            new VocabularyKeyword(),
-            new IdKeyword(),
-            new AnchorKeyword(),
-            new DynamicAnchorKeyword(),
-            new RefKeyword(),
-            new DynamicRefKeyword(),
-            new DefsKeyword(),
-            new CommentKeyword(),
+            SchemaKeyword::NAME => new SchemaKeyword(),
+            VocabularyKeyword::NAME => new VocabularyKeyword(),
+            IdKeyword::NAME => new IdKeyword(),
+            AnchorKeyword::NAME => new AnchorKeyword(),
+            DynamicAnchorKeyword::NAME => new DynamicAnchorKeyword(),
+            RefKeyword::NAME => new RefKeyword(),
+            DynamicRefKeyword::NAME => new DynamicRefKeyword(),
+            DefsKeyword::NAME => new DefsKeyword(),
+            CommentKeyword::NAME => new CommentKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

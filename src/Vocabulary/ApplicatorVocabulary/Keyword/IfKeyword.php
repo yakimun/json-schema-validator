@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class IfKeyword implements Keyword
 {
-    private const NAME = 'if';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'if';
 
     /**
      * @param non-empty-array<string, mixed> $properties

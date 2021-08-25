@@ -61,11 +61,6 @@ final class DynamicAnchorKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $this->pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$dynamicAnchor', $this->keyword->getName());
-    }
-
     /**
      * @param string $value
      * @dataProvider valueProvider

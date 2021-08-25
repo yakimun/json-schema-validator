@@ -47,11 +47,6 @@ final class DescriptionKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('description', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new DescriptionKeywordValidator('a')];

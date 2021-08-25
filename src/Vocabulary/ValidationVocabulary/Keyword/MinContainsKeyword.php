@@ -5,23 +5,13 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
 use Yakimun\JsonSchemaValidator\SchemaContext;
+use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\ContainsKeyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\MinContainsKeywordValidator;
 
 final class MinContainsKeyword implements Keyword
 {
-    private const NAME = 'minContains';
-
-    private const CONTAINS_NAME = 'contains';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'minContains';
 
     /**
      * @param non-empty-array<string, mixed> $properties
@@ -39,7 +29,7 @@ final class MinContainsKeyword implements Keyword
             throw $context->createException('The value must be a non-negative integer.', self::NAME);
         }
 
-        if (array_key_exists(self::CONTAINS_NAME, $properties)) {
+        if (array_key_exists(ContainsKeyword::NAME, $properties)) {
             $context->addKeywordValidator(new MinContainsKeywordValidator($property));
         }
     }

@@ -49,11 +49,6 @@ final class DefsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('$defs', $this->keyword->getName());
-    }
-
     /**
      * @param array<string, object> $properties
      * @param list<ProcessedSchema> $expected

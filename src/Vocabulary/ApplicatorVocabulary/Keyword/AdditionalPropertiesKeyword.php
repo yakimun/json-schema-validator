@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class AdditionalPropertiesKeyword implements Keyword
 {
-    private const NAME = 'additionalProperties';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'additionalProperties';
 
     /**
      * @param non-empty-array<string, mixed> $properties

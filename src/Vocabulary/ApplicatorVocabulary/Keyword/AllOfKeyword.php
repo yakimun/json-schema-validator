@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class AllOfKeyword implements Keyword
 {
-    private const NAME = 'allOf';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'allOf';
 
     /**
      * @param non-empty-array<string, mixed> $properties

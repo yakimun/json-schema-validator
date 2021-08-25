@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class MaxPropertiesKeyword implements Keyword
 {
-    private const NAME = 'maxProperties';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'maxProperties';
 
     /**
      * @param non-empty-array<string, mixed> $properties

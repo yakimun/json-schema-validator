@@ -9,16 +9,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class AnchorKeyword implements Keyword
 {
-    private const NAME = '$anchor';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$anchor';
 
     /**
      * @param non-empty-array<string, mixed> $properties

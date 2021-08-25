@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class PropertiesKeyword implements Keyword
 {
-    private const NAME = 'properties';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'properties';
 
     /**
      * @param non-empty-array<string, mixed> $properties

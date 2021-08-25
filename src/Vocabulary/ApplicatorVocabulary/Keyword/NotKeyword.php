@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class NotKeyword implements Keyword
 {
-    private const NAME = 'not';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'not';
 
     /**
      * @param non-empty-array<string, mixed> $properties

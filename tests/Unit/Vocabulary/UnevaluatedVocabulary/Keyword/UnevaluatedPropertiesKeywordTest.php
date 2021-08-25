@@ -57,11 +57,6 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('unevaluatedProperties', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $pointer = new JsonPointer('unevaluatedProperties');

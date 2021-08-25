@@ -51,11 +51,6 @@ final class AllOfKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('allOf', $this->keyword->getName());
-    }
-
     /**
      * @param non-empty-list<object> $value
      * @param non-empty-list<ProcessedSchema> $expectedProcessedSchemas

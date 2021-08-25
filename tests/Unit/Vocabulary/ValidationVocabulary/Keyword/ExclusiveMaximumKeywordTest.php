@@ -49,11 +49,6 @@ final class ExclusiveMaximumKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('exclusiveMaximum', $this->keyword->getName());
-    }
-
     public function testProcessWithIntValue(): void
     {
         $expected = [new IntExclusiveMaximumKeywordValidator(0)];

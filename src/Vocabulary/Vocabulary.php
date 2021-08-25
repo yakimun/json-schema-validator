@@ -10,7 +10,7 @@ namespace Yakimun\JsonSchemaValidator\Vocabulary;
 interface Vocabulary
 {
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array;
 }

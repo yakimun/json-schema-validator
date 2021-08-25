@@ -13,15 +13,6 @@ final class PatternPropertiesKeyword implements Keyword
     private const NAME = 'patternProperties';
 
     /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
-    /**
      * @param non-empty-array<string, mixed> $properties
      * @param SchemaContext $context
      */

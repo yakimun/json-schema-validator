@@ -19,9 +19,9 @@ final class ContentVocabularyTest extends TestCase
     {
         $vocabulary = new ContentVocabulary();
         $expected = [
-            new ContentEncodingKeyword(),
-            new ContentMediaTypeKeyword(),
-            new ContentSchemaKeyword(),
+            ContentEncodingKeyword::NAME => new ContentEncodingKeyword(),
+            ContentMediaTypeKeyword::NAME => new ContentMediaTypeKeyword(),
+            ContentSchemaKeyword::NAME => new ContentSchemaKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

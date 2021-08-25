@@ -14,19 +14,19 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Vocabulary;
 final class FormatAnnotationVocabulary implements Vocabulary
 {
     /**
-     * @var non-empty-list<Keyword>
+     * @var non-empty-array<string, Keyword>
      */
     private array $keywords;
 
     public function __construct()
     {
         $this->keywords = [
-            new FormatKeyword(),
+            FormatKeyword::NAME => new FormatKeyword(),
         ];
     }
 
     /**
-     * @return non-empty-list<Keyword>
+     * @return non-empty-array<string, Keyword>
      */
     public function getKeywords(): array
     {

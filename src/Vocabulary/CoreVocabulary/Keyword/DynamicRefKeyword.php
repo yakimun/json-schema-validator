@@ -12,16 +12,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
 final class DynamicRefKeyword implements Keyword
 {
-    private const NAME = '$dynamicRef';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = '$dynamicRef';
 
     /**
      * @param non-empty-array<string, mixed> $properties

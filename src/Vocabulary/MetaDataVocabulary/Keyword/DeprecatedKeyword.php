@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
 
 final class DeprecatedKeyword implements Keyword
 {
-    private const NAME = 'deprecated';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'deprecated';
 
     /**
      * @param non-empty-array<string, mixed> $properties

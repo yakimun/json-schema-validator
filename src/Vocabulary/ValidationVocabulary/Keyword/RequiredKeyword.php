@@ -10,16 +10,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 
 final class RequiredKeyword implements Keyword
 {
-    private const NAME = 'required';
-
-    /**
-     * @return string
-     * @psalm-mutation-free
-     */
-    public function getName(): string
-    {
-        return self::NAME;
-    }
+    public const NAME = 'required';
 
     /**
      * @param non-empty-array<string, mixed> $properties

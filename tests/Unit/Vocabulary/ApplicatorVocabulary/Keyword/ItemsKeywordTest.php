@@ -57,11 +57,6 @@ final class ItemsKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('items', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $pointer = new JsonPointer('items');

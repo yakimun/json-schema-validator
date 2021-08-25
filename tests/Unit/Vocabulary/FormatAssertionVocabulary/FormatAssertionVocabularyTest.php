@@ -17,7 +17,7 @@ final class FormatAssertionVocabularyTest extends TestCase
     {
         $vocabulary = new FormatAssertionVocabulary();
         $expected = [
-            new FormatKeyword(),
+            FormatKeyword::NAME => new FormatKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

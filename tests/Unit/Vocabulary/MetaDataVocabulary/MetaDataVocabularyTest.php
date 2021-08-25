@@ -23,13 +23,13 @@ final class MetaDataVocabularyTest extends TestCase
     {
         $vocabulary = new MetaDataVocabulary();
         $expected = [
-            new TitleKeyword(),
-            new DescriptionKeyword(),
-            new DefaultKeyword(),
-            new DeprecatedKeyword(),
-            new ReadOnlyKeyword(),
-            new WriteOnlyKeyword(),
-            new ExamplesKeyword(),
+            TitleKeyword::NAME => new TitleKeyword(),
+            DescriptionKeyword::NAME => new DescriptionKeyword(),
+            DefaultKeyword::NAME => new DefaultKeyword(),
+            DeprecatedKeyword::NAME => new DeprecatedKeyword(),
+            ReadOnlyKeyword::NAME => new ReadOnlyKeyword(),
+            WriteOnlyKeyword::NAME => new WriteOnlyKeyword(),
+            ExamplesKeyword::NAME => new ExamplesKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

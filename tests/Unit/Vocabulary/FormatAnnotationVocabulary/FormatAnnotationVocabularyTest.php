@@ -17,7 +17,7 @@ final class FormatAnnotationVocabularyTest extends TestCase
     {
         $vocabulary = new FormatAnnotationVocabulary();
         $expected = [
-            new FormatKeyword(),
+            FormatKeyword::NAME => new FormatKeyword(),
         ];
 
         $this->assertEquals($expected, $vocabulary->getKeywords());

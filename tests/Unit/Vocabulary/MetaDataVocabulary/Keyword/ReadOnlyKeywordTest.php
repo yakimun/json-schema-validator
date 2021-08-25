@@ -47,11 +47,6 @@ final class ReadOnlyKeywordTest extends TestCase
         $this->context = new SchemaContext($processor, $pointer, [$identifier]);
     }
 
-    public function testGetName(): void
-    {
-        $this->assertSame('readOnly', $this->keyword->getName());
-    }
-
     public function testProcess(): void
     {
         $expected = [new ReadOnlyKeywordValidator(true)];
