@@ -85,7 +85,7 @@ final class SchemaProcessorTest extends TestCase
         $this->keyword
             ->expects($this->once())
             ->method('process')
-            ->with($this->equalTo($properties), $this->anything());
+            ->with($properties, $this->anything());
 
         $schema = (object)$properties;
         $validator = new ObjectSchemaValidator($this->uri, $this->pointer, []);

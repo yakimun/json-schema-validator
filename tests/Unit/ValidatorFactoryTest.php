@@ -239,6 +239,7 @@ final class ValidatorFactoryTest extends TestCase
         $loader
             ->expects($this->once())
             ->method('load')
+            ->with($uri)
             ->willReturn(new SchemaLoaderResult((object)[]));
 
         $factory = new ValidatorFactory([$loader]);
@@ -262,16 +263,44 @@ final class ValidatorFactoryTest extends TestCase
 
     public function testCreateValidatorWithInvalidExternalSchema(): void
     {
+        $uri = $this->uri->withPath('/a');
+        $_ = (string)$uri;
+
         $loader = $this->createMock(SchemaLoader::class);
         $loader
             ->expects($this->once())
             ->method('load')
+            ->with($uri)
             ->willThrowException(new SchemaLoaderException());
 
         $factory = new ValidatorFactory([$loader]);
         $schema = (object)['$ref' => 'a'];
 
         $this->expectException(ValidatorFactoryException::class);
+
+        $factory->createValidator($schema, $this->uri);
+    }
+
+    public function testCreateValidatorWithTwoLoaders(): void
+    {
+        $uri = $this->uri->withPath('/a');
+        $_ = (string)$uri;
+
+        $loader1 = $this->createMock(SchemaLoader::class);
+        $loader1
+            ->expects($this->once())
+            ->method('load')
+            ->with($uri);
+
+        $loader2 = $this->createMock(SchemaLoader::class);
+        $loader2
+            ->expects($this->once())
+            ->method('load')
+            ->with($uri)
+            ->willReturn(new SchemaLoaderResult((object)[]));
+
+        $factory = new ValidatorFactory([$loader1, $loader2]);
+        $schema = (object)['$ref' => 'a'];
 
         $factory->createValidator($schema, $this->uri);
     }

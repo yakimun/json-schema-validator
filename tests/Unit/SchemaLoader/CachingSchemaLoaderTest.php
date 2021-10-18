@@ -53,7 +53,7 @@ final class CachingSchemaLoaderTest extends TestCase
         $this->internalLoader
             ->expects($this->once())
             ->method('load')
-            ->with($this->equalTo($this->uri))
+            ->with($this->uri)
             ->willReturn($expected);
 
         $this->assertEquals($expected, $this->loader->load($this->uri));
@@ -66,7 +66,7 @@ final class CachingSchemaLoaderTest extends TestCase
         $this->internalLoader
             ->expects($this->once())
             ->method('load')
-            ->with($this->equalTo($this->uri))
+            ->with($this->uri)
             ->willReturn($expected);
 
         $this->assertEquals($expected, $this->loader->load($this->uri));
@@ -78,8 +78,7 @@ final class CachingSchemaLoaderTest extends TestCase
         $this->internalLoader
             ->expects($this->once())
             ->method('load')
-            ->with($this->equalTo($this->invalidUri))
-            ->willReturn(null);
+            ->with($this->invalidUri);
 
         $this->assertNull($this->loader->load($this->invalidUri));
     }
@@ -89,8 +88,7 @@ final class CachingSchemaLoaderTest extends TestCase
         $this->internalLoader
             ->expects($this->once())
             ->method('load')
-            ->with($this->equalTo($this->invalidUri))
-            ->willReturn(null);
+            ->with($this->invalidUri);
 
         $this->assertNull($this->loader->load($this->invalidUri));
         $this->assertNull($this->loader->load($this->invalidUri));

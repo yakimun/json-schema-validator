@@ -55,6 +55,14 @@ final class DependentRequiredKeywordTest extends TestCase
         $this->assertEquals($expected, $this->context->getKeywordValidators());
     }
 
+    public function testProcessWithNonEmptyObject(): void
+    {
+        $expected = [new DependentRequiredKeywordValidator(['a' => []])];
+        $this->keyword->process(['dependentRequired' => (object)['a' => []]], $this->context);
+
+        $this->assertEquals($expected, $this->context->getKeywordValidators());
+    }
+
     public function testProcessWithInvalidValue(): void
     {
         $this->expectException(SchemaException::class);
