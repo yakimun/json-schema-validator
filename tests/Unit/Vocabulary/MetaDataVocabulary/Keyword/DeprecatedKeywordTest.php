@@ -44,7 +44,7 @@ final class DeprecatedKeywordTest extends TestCase
         $processor = new SchemaProcessor(['deprecated' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

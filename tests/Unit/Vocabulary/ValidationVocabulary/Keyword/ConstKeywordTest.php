@@ -42,7 +42,7 @@ final class ConstKeywordTest extends TestCase
         $processor = new SchemaProcessor(['const' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

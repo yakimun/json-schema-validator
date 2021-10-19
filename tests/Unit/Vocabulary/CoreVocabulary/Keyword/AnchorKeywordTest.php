@@ -56,7 +56,7 @@ final class AnchorKeywordTest extends TestCase
         $processor = new SchemaProcessor(['$anchor' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
 
-        $this->context = new SchemaContext($processor, $this->pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $this->pointer, $identifier, []);
     }
 
     /**

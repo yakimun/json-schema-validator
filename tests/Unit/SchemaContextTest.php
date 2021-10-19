@@ -6,7 +6,6 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
@@ -33,14 +32,14 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class SchemaContextTest extends TestCase
 {
     /**
-     * @var UriInterface
+     * @var SchemaIdentifier
      */
-    private UriInterface $uri;
+    private SchemaIdentifier $identifier;
 
     /**
      * @var SchemaIdentifier
      */
-    private SchemaIdentifier $identifier;
+    private SchemaIdentifier $nonCanonicalIdentifier;
 
     /**
      * @var SchemaContext
@@ -49,12 +48,14 @@ final class SchemaContextTest extends TestCase
 
     protected function setUp(): void
     {
-        $processor = new SchemaProcessor(['a' => $this->createStub(Keyword::class)]);
+        $uri = new Uri('https://example1.com');
+        $nonCanonicalUri = new Uri('https://example2.com');
         $pointer = new JsonPointer();
+        $processor = new SchemaProcessor(['a' => $this->createStub(Keyword::class)]);
 
-        $this->uri = new Uri('https://example.com');
-        $this->identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $this->context = new SchemaContext($processor, $pointer, [$this->identifier]);
+        $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+        $this->nonCanonicalIdentifier = new SchemaIdentifier($nonCanonicalUri, $pointer, $pointer);
+        $this->context = new SchemaContext($processor, $pointer, $this->identifier, [$this->nonCanonicalIdentifier]);
     }
 
     public function testGetPath(): void
@@ -64,43 +65,54 @@ final class SchemaContextTest extends TestCase
         $this->assertEquals($expected, $this->context->getPath());
     }
 
-    public function testGetIdentifiers(): void
+    public function testGetIdentifier(): void
     {
-        $expected = [$this->identifier];
+        $expected = $this->identifier;
 
-        $this->assertSame($expected, $this->context->getIdentifiers());
+        $this->assertSame($expected, $this->context->getIdentifier());
     }
 
-    public function testAddIdentifier(): void
+    public function testSetIdentifier(): void
     {
-        $uri = new Uri('https://example.org');
+        $uri = new Uri('https://example1.org');
         $fragment = new JsonPointer();
         $path = new JsonPointer('$id');
-        $expected = [$this->identifier, new SchemaIdentifier($uri, $fragment, $path)];
-        $this->context->addIdentifier($uri, '$id');
+        $expectedIdentifier = new SchemaIdentifier($uri, $fragment, $path);
+        $expectedNonCanonicalIdentifiers = [$this->nonCanonicalIdentifier, $this->identifier];
+        $this->context->setIdentifier($uri, '$id');
 
-        $this->assertEquals($expected, $this->context->getIdentifiers());
+        $this->assertEquals($expectedIdentifier, $this->context->getIdentifier());
+        $this->assertEquals($expectedNonCanonicalIdentifiers, $this->context->getNonCanonicalIdentifiers());
     }
 
-    public function testAddIdentifierWithCurrentUri(): void
+    public function testSetIdentifierWithCurrentUri(): void
     {
-        $uri = new Uri('https://example.com');
+        $uri = new Uri('https://example1.com');
         $fragment = new JsonPointer();
         $path = new JsonPointer('$id');
-        $expected = [new SchemaIdentifier($uri, $fragment, $path)];
-        $this->context->addIdentifier($uri, '$id');
+        $expectedIdentifier = new SchemaIdentifier($uri, $fragment, $path);
+        $expectedNonCanonicalIdentifiers = [$this->nonCanonicalIdentifier];
+        $this->context->setIdentifier($uri, '$id');
 
-        $this->assertEquals($expected, $this->context->getIdentifiers());
+        $this->assertEquals($expectedIdentifier, $this->context->getIdentifier());
+        $this->assertEquals($expectedNonCanonicalIdentifiers, $this->context->getNonCanonicalIdentifiers());
+    }
+
+    public function testGetNonCanonicalIdentifiers(): void
+    {
+        $expected = [$this->nonCanonicalIdentifier];
+
+        $this->assertEquals($expected, $this->context->getNonCanonicalIdentifiers());
     }
 
     public function testGetAnchors(): void
     {
-        $this->assertSame([], $this->context->getAnchors());
+        $this->assertEmpty($this->context->getAnchors());
     }
 
     public function testAddAnchor(): void
     {
-        $uri = new Uri('https://example.com#a');
+        $uri = new Uri('https://example1.com#a');
         $path = new JsonPointer('$anchor');
         $expected = [new SchemaAnchor($uri, false, $path)];
         $this->context->addAnchor($uri, false, '$anchor');
@@ -110,12 +122,12 @@ final class SchemaContextTest extends TestCase
 
     public function testGetReferences(): void
     {
-        $this->assertSame([], $this->context->getReferences());
+        $this->assertEmpty($this->context->getReferences());
     }
 
     public function testAddReference(): void
     {
-        $uri = new Uri('https://example.com');
+        $uri = new Uri('https://example1.com');
         $path = new JsonPointer('$ref');
         $expected = [new SchemaReference($uri, $path)];
         $this->context->addReference($uri, '$ref');
@@ -125,7 +137,7 @@ final class SchemaContextTest extends TestCase
 
     public function testGetKeywordValidators(): void
     {
-        $this->assertSame([], $this->context->getKeywordValidators());
+        $this->assertEmpty($this->context->getKeywordValidators());
     }
 
     public function testAddKeywordValidator(): void
@@ -139,16 +151,26 @@ final class SchemaContextTest extends TestCase
 
     public function testGetProcessedSchemas(): void
     {
-        $this->assertSame([], $this->context->getProcessedSchemas());
+        $this->assertEmpty($this->context->getProcessedSchemas());
     }
 
     public function testCreateValidator(): void
     {
-        $uri = new Uri('https://example.com');
+        $uri = new Uri('https://example1.com');
+        $nonCanonicalUri = new Uri('https://example2.com');
         $pointer = new JsonPointer('a');
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+        $nonCanonicalIdentifier = new SchemaIdentifier($nonCanonicalUri, $pointer, $pointer);
         $expectedValidator = new ObjectSchemaValidator($uri, $pointer, []);
-        $expectedProcessedSchemas = [new ProcessedSchema($expectedValidator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [
+            new ProcessedSchema(
+                $expectedValidator,
+                $identifier,
+                [$nonCanonicalIdentifier],
+                [],
+                [],
+            ),
+        ];
 
         $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], 'a'));
         $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());

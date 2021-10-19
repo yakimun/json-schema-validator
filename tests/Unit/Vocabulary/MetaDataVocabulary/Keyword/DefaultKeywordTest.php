@@ -42,7 +42,7 @@ final class DefaultKeywordTest extends TestCase
         $processor = new SchemaProcessor(['default' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

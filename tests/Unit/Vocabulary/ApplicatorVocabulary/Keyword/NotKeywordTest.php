@@ -54,7 +54,7 @@ final class NotKeywordTest extends TestCase
         $processor = new SchemaProcessor(['not' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void
@@ -63,7 +63,7 @@ final class NotKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new NotKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['not' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());

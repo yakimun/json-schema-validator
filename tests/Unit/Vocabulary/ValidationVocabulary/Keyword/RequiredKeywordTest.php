@@ -44,7 +44,7 @@ final class RequiredKeywordTest extends TestCase
         $processor = new SchemaProcessor(['required' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

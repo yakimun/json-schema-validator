@@ -46,7 +46,7 @@ final class ExclusiveMinimumKeywordTest extends TestCase
         $processor = new SchemaProcessor(['exclusiveMinimum' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcessWithIntValue(): void

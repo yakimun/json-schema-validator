@@ -33,6 +33,11 @@ final class ProcessedSchemaTest extends TestCase
     private SchemaIdentifier $identifier;
 
     /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $nonCanonicalIdentifier;
+
+    /**
      * @var SchemaAnchor
      */
     private SchemaAnchor $anchor;
@@ -49,18 +54,27 @@ final class ProcessedSchemaTest extends TestCase
 
     protected function setUp(): void
     {
-        $uri = new Uri('https://example.com');
+        $uri = new Uri('https://example1.com');
+        $nonCanonicalIdentifier = new Uri('https://example2.com');
         $pointer = new JsonPointer();
 
         $this->validator = $this->createStub(SchemaValidator::class);
         $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
+        $this->nonCanonicalIdentifier = new SchemaIdentifier($nonCanonicalIdentifier, $pointer, $pointer);
         $this->anchor = new SchemaAnchor($uri->withFragment('a'), false, $pointer->addTokens('$anchor'));
         $this->reference = new SchemaReference($uri, $pointer->addTokens('$ref'));
 
+        $nonCanonicalIdentifiers = [$this->nonCanonicalIdentifier];
         $anchors = [$this->anchor];
         $references = [$this->reference];
 
-        $this->processedSchema = new ProcessedSchema($this->validator, [$this->identifier], $anchors, $references);
+        $this->processedSchema = new ProcessedSchema(
+            $this->validator,
+            $this->identifier,
+            $nonCanonicalIdentifiers,
+            $anchors,
+            $references,
+        );
     }
 
     public function testGetValidator(): void
@@ -70,11 +84,18 @@ final class ProcessedSchemaTest extends TestCase
         $this->assertSame($expected, $this->processedSchema->getValidator());
     }
 
-    public function testGetIdentifiers(): void
+    public function testGetIdentifier(): void
     {
-        $expected = [$this->identifier];
+        $expected = $this->identifier;
 
-        $this->assertSame($expected, $this->processedSchema->getIdentifiers());
+        $this->assertSame($expected, $this->processedSchema->getIdentifier());
+    }
+
+    public function testGetNonCanonicalIdentifiers(): void
+    {
+        $expected = [$this->nonCanonicalIdentifier];
+
+        $this->assertSame($expected, $this->processedSchema->getNonCanonicalIdentifiers());
     }
 
     public function testGetAnchors(): void

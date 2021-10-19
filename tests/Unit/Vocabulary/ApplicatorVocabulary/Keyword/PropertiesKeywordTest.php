@@ -48,7 +48,7 @@ final class PropertiesKeywordTest extends TestCase
         $processor = new SchemaProcessor(['properties' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     /**
@@ -91,8 +91,8 @@ final class PropertiesKeywordTest extends TestCase
         $identifier1 = new SchemaIdentifier($uri, $pointer1, $pointer1);
         $identifier2 = new SchemaIdentifier($uri, $pointer2, $pointer2);
 
-        $processedSchema1 = new ProcessedSchema($validator1, [$identifier1], [], []);
-        $processedSchema2 = new ProcessedSchema($validator2, [$identifier2], [], []);
+        $processedSchema1 = new ProcessedSchema($validator1, $identifier1, [], [], []);
+        $processedSchema2 = new ProcessedSchema($validator2, $identifier2, [], [], []);
 
         return [
             [[], []],

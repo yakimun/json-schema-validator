@@ -54,7 +54,7 @@ final class ContentSchemaKeywordTest extends TestCase
         $processor = new SchemaProcessor(['contentSchema' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void
@@ -63,7 +63,7 @@ final class ContentSchemaKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ContentSchemaKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['contentMediaType' => 'a', 'contentSchema' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
@@ -82,7 +82,7 @@ final class ContentSchemaKeywordTest extends TestCase
         $pointer = new JsonPointer('contentSchema');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['contentSchema' => (object)[]], $this->context);
 
         $this->assertEmpty($this->context->getKeywordValidators());

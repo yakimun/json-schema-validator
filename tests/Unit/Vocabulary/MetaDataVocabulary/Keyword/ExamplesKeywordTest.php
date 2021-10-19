@@ -44,7 +44,7 @@ final class ExamplesKeywordTest extends TestCase
         $processor = new SchemaProcessor(['examples' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

@@ -17,9 +17,14 @@ final class ProcessedSchema
     private SchemaValidator $validator;
 
     /**
-     * @var non-empty-list<SchemaIdentifier>
+     * @var SchemaIdentifier
      */
-    private array $identifiers;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var list<SchemaIdentifier>
+     */
+    private array $nonCanonicalIdentifiers;
 
     /**
      * @var list<SchemaAnchor>
@@ -33,14 +38,21 @@ final class ProcessedSchema
 
     /**
      * @param SchemaValidator $validator
-     * @param non-empty-list<SchemaIdentifier> $identifiers
+     * @param SchemaIdentifier $identifier
+     * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      * @param list<SchemaAnchor> $anchors
      * @param list<SchemaReference> $references
      */
-    public function __construct(SchemaValidator $validator, array $identifiers, array $anchors, array $references)
-    {
+    public function __construct(
+        SchemaValidator $validator,
+        SchemaIdentifier $identifier,
+        array $nonCanonicalIdentifiers,
+        array $anchors,
+        array $references
+    ) {
         $this->validator = $validator;
-        $this->identifiers = $identifiers;
+        $this->identifier = $identifier;
+        $this->nonCanonicalIdentifiers = $nonCanonicalIdentifiers;
         $this->anchors = $anchors;
         $this->references = $references;
     }
@@ -54,11 +66,19 @@ final class ProcessedSchema
     }
 
     /**
-     * @return non-empty-list<SchemaIdentifier>
+     * @return SchemaIdentifier
      */
-    public function getIdentifiers(): array
+    public function getIdentifier(): SchemaIdentifier
     {
-        return $this->identifiers;
+        return $this->identifier;
+    }
+
+    /**
+     * @return list<SchemaIdentifier>
+     */
+    public function getNonCanonicalIdentifiers(): array
+    {
+        return $this->nonCanonicalIdentifiers;
     }
 
     /**

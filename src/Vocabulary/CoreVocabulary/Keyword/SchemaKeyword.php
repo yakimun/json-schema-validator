@@ -22,9 +22,7 @@ final class SchemaKeyword implements Keyword
      */
     public function process(array $properties, SchemaContext $context): void
     {
-        $identifiers = $context->getIdentifiers();
-
-        if (!end($identifiers)->getFragment()->isEmpty()) {
+        if (!$context->getIdentifier()->getFragment()->isEmpty()) {
             $message = 'The keyword must not appear in non-resource root schema objects.';
             throw $context->createException($message, self::NAME);
         }

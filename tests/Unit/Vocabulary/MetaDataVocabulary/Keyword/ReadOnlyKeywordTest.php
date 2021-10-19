@@ -44,7 +44,7 @@ final class ReadOnlyKeywordTest extends TestCase
         $processor = new SchemaProcessor(['readOnly' => $this->keyword]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void

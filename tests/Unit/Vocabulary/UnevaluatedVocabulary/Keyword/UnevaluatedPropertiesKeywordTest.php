@@ -54,7 +54,7 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
         $processor = new SchemaProcessor(['unevaluatedProperties' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void
@@ -63,7 +63,7 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new UnevaluatedPropertiesKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['unevaluatedProperties' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());

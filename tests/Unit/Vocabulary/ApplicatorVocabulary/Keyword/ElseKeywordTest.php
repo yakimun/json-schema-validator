@@ -54,7 +54,7 @@ final class ElseKeywordTest extends TestCase
         $processor = new SchemaProcessor(['else' => $this->keyword]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
 
-        $this->context = new SchemaContext($processor, $pointer, [$identifier]);
+        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
     }
 
     public function testProcess(): void
@@ -63,7 +63,7 @@ final class ElseKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ElseKeywordValidator($validator)];
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['if' => (object)[], 'else' => (object)[]], $this->context);
 
         $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
@@ -75,7 +75,7 @@ final class ElseKeywordTest extends TestCase
         $pointer = new JsonPointer('else');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
-        $expectedProcessedSchemas = [new ProcessedSchema($validator, [$identifier], [], [])];
+        $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
         $this->keyword->process(['else' => (object)[]], $this->context);
 
         $this->assertEmpty($this->context->getKeywordValidators());

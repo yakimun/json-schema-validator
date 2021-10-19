@@ -59,7 +59,7 @@ final class IdKeywordTest extends TestCase
         $processor = new SchemaProcessor(['$id' => $this->keyword]);
 
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-        $this->context = new SchemaContext($processor, $this->pointer, [$this->identifier]);
+        $this->context = new SchemaContext($processor, $this->pointer, $this->identifier, []);
     }
 
     /**
@@ -72,10 +72,12 @@ final class IdKeywordTest extends TestCase
         $_ = (string)$uri;
         $fragment = new JsonPointer();
         $path = $this->pointer->addTokens('$id');
-        $expected = [$this->identifier, new SchemaIdentifier($uri, $fragment, $path)];
+        $expectedIdentifier = new SchemaIdentifier($uri, $fragment, $path);
+        $expectedNonCanonicalIdentifiers = [$this->identifier];
         $this->keyword->process(['$id' => $value], $this->context);
 
-        $this->assertEquals($expected, $this->context->getIdentifiers());
+        $this->assertEquals($expectedIdentifier, $this->context->getIdentifier());
+        $this->assertEquals($expectedNonCanonicalIdentifiers, $this->context->getNonCanonicalIdentifiers());
     }
 
     /**
@@ -101,10 +103,11 @@ final class IdKeywordTest extends TestCase
         $_ = (string)$uri;
         $fragment = new JsonPointer();
         $path = $this->pointer->addTokens('$id');
-        $expected = [new SchemaIdentifier($uri, $fragment, $path)];
+        $expected = new SchemaIdentifier($uri, $fragment, $path);
         $this->keyword->process(['$id' => $value], $this->context);
 
-        $this->assertEquals($expected, $this->context->getIdentifiers());
+        $this->assertEquals($expected, $this->context->getIdentifier());
+        $this->assertEmpty($this->context->getNonCanonicalIdentifiers());
     }
 
     /**

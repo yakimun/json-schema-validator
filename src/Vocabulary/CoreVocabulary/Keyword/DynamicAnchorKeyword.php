@@ -30,9 +30,7 @@ final class DynamicAnchorKeyword implements Keyword
             throw $context->createException($message, self::NAME);
         }
 
-        $identifiers = $context->getIdentifiers();
-
-        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), true, self::NAME);
+        $context->addAnchor($context->getIdentifier()->getUri()->withFragment($property), true, self::NAME);
         $context->addKeywordValidator(new DynamicAnchorKeywordValidator($property));
     }
 }

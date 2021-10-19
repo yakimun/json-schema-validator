@@ -25,9 +25,14 @@ final class SchemaContext
     private JsonPointer $path;
 
     /**
-     * @var non-empty-list<SchemaIdentifier>
+     * @var SchemaIdentifier
      */
-    private array $identifiers;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var list<SchemaIdentifier>
+     */
+    private array $nonCanonicalIdentifiers;
 
     /**
      * @var list<SchemaAnchor>
@@ -52,13 +57,19 @@ final class SchemaContext
     /**
      * @param SchemaProcessor $processor
      * @param JsonPointer $path
-     * @param non-empty-list<SchemaIdentifier> $identifiers
+     * @param SchemaIdentifier $identifier
+     * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      */
-    public function __construct(SchemaProcessor $processor, JsonPointer $path, array $identifiers)
-    {
+    public function __construct(
+        SchemaProcessor $processor,
+        JsonPointer $path,
+        SchemaIdentifier $identifier,
+        array $nonCanonicalIdentifiers
+    ) {
         $this->processor = $processor;
         $this->path = $path;
-        $this->identifiers = $identifiers;
+        $this->identifier = $identifier;
+        $this->nonCanonicalIdentifiers = $nonCanonicalIdentifiers;
     }
 
     /**
@@ -71,29 +82,39 @@ final class SchemaContext
     }
 
     /**
-     * @return non-empty-list<SchemaIdentifier>
+     * @return SchemaIdentifier
      * @psalm-mutation-free
      */
-    public function getIdentifiers(): array
+    public function getIdentifier(): SchemaIdentifier
     {
-        return $this->identifiers;
+        return $this->identifier;
     }
 
     /**
      * @param UriInterface $identifier
      * @param string $token
      */
-    public function addIdentifier(UriInterface $identifier, string $token): void
+    public function setIdentifier(UriInterface $identifier, string $token): void
     {
         $schemaIdentifier = new SchemaIdentifier($identifier, new JsonPointer(), $this->path->addTokens($token));
 
-        if (UriNormalizer::isEquivalent(end($this->identifiers)->getUri(), $identifier)) {
-            $this->identifiers = [$schemaIdentifier];
+        if (UriNormalizer::isEquivalent($this->identifier->getUri(), $identifier)) {
+            $this->identifier = $schemaIdentifier;
 
             return;
         }
 
-        $this->identifiers[] = $schemaIdentifier;
+        $this->nonCanonicalIdentifiers[] = $this->identifier;
+        $this->identifier = $schemaIdentifier;
+    }
+
+    /**
+     * @return list<SchemaIdentifier>
+     * @psalm-mutation-free
+     */
+    public function getNonCanonicalIdentifiers(): array
+    {
+        return $this->nonCanonicalIdentifiers;
     }
 
     /**
@@ -167,22 +188,36 @@ final class SchemaContext
      */
     public function createValidator($schema, string ...$tokens): SchemaValidator
     {
-        $identifiers = [];
+        $identifier = $this->advanceIdentifier($this->identifier, ...$tokens);
 
-        foreach ($this->identifiers as $identifier) {
-            $identifierUri = $identifier->getUri();
-            $identifierFragment = $identifier->getFragment()->addTokens(...$tokens);
-            $identifierPath = $identifier->getPath()->addTokens(...$tokens);
+        $nonCanonicalIdentifiers = [];
 
-            $identifiers[] = new SchemaIdentifier($identifierUri, $identifierFragment, $identifierPath);
+        foreach ($this->nonCanonicalIdentifiers as $nonCanonicalIdentifier) {
+            $nonCanonicalIdentifiers[] = $this->advanceIdentifier($nonCanonicalIdentifier, ...$tokens);
         }
 
         $path = $this->path->addTokens(...$tokens);
 
-        $processedSchemas = $this->processor->process($schema, $identifiers, $path);
+        $processedSchemas = $this->processor->process($schema, $identifier, $nonCanonicalIdentifiers, $path);
         $this->processedSchemas = [...$this->processedSchemas, ...$processedSchemas];
 
         return $processedSchemas[0]->getValidator();
+    }
+
+    /**
+     * @param SchemaIdentifier $identifier
+     * @param string ...$tokens
+     * @return SchemaIdentifier
+     * @no-named-arguments
+     * @psalm-mutation-free
+     */
+    private function advanceIdentifier(SchemaIdentifier $identifier, string ...$tokens): SchemaIdentifier
+    {
+        $identifierUri = $identifier->getUri();
+        $identifierFragment = $identifier->getFragment()->addTokens(...$tokens);
+        $identifierPath = $identifier->getPath()->addTokens(...$tokens);
+
+        return new SchemaIdentifier($identifierUri, $identifierFragment, $identifierPath);
     }
 
     /**

@@ -123,7 +123,7 @@ final class ValidatorFactory
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
         try {
-            $processedSchemas = $this->processor->process($schema, [$identifier], $pointer);
+            $processedSchemas = $this->processor->process($schema, $identifier, [], $pointer);
         } catch (SchemaException $e) {
             $message = sprintf('The "%s" schema must be valid. %s', (string)$uri, $e->getMessage());
             throw new ValidatorFactoryException($message, 0, $e);
@@ -132,28 +132,10 @@ final class ValidatorFactory
         foreach ($processedSchemas as $processedSchema) {
             $validator = $processedSchema->getValidator();
 
-            foreach ($processedSchema->getIdentifiers() as $identifier) {
-                $identifierUriString = (string)$identifier->getUri()->withFragment((string)$identifier->getFragment());
-                $identifierPath = $identifier->getPath();
+            $validators = $this->processIdentifier($validator, $processedSchema->getIdentifier(), $uri, $validators);
 
-                if (array_key_exists($identifierUriString, $validators)) {
-                    $uriString = (string)$uri;
-                    $identifierPathString = (string)$identifierPath;
-                    $existingValidatorUriString = (string)$validators[$identifierUriString][2];
-                    $existingValidatorPathString = (string)$validators[$identifierUriString][3];
-
-                    $format = 'The schemas "%s" and "%s" must have different identifiers. Paths: "%s" and "%s".';
-                    $message = sprintf(
-                        $format,
-                        $existingValidatorUriString,
-                        $uriString,
-                        $existingValidatorPathString,
-                        $identifierPathString,
-                    );
-                    throw new ValidatorFactoryException($message);
-                }
-
-                $validators[$identifierUriString] = [$validator, false, $uri, $identifierPath];
+            foreach ($processedSchema->getNonCanonicalIdentifiers() as $nonCanonicalIdentifier) {
+                $validators = $this->processIdentifier($validator, $nonCanonicalIdentifier, $uri, $validators);
             }
 
             foreach ($processedSchema->getAnchors() as $anchor) {
@@ -186,6 +168,44 @@ final class ValidatorFactory
         }
 
         return [$validators, $references];
+    }
+
+    /**
+     * @param SchemaValidator $validator
+     * @param SchemaIdentifier $identifier
+     * @param UriInterface $uri
+     * @param array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}> $validators
+     * @return non-empty-array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}>
+     */
+    private function processIdentifier(
+        SchemaValidator $validator,
+        SchemaIdentifier $identifier,
+        UriInterface $uri,
+        array $validators
+    ): array {
+        $identifierUriString = (string)$identifier->getUri()->withFragment((string)$identifier->getFragment());
+        $identifierPath = $identifier->getPath();
+
+        if (array_key_exists($identifierUriString, $validators)) {
+            $uriString = (string)$uri;
+            $identifierPathString = (string)$identifierPath;
+            $existingValidatorUriString = (string)$validators[$identifierUriString][2];
+            $existingValidatorPathString = (string)$validators[$identifierUriString][3];
+
+            $format = 'The schemas "%s" and "%s" must have different identifiers. Paths: "%s" and "%s".';
+            $message = sprintf(
+                $format,
+                $existingValidatorUriString,
+                $uriString,
+                $existingValidatorPathString,
+                $identifierPathString,
+            );
+            throw new ValidatorFactoryException($message);
+        }
+
+        $validators[$identifierUriString] = [$validator, false, $uri, $identifierPath];
+
+        return $validators;
     }
 
     /**

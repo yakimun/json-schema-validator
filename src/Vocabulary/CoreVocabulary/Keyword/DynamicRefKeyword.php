@@ -26,9 +26,7 @@ final class DynamicRefKeyword implements Keyword
             throw $context->createException('The value must be a string.', self::NAME);
         }
 
-        $identifiers = $context->getIdentifiers();
-
-        $dynamicRef = UriResolver::resolve(end($identifiers)->getUri(), new Uri($property));
+        $dynamicRef = UriResolver::resolve($context->getIdentifier()->getUri(), new Uri($property));
 
         $context->addReference($dynamicRef, self::NAME);
         $context->addKeywordValidator(new DynamicRefKeywordValidator($dynamicRef));

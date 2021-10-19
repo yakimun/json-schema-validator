@@ -29,8 +29,6 @@ final class AnchorKeyword implements Keyword
             throw $context->createException($message, self::NAME);
         }
 
-        $identifiers = $context->getIdentifiers();
-
-        $context->addAnchor(end($identifiers)->getUri()->withFragment($property), false, self::NAME);
+        $context->addAnchor($context->getIdentifier()->getUri()->withFragment($property), false, self::NAME);
     }
 }
