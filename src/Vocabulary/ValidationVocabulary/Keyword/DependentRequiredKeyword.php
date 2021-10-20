@@ -33,7 +33,9 @@ final class DependentRequiredKeyword implements Keyword
 
             $dependentRequiredProperties[$key] = [];
 
-            /** @var scalar|object|list<mixed>|null $item */
+            /**
+             * @var scalar|object|list<mixed>|null $item
+             */
             foreach (array_values($objectProperty) as $item) {
                 if (!is_string($item)) {
                     $message = 'Object property values must contain only string elements.';

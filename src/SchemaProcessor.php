@@ -78,7 +78,9 @@ final class SchemaProcessor
 
         $keywordValidators = $context->getKeywordValidators();
 
-        /** @var scalar|object|list<mixed>|null $value */
+        /**
+         * @var scalar|object|list<mixed>|null $value
+         */
         foreach (array_diff_key($properties, $this->keywords) as $name => $value) {
             $keywordValidators[] = new UnknownKeywordValidator($name, $value);
         }

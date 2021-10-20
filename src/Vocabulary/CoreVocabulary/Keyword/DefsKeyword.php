@@ -23,7 +23,9 @@ final class DefsKeyword implements Keyword
             throw $context->createException('The value must be an object.', self::NAME);
         }
 
-        /** @var scalar|object|list<mixed>|null $value */
+        /**
+         * @var scalar|object|list<mixed>|null $value
+         */
         foreach (get_object_vars($property) as $key => $value) {
             $context->createValidator($value, self::NAME, $key);
         }

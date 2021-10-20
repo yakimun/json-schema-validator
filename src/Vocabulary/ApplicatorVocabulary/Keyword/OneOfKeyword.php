@@ -30,7 +30,9 @@ final class OneOfKeyword implements Keyword
 
         $validators = [];
 
-        /** @var scalar|object|list<mixed>|null $item */
+        /**
+         * @var scalar|object|list<mixed>|null $item
+         */
         foreach (array_values($property) as $index => $item) {
             $validators[] = $context->createValidator($item, self::NAME, (string)$index);
         }

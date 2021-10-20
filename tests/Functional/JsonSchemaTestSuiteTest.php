@@ -66,12 +66,18 @@ final class JsonSchemaTestSuiteTest extends TestCase
                 throw new \RuntimeException('Test file must be readable.');
             }
 
-            /** @var \stdClass $testCase */
+            /**
+             * @var \stdClass $testCase
+             */
             foreach (json_decode($json, false, 512, JSON_THROW_ON_ERROR) as $testCase) {
-                /** @var string $description */
+                /**
+                 * @var string $description
+                 */
                 $description = $testCase->description;
 
-                /** @var object|bool $schema */
+                /**
+                 * @var object|bool $schema
+                 */
                 $schema = $testCase->schema;
 
                 $datasets[$description] = [$schema];

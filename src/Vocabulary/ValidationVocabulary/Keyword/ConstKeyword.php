@@ -18,7 +18,9 @@ final class ConstKeyword implements Keyword
      */
     public function process(array $properties, SchemaContext $context): void
     {
-        /** @var scalar|object|list<mixed>|null $property */
+        /**
+         * @var scalar|object|list<mixed>|null $property
+         */
         $property = $properties[self::NAME];
 
         $context->addKeywordValidator(new ConstKeywordValidator($property));
