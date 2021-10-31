@@ -30,11 +30,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\RefKe
 final class RefKeywordTest extends TestCase
 {
     /**
-     * @var RefKeyword
-     */
-    private RefKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
@@ -45,20 +40,27 @@ final class RefKeywordTest extends TestCase
     private JsonPointer $pointer;
 
     /**
-     * @var SchemaContext
+     * @var SchemaIdentifier
      */
-    private SchemaContext $context;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var RefKeyword
+     */
+    private RefKeyword $keyword;
+
+    /**
+     * @var SchemaProcessor
+     */
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
-        $this->keyword = new RefKeyword();
         $this->uri = new Uri('https://example.com');
         $this->pointer = new JsonPointer();
-
-        $processor = new SchemaProcessor(['$ref' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-
-        $this->context = new SchemaContext($processor, $this->pointer, $identifier, []);
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $this->keyword = new RefKeyword();
+        $this->processor = new SchemaProcessor(['$ref' => $this->keyword]);
     }
 
     /**
@@ -67,14 +69,14 @@ final class RefKeywordTest extends TestCase
      */
     public function testProcess(string $value): void
     {
+        $context = new SchemaContext($this->processor, ['$ref' => $value], $this->pointer, $this->identifier, []);
         $uri = UriResolver::resolve($this->uri, new Uri($value));
-        $path = $this->pointer->addTokens('$ref');
-        $expectedReferences = [new SchemaReference($uri, $path)];
+        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens('$ref'))];
         $expectedValidators = [new RefKeywordValidator($uri)];
-        $this->keyword->process(['$ref' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedReferences, $this->context->getReferences());
-        $this->assertEquals($expectedValidators, $this->context->getKeywordValidators());
+        $this->assertEquals($expectedReferences, $context->getReferences());
+        $this->assertEquals($expectedValidators, $context->getKeywordValidators());
     }
 
     /**
@@ -95,8 +97,11 @@ final class RefKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['$ref' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$ref' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

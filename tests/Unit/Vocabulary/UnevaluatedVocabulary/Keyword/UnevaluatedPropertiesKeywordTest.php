@@ -36,44 +36,68 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
     private UriInterface $uri;
 
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var UnevaluatedPropertiesKeyword
      */
     private UnevaluatedPropertiesKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new UnevaluatedPropertiesKeyword();
-
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['unevaluatedProperties' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['unevaluatedProperties' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer('unevaluatedProperties');
+        $value = (object)[];
+        $context = new SchemaContext(
+            $this->processor,
+            ['unevaluatedProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $pointer = $this->pointer->addTokens('unevaluatedProperties');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new UnevaluatedPropertiesKeywordValidator($validator)];
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
-        $this->keyword->process(['unevaluatedProperties' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['unevaluatedProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['unevaluatedProperties' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

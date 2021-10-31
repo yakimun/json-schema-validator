@@ -26,53 +26,70 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class RequiredKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var RequiredKeyword
      */
     private RequiredKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new RequiredKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['required' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['required' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new RequiredKeywordValidator(['a'])];
-        $this->keyword->process(['required' => ['a']], $this->context);
+        $value = ['a'];
+        $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new RequiredKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['required' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
+        $value = [null];
+        $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['required' => [null]], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
+        $value = ['a', 'a'];
+        $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['required' => ['a', 'a']], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

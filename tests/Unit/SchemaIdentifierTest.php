@@ -34,7 +34,7 @@ final class SchemaIdentifierTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer('a');
+        $this->pointer = new JsonPointer();
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
     }
 
@@ -42,20 +42,20 @@ final class SchemaIdentifierTest extends TestCase
     {
         $expected = $this->uri;
 
-        $this->assertEquals($expected, $this->identifier->getUri());
+        $this->assertSame($expected, $this->identifier->getUri());
     }
 
     public function testGetFragment(): void
     {
         $expected = $this->pointer;
 
-        $this->assertEquals($expected, $this->identifier->getFragment());
+        $this->assertSame($expected, $this->identifier->getFragment());
     }
 
     public function testGetPath(): void
     {
         $expected = $this->pointer;
 
-        $this->assertEquals($expected, $this->identifier->getPath());
+        $this->assertSame($expected, $this->identifier->getPath());
     }
 }

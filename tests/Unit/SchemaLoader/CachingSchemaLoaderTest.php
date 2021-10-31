@@ -57,19 +57,6 @@ final class CachingSchemaLoaderTest extends TestCase
             ->willReturn($expected);
 
         $this->assertEquals($expected, $this->loader->load($this->uri));
-    }
-
-    public function testLoadCachedValue(): void
-    {
-        $expected = new SchemaLoaderResult(null);
-
-        $this->internalLoader
-            ->expects($this->once())
-            ->method('load')
-            ->with($this->uri)
-            ->willReturn($expected);
-
-        $this->assertEquals($expected, $this->loader->load($this->uri));
         $this->assertEquals($expected, $this->loader->load($this->uri));
     }
 
@@ -80,17 +67,6 @@ final class CachingSchemaLoaderTest extends TestCase
             ->method('load')
             ->with($this->invalidUri);
 
-        $this->assertNull($this->loader->load($this->invalidUri));
-    }
-
-    public function testLoadCachedValueWithInvalidUri(): void
-    {
-        $this->internalLoader
-            ->expects($this->once())
-            ->method('load')
-            ->with($this->invalidUri);
-
-        $this->assertNull($this->loader->load($this->invalidUri));
         $this->assertNull($this->loader->load($this->invalidUri));
     }
 }

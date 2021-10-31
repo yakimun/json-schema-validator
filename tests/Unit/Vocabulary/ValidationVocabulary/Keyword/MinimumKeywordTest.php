@@ -28,47 +28,60 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class MinimumKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var MinimumKeyword
      */
     private MinimumKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MinimumKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['minimum' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['minimum' => $this->keyword]);
     }
 
     public function testProcessWithIntValue(): void
     {
-        $expected = [new IntMinimumKeywordValidator(0)];
-        $this->keyword->process(['minimum' => 0], $this->context);
+        $value = 0;
+        $context = new SchemaContext($this->processor, ['minimum' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new IntMinimumKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $expected = [new FloatMinimumKeywordValidator(0)];
-        $this->keyword->process(['minimum' => 0.0], $this->context);
+        $value = 0.0;
+        $context = new SchemaContext($this->processor, ['minimum' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new FloatMinimumKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['minimum' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['minimum' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

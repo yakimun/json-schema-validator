@@ -30,25 +30,31 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
 final class OneOfKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var OneOfKeyword
      */
     private OneOfKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new OneOfKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['oneOf' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['oneOf' => $this->keyword]);
     }
 
     /**
@@ -58,6 +64,8 @@ final class OneOfKeywordTest extends TestCase
      */
     public function testProcess(array $value, array $expectedProcessedSchemas): void
     {
+        $context = new SchemaContext($this->processor, ['oneOf' => $value], $this->pointer, $this->identifier, []);
+
         $validators = [];
 
         foreach ($expectedProcessedSchemas as $processedSchema) {
@@ -65,10 +73,10 @@ final class OneOfKeywordTest extends TestCase
         }
 
         $expectedKeywordValidators = [new OneOfKeywordValidator($validators)];
-        $this->keyword->process(['oneOf' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     /**
@@ -105,9 +113,11 @@ final class OneOfKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?array $value): void
     {
+        $context = new SchemaContext($this->processor, ['oneOf' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['oneOf' => $value], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     /**

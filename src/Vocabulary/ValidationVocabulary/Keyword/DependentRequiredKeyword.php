@@ -13,13 +13,11 @@ final class DependentRequiredKeyword implements Keyword
     public const NAME = 'dependentRequired';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $property = $properties[self::NAME];
-
         if (!is_object($property)) {
             throw $context->createException('The value must be an object.', self::NAME);
         }
@@ -34,7 +32,7 @@ final class DependentRequiredKeyword implements Keyword
             $dependentRequiredProperties[$key] = [];
 
             /**
-             * @var scalar|object|list<mixed>|null $item
+             * @var list<mixed>|null|object|scalar $item
              */
             foreach (array_values($objectProperty) as $item) {
                 if (!is_string($item)) {

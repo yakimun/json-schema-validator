@@ -17,16 +17,14 @@ final class VocabularyKeyword implements Keyword
     public const NAME = '$vocabulary';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
         if (!$context->getPath()->isEmpty()) {
             throw $context->createException('The keyword must not appear in subschemas.', self::NAME);
         }
-
-        $property = $properties[self::NAME];
 
         if (!is_object($property)) {
             throw $context->createException('The value must be an object.', self::NAME);

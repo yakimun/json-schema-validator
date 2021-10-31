@@ -26,39 +26,50 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\T
 final class TitleKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var TitleKeyword
      */
     private TitleKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new TitleKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['title' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['title' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new TitleKeywordValidator('a')];
-        $this->keyword->process(['title' => 'a'], $this->context);
+        $value = 'a';
+        $context = new SchemaContext($this->processor, ['title' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new TitleKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['title' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['title' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

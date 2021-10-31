@@ -25,14 +25,19 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\SchemaKeyword;
 final class SchemaKeywordTest extends TestCase
 {
     /**
-     * @var SchemaKeyword
-     */
-    private SchemaKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaKeyword
+     */
+    private SchemaKeyword $keyword;
 
     /**
      * @var SchemaProcessor
@@ -41,26 +46,26 @@ final class SchemaKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->keyword = new SchemaKeyword();
         $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+        $this->keyword = new SchemaKeyword();
         $this->processor = new SchemaProcessor(['$schema' => $this->keyword]);
     }
 
     /**
      * @param non-empty-array<string, string> $properties
-     * @dataProvider propertyProvider
+     * @dataProvider propertiesProvider
      */
     public function testProcess(array $properties): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $pointer, $identifier, []);
-        $expected = clone $context;
+        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $context = new SchemaContext($this->processor, $properties, $this->pointer, $identifier, []);
+        $expected = new SchemaContext($this->processor, $properties, $this->pointer, $identifier, []);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process($properties, $context);
+        $this->keyword->process($properties['$schema'], $context);
 
         $this->assertEquals($expected, $context);
     }
@@ -68,7 +73,7 @@ final class SchemaKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{non-empty-array<string, string>}>
      */
-    public function propertyProvider(): array
+    public function propertiesProvider(): array
     {
         return [
             [['$schema' => 'https://example.org/a']],
@@ -83,16 +88,16 @@ final class SchemaKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?string $value, array $tokens): void
     {
-        $pointer = new JsonPointer(...$tokens);
+        $pointer = $this->pointer->addTokens(...$tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $pointer, $identifier, []);
+        $context = new SchemaContext($this->processor, ['$schema' => $value], $pointer, $identifier, []);
 
         $this->expectException(SchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$schema' => $value], $context);
+        $this->keyword->process($value, $context);
     }
 
     /**

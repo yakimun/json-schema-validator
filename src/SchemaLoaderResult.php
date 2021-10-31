@@ -10,12 +10,12 @@ namespace Yakimun\JsonSchemaValidator;
 final class SchemaLoaderResult
 {
     /**
-     * @var scalar|object|list<mixed>|null
+     * @var list<mixed>|null|object|scalar
      */
     private $schema;
 
     /**
-     * @param scalar|object|list<mixed>|null $schema
+     * @param list<mixed>|null|object|scalar $schema
      */
     public function __construct($schema)
     {
@@ -23,7 +23,7 @@ final class SchemaLoaderResult
     }
 
     /**
-     * @return scalar|object|list<mixed>|null
+     * @return list<mixed>|null|object|scalar
      */
     public function getSchema()
     {

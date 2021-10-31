@@ -61,19 +61,14 @@ final class ProcessedSchemaTest extends TestCase
         $this->validator = $this->createStub(SchemaValidator::class);
         $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
         $this->nonCanonicalIdentifier = new SchemaIdentifier($nonCanonicalIdentifier, $pointer, $pointer);
-        $this->anchor = new SchemaAnchor($uri->withFragment('a'), false, $pointer->addTokens('$anchor'));
-        $this->reference = new SchemaReference($uri, $pointer->addTokens('$ref'));
-
-        $nonCanonicalIdentifiers = [$this->nonCanonicalIdentifier];
-        $anchors = [$this->anchor];
-        $references = [$this->reference];
-
+        $this->anchor = new SchemaAnchor($uri, true, $pointer);
+        $this->reference = new SchemaReference($uri, $pointer);
         $this->processedSchema = new ProcessedSchema(
             $this->validator,
             $this->identifier,
-            $nonCanonicalIdentifiers,
-            $anchors,
-            $references,
+            [$this->nonCanonicalIdentifier],
+            [$this->anchor],
+            [$this->reference],
         );
     }
 

@@ -57,7 +57,7 @@ final class DirectorySchemaLoaderTest extends TestCase
             throw new \RuntimeException('The file must exist and be readable.');
         }
 
-        $this->uri = new Uri('https://example.com/schema');
+        $this->uri = $uri->withPath('/schema');
         $this->directory = $fullDirectory . '/';
         $this->filename = $fullFilename;
         $this->loader = new DirectorySchemaLoader($uri, $fullDirectory);
@@ -84,7 +84,7 @@ final class DirectorySchemaLoaderTest extends TestCase
 
     public function testLoadWithNonExistingUri(): void
     {
-        $this->assertNull($this->loader->load(new Uri('https://example.com/schema2')));
+        $this->assertNull($this->loader->load($this->uri->withPath('/schema2')));
     }
 
     public function testLoadWithInvalidJson(): void

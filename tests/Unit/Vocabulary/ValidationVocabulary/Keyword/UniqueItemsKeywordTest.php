@@ -26,39 +26,62 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class UniqueItemsKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var UniqueItemsKeyword
      */
     private UniqueItemsKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new UniqueItemsKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['uniqueItems' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['uniqueItems' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new UniqueItemsKeywordValidator(true)];
-        $this->keyword->process(['uniqueItems' => true], $this->context);
+        $value = true;
+        $context = new SchemaContext(
+            $this->processor,
+            ['uniqueItems' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $expected = [new UniqueItemsKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['uniqueItems' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['uniqueItems' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

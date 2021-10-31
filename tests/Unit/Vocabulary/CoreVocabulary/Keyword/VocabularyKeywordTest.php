@@ -25,14 +25,19 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\VocabularyKeyw
 final class VocabularyKeywordTest extends TestCase
 {
     /**
-     * @var VocabularyKeyword
-     */
-    private VocabularyKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
+
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var VocabularyKeyword
+     */
+    private VocabularyKeyword $keyword;
 
     /**
      * @var SchemaProcessor
@@ -41,9 +46,10 @@ final class VocabularyKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->keyword = new VocabularyKeyword();
         $this->uri = new Uri('https://example.com');
-        $this->processor = new SchemaProcessor(['$schema' => $this->keyword]);
+        $this->pointer = new JsonPointer();
+        $this->keyword = new VocabularyKeyword();
+        $this->processor = new SchemaProcessor(['$vocabulary' => $this->keyword]);
     }
 
     /**
@@ -52,15 +58,26 @@ final class VocabularyKeywordTest extends TestCase
      */
     public function testProcess(array $value): void
     {
-        $pointer = new JsonPointer();
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $pointer, $identifier, []);
-        $expected = clone $context;
+        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $context = new SchemaContext(
+            $this->processor,
+            ['$vocabulary' => (object)$value],
+            $this->pointer,
+            $identifier,
+            [],
+        );
+        $expected = new SchemaContext(
+            $this->processor,
+            ['$vocabulary' => (object)$value],
+            $this->pointer,
+            $identifier,
+            [],
+        );
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$vocabulary' => (object)$value], $context);
+        $this->keyword->process((object)$value, $context);
 
         $this->assertEquals($expected, $context);
     }
@@ -85,16 +102,16 @@ final class VocabularyKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?object $value, array $tokens): void
     {
-        $pointer = new JsonPointer(...$tokens);
+        $pointer = $this->pointer->addTokens(...$tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-        $context = new SchemaContext($this->processor, $pointer, $identifier, []);
+        $context = new SchemaContext($this->processor, ['$vocabulary' => $value], $pointer, $identifier, []);
 
         $this->expectException(SchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$vocabulary' => $value], $context);
+        $this->keyword->process($value, $context);
     }
 
     /**

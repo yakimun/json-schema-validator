@@ -14,16 +14,11 @@ final class MultipleOfKeyword implements Keyword
     public const NAME = 'multipleOf';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        /**
-         * @var scalar|object|list<mixed>|null $property
-         */
-        $property = $properties[self::NAME];
-
         if (is_int($property)) {
             if ($property <= 0) {
                 throw $context->createException('The value must be strictly greater than 0.', self::NAME);

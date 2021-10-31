@@ -24,46 +24,57 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\CommentKeyword
 final class CommentKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var CommentKeyword
      */
     private CommentKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new CommentKeyword();
-
-        $pointer = new JsonPointer();
-
-        $processor = new SchemaProcessor(['$comment' => $this->keyword]);
-        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['$comment' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = clone $this->context;
+        $value = 'a';
+        $context = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
+        $expected = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => 'a'], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context);
+        $this->assertEquals($expected, $context);
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
         /**
          * @psalm-suppress UnusedMethodCall
          */
-        $this->keyword->process(['$comment' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

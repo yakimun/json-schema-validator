@@ -36,44 +36,56 @@ final class NotKeywordTest extends TestCase
     private UriInterface $uri;
 
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var NotKeyword
      */
     private NotKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new NotKeyword();
-
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['not' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['not' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer('not');
+        $value = (object)[];
+        $context = new SchemaContext($this->processor, ['not' => $value], $this->pointer, $this->identifier, []);
+        $pointer = $this->pointer->addTokens('not');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new NotKeywordValidator($validator)];
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
-        $this->keyword->process(['not' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['not' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['not' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

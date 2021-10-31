@@ -26,46 +26,60 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class MaxItemsKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var MaxItemsKeyword
      */
     private MaxItemsKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MaxItemsKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['maxItems' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['maxItems' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new MaxItemsKeywordValidator(0)];
-        $this->keyword->process(['maxItems' => 0], $this->context);
+        $value = 0;
+        $context = new SchemaContext($this->processor, ['maxItems' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new MaxItemsKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['maxItems' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['maxItems' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNegativeValue(): void
     {
+        $value = -1;
+        $context = new SchemaContext($this->processor, ['maxItems' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['maxItems' => -1], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

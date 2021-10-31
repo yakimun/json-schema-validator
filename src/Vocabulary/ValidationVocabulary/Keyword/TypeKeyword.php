@@ -14,16 +14,11 @@ final class TypeKeyword implements Keyword
     public const NAME = 'type';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        /**
-         * @var scalar|object|list<mixed>|null $property
-         */
-        $property = $properties[self::NAME];
-
         if (is_string($property)) {
             if (!in_array($property, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
                 $message = 'The value must be equal to "null", "boolean", "object", "array", "number", "string", or '

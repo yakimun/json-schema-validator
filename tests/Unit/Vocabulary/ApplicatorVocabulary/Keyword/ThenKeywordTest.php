@@ -36,56 +36,76 @@ final class ThenKeywordTest extends TestCase
     private UriInterface $uri;
 
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var ThenKeyword
      */
     private ThenKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new ThenKeyword();
-
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['then' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['then' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer('then');
+        $value = (object)[];
+        $context = new SchemaContext(
+            $this->processor,
+            ['if' => (object)[], 'then' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $pointer = $this->pointer->addTokens('then');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ThenKeywordValidator($validator)];
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
-        $this->keyword->process(['if' => (object)[], 'then' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithoutIf(): void
     {
-        $pointer = new JsonPointer('then');
+        $value = (object)[];
+        $context = new SchemaContext($this->processor, ['then' => $value], $this->pointer, $this->identifier, []);
+        $pointer = $this->pointer->addTokens('then');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
-        $this->keyword->process(['then' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEmpty($this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEmpty($context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['then' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['then' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

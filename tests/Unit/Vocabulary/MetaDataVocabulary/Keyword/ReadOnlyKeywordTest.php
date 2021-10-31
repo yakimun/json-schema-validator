@@ -26,39 +26,50 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\R
 final class ReadOnlyKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var ReadOnlyKeyword
      */
     private ReadOnlyKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ReadOnlyKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['readOnly' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['readOnly' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new ReadOnlyKeywordValidator(true)];
-        $this->keyword->process(['readOnly' => true], $this->context);
+        $value = true;
+        $context = new SchemaContext($this->processor, ['readOnly' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new ReadOnlyKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['readOnly' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['readOnly' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

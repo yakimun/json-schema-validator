@@ -36,44 +36,68 @@ final class PropertyNamesKeywordTest extends TestCase
     private UriInterface $uri;
 
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var PropertyNamesKeyword
      */
     private PropertyNamesKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new PropertyNamesKeyword();
-
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['propertyNames' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['propertyNames' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $pointer = new JsonPointer('propertyNames');
+        $value = (object)[];
+        $context = new SchemaContext(
+            $this->processor,
+            ['propertyNames' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $pointer = $this->pointer->addTokens('propertyNames');
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new PropertyNamesKeywordValidator($validator)];
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];
-        $this->keyword->process(['propertyNames' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['propertyNames' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['propertyNames' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

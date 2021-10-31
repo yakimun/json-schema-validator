@@ -13,13 +13,11 @@ final class DynamicAnchorKeyword implements Keyword
     public const NAME = '$dynamicAnchor';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $property = $properties[self::NAME];
-
         if (!is_string($property)) {
             throw $context->createException('The value must be a string.', self::NAME);
         }

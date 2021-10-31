@@ -19,6 +19,12 @@ final class SchemaContext
     private SchemaProcessor $processor;
 
     /**
+     * @var non-empty-array<string, list<mixed>|null|object|scalar>
+     * @readonly
+     */
+    private array $properties;
+
+    /**
      * @var JsonPointer
      * @readonly
      */
@@ -56,20 +62,31 @@ final class SchemaContext
 
     /**
      * @param SchemaProcessor $processor
+     * @param non-empty-array<string, list<mixed>|null|object|scalar> $properties
      * @param JsonPointer $path
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      */
     public function __construct(
         SchemaProcessor $processor,
+        array $properties,
         JsonPointer $path,
         SchemaIdentifier $identifier,
         array $nonCanonicalIdentifiers
     ) {
         $this->processor = $processor;
+        $this->properties = $properties;
         $this->path = $path;
         $this->identifier = $identifier;
         $this->nonCanonicalIdentifiers = $nonCanonicalIdentifiers;
+    }
+
+    /**
+     * @return non-empty-array<string, list<mixed>|null|object|scalar>
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
     }
 
     /**
@@ -181,7 +198,7 @@ final class SchemaContext
     }
 
     /**
-     * @param mixed $schema
+     * @param list<mixed>|null|object|scalar $schema
      * @param string ...$tokens
      * @return SchemaValidator
      * @no-named-arguments

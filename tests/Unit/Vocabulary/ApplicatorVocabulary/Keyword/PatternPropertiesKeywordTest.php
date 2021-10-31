@@ -30,34 +30,48 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
 final class PatternPropertiesKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var PatternPropertiesKeyword
      */
     private PatternPropertiesKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new PatternPropertiesKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['patternProperties' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['patternProperties' => $this->keyword]);
     }
 
     /**
      * @param array<string, object> $value
      * @param array<string, ProcessedSchema> $processedSchemas
-     * @dataProvider propertyProvider
+     * @dataProvider valueProvider
      */
     public function testProcess(array $value, array $processedSchemas): void
     {
+        $context = new SchemaContext(
+            $this->processor,
+            ['patternProperties' => (object)$value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $validators = [];
 
         foreach ($processedSchemas as $key => $processedSchema) {
@@ -66,16 +80,16 @@ final class PatternPropertiesKeywordTest extends TestCase
 
         $expectedKeywordValidators = [new PatternPropertiesKeywordValidator($validators)];
         $expectedProcessedSchemas = array_values($processedSchemas);
-        $this->keyword->process(['patternProperties' => (object)$value], $this->context);
+        $this->keyword->process((object)$value, $context);
 
-        $this->assertEquals($expectedKeywordValidators, $this->context->getKeywordValidators());
-        $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
+        $this->assertEquals($expectedKeywordValidators, $context->getKeywordValidators());
+        $this->assertEquals($expectedProcessedSchemas, $context->getProcessedSchemas());
     }
 
     /**
      * @return non-empty-list<array{array<string, object>, array<string, ProcessedSchema>}>
      */
-    public function propertyProvider(): array
+    public function valueProvider(): array
     {
         $object1 = (object)[];
         $object2 = (object)[];
@@ -107,9 +121,17 @@ final class PatternPropertiesKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?object $value): void
     {
+        $context = new SchemaContext(
+            $this->processor,
+            ['patternProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['patternProperties' => $value], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     /**

@@ -30,10 +30,7 @@ final class StringSchemaLoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-
-        $json = '{}';
-
-        $this->loader = new StringSchemaLoader($this->uri, $json);
+        $this->loader = new StringSchemaLoader($this->uri, '{}');
     }
 
     public function testLoad(): void

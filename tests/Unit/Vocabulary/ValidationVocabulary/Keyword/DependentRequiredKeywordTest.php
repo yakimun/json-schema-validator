@@ -26,68 +26,126 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class DependentRequiredKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var DependentRequiredKeyword
      */
     private DependentRequiredKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new DependentRequiredKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['dependentRequired' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['dependentRequired' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
+        $value = (object)[];
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
         $expected = [new DependentRequiredKeywordValidator([])];
-        $this->keyword->process(['dependentRequired' => (object)[]], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithNonEmptyObject(): void
     {
-        $expected = [new DependentRequiredKeywordValidator(['a' => []])];
-        $this->keyword->process(['dependentRequired' => (object)['a' => []]], $this->context);
+        $value = ['a' => []];
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => (object)$value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $expected = [new DependentRequiredKeywordValidator($value)];
+        $this->keyword->process((object)$value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidObjectProperty(): void
     {
+        $value = (object)['a' => null];
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => (object)['a' => null]], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
+        $value = (object)['a' => [null]];
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => (object)['a' => [null]]], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
+        $value = (object)['a' => ['b', 'b']];
+        $context = new SchemaContext(
+            $this->processor,
+            ['dependentRequired' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['dependentRequired' => (object)['a' => ['b', 'b']]], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

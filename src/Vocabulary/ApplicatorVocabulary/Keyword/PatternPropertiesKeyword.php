@@ -13,13 +13,11 @@ final class PatternPropertiesKeyword implements Keyword
     private const NAME = 'patternProperties';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $property = $properties[self::NAME];
-
         if (!is_object($property)) {
             throw $context->createException('The value must be an object.', self::NAME);
         }
@@ -27,7 +25,7 @@ final class PatternPropertiesKeyword implements Keyword
         $validators = [];
 
         /**
-         * @var scalar|object|list<mixed>|null $value
+         * @var list<mixed>|null|object|scalar $value
          */
         foreach (get_object_vars($property) as $key => $value) {
             $validators['/' . $key . '/'] = $context->createValidator($value, self::NAME, $key);

@@ -49,7 +49,7 @@ final class StringSchemaLoader implements SchemaLoader
 
         try {
             /**
-             * @var scalar|object|list<mixed>|null $schema
+             * @var list<mixed>|null|object|scalar $schema
              */
             $schema = json_decode($this->json, false, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {

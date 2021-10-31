@@ -21,7 +21,7 @@ final class JsonPointerTest extends TestCase
     {
         $pointer = new JsonPointer(...$initialTokens);
         $expectedPointer = new JsonPointer(...$initialTokens, ...$tokens);
-        $expectedInitialPointer = clone $pointer;
+        $expectedInitialPointer = new JsonPointer(...$initialTokens);
 
         $this->assertEquals($expectedPointer, $pointer->addTokens(...$tokens));
         $this->assertEquals($expectedInitialPointer, $pointer);

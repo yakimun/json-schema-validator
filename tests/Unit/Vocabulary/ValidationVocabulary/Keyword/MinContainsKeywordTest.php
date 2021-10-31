@@ -26,53 +26,94 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class MinContainsKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var MinContainsKeyword
      */
     private MinContainsKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MinContainsKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['minContains' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['minContains' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new MinContainsKeywordValidator(0)];
-        $this->keyword->process(['contains' => true, 'minContains' => 0], $this->context);
+        $value = 0;
+        $context = new SchemaContext(
+            $this->processor,
+            ['contains' => true, 'minContains' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $expected = [new MinContainsKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
-    }
-
-    public function testProcessWithInvalidValue(): void
-    {
-        $this->expectException(SchemaException::class);
-
-        $this->keyword->process(['minContains' => null], $this->context);
-    }
-
-    public function testProcessWithNegativeValue(): void
-    {
-        $this->expectException(SchemaException::class);
-
-        $this->keyword->process(['minContains' => -1], $this->context);
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithoutContains(): void
     {
-        $this->keyword->process(['minContains' => 0], $this->context);
+        $value = 0;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minContains' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
 
-        $this->assertEmpty($this->context->getKeywordValidators());
+        $this->keyword->process($value, $context);
+
+        $this->assertEmpty($context->getKeywordValidators());
+    }
+
+    public function testProcessWithInvalidValue(): void
+    {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minContains' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
+        $this->expectException(SchemaException::class);
+
+        $this->keyword->process($value, $context);
+    }
+
+    public function testProcessWithNegativeValue(): void
+    {
+        $value = -1;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minContains' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
+        $this->expectException(SchemaException::class);
+
+        $this->keyword->process($value, $context);
     }
 }

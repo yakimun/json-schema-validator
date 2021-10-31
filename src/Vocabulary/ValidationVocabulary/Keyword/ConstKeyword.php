@@ -13,16 +13,11 @@ final class ConstKeyword implements Keyword
     public const NAME = 'const';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        /**
-         * @var scalar|object|list<mixed>|null $property
-         */
-        $property = $properties[self::NAME];
-
         $context->addKeywordValidator(new ConstKeywordValidator($property));
     }
 }

@@ -13,17 +13,20 @@ final class ExamplesKeyword implements Keyword
     public const NAME = 'examples';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $property = $properties[self::NAME];
-
         if (!is_array($property)) {
             throw $context->createException('The value must be an array.', self::NAME);
         }
 
-        $context->addKeywordValidator(new ExamplesKeywordValidator(array_values($property)));
+        /**
+         * @var list<list<mixed>|null|object|scalar> $examples
+         */
+        $examples = array_values($property);
+
+        $context->addKeywordValidator(new ExamplesKeywordValidator($examples));
     }
 }

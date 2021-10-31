@@ -13,14 +13,14 @@ final class ContentSchemaKeyword implements Keyword
     public const NAME = 'contentSchema';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($properties[self::NAME], self::NAME);
+        $validator = $context->createValidator($property, self::NAME);
 
-        if (array_key_exists(ContentMediaTypeKeyword::NAME, $properties)) {
+        if (array_key_exists(ContentMediaTypeKeyword::NAME, $context->getProperties())) {
             $context->addKeywordValidator(new ContentSchemaKeywordValidator($validator));
         }
     }

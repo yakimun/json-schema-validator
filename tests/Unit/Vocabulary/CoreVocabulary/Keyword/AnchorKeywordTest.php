@@ -28,11 +28,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword;
 final class AnchorKeywordTest extends TestCase
 {
     /**
-     * @var AnchorKeyword
-     */
-    private AnchorKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
@@ -43,20 +38,27 @@ final class AnchorKeywordTest extends TestCase
     private JsonPointer $pointer;
 
     /**
-     * @var SchemaContext
+     * @var SchemaIdentifier
      */
-    private SchemaContext $context;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var AnchorKeyword
+     */
+    private AnchorKeyword $keyword;
+
+    /**
+     * @var SchemaProcessor
+     */
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
-        $this->keyword = new AnchorKeyword();
         $this->uri = new Uri('https://example.com');
         $this->pointer = new JsonPointer();
-
-        $processor = new SchemaProcessor(['$anchor' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-
-        $this->context = new SchemaContext($processor, $this->pointer, $identifier, []);
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $this->keyword = new AnchorKeyword();
+        $this->processor = new SchemaProcessor(['$anchor' => $this->keyword]);
     }
 
     /**
@@ -65,10 +67,11 @@ final class AnchorKeywordTest extends TestCase
      */
     public function testProcess(string $value): void
     {
+        $context = new SchemaContext($this->processor, ['$anchor' => $value], $this->pointer, $this->identifier, []);
         $expected = [new SchemaAnchor($this->uri->withFragment($value), false, $this->pointer->addTokens('$anchor'))];
-        $this->keyword->process(['$anchor' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getAnchors());
+        $this->assertEquals($expected, $context->getAnchors());
     }
 
     /**
@@ -96,9 +99,11 @@ final class AnchorKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?string $value): void
     {
+        $context = new SchemaContext($this->processor, ['$anchor' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$anchor' => $value], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     /**

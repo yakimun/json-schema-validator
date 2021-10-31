@@ -13,12 +13,12 @@ final class IfKeyword implements Keyword
     public const NAME = 'if';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($properties[self::NAME], self::NAME);
+        $validator = $context->createValidator($property, self::NAME);
         $context->addKeywordValidator(new IfKeywordValidator($validator));
     }
 }

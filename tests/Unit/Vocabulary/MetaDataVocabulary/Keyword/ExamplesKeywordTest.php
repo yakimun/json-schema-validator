@@ -26,39 +26,50 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\E
 final class ExamplesKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var ExamplesKeyword
      */
     private ExamplesKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ExamplesKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['examples' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['examples' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new ExamplesKeywordValidator([])];
-        $this->keyword->process(['examples' => []], $this->context);
+        $value = [];
+        $context = new SchemaContext($this->processor, ['examples' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new ExamplesKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['examples' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['examples' => null], $this->context);
+        $this->keyword->process(null, $context);
     }
 }

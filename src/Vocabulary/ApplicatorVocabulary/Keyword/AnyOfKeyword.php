@@ -13,13 +13,11 @@ final class AnyOfKeyword implements Keyword
     public const NAME = 'anyOf';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $property = $properties[self::NAME];
-
         if (!is_array($property)) {
             throw $context->createException('The value must be an array.', self::NAME);
         }
@@ -31,7 +29,7 @@ final class AnyOfKeyword implements Keyword
         $validators = [];
 
         /**
-         * @var scalar|object|list<mixed>|null $item
+         * @var list<mixed>|null|object|scalar $item
          */
         foreach (array_values($property) as $index => $item) {
             $validators[] = $context->createValidator($item, self::NAME, (string)$index);

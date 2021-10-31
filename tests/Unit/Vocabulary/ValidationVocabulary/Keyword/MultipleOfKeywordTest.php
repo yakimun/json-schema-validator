@@ -28,68 +28,90 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class MultipleOfKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var MultipleOfKeyword
      */
     private MultipleOfKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MultipleOfKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['multipleOf' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['multipleOf' => $this->keyword]);
     }
 
     public function testProcessWithIntValue(): void
     {
-        $expected = [new IntMultipleOfKeywordValidator(1)];
-        $this->keyword->process(['multipleOf' => 1], $this->context);
+        $value = 1;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new IntMultipleOfKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithFloatValue(): void
     {
-        $expected = [new FloatMultipleOfKeywordValidator(1)];
-        $this->keyword->process(['multipleOf' => 1.0], $this->context);
+        $value = 1.0;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new FloatMultipleOfKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['multipleOf' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNegativeIntValue(): void
     {
+        $value = -1;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['multipleOf' => -1], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNegativeFloatValue(): void
     {
+        $value = -1.0;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['multipleOf' => -1.0], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithZeroValue(): void
     {
+        $value = 0;
+        $context = new SchemaContext($this->processor, ['multipleOf' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['multipleOf' => 0], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

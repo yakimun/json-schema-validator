@@ -28,43 +28,56 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DefsKeyword;
 final class DefsKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var DefsKeyword
      */
     private DefsKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new DefsKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['$defs' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['$defs' => $this->keyword]);
     }
 
     /**
-     * @param array<string, object> $properties
+     * @param array<string, object> $value
      * @param list<ProcessedSchema> $expected
-     * @dataProvider propertyProvider
+     * @dataProvider valueProvider
      */
-    public function testProcess(array $properties, array $expected): void
+    public function testProcess(array $value, array $expected): void
     {
-        $this->keyword->process(['$defs' => (object)$properties], $this->context);
+        $context = new SchemaContext(
+            $this->processor,
+            ['$defs' => (object)$value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $this->keyword->process((object)$value, $context);
 
-        $this->assertEquals($expected, $this->context->getProcessedSchemas());
+        $this->assertEquals($expected, $context->getProcessedSchemas());
     }
 
     /**
      * @return non-empty-list<array{array<string, object>, list<ProcessedSchema>}>
      */
-    public function propertyProvider(): array
+    public function valueProvider(): array
     {
         $object1 = (object)[];
         $object2 = (object)[];
@@ -97,9 +110,11 @@ final class DefsKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?object $value): void
     {
+        $context = new SchemaContext($this->processor, ['$defs' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$defs' => $value], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     /**

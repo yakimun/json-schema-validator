@@ -19,13 +19,13 @@ final class MemorySchemaLoader implements SchemaLoader
     private UriInterface $uri;
 
     /**
-     * @var scalar|object|list<mixed>|null
+     * @var list<mixed>|null|object|scalar
      */
     private $schema;
 
     /**
      * @param UriInterface $uri
-     * @param scalar|object|list<mixed>|null $schema
+     * @param list<mixed>|null|object|scalar $schema
      */
     public function __construct(UriInterface $uri, $schema)
     {

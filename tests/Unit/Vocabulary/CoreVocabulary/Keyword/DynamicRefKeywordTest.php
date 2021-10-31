@@ -30,11 +30,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
 final class DynamicRefKeywordTest extends TestCase
 {
     /**
-     * @var DynamicRefKeyword
-     */
-    private DynamicRefKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
@@ -45,20 +40,27 @@ final class DynamicRefKeywordTest extends TestCase
     private JsonPointer $pointer;
 
     /**
-     * @var SchemaContext
+     * @var SchemaIdentifier
      */
-    private SchemaContext $context;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var DynamicRefKeyword
+     */
+    private DynamicRefKeyword $keyword;
+
+    /**
+     * @var SchemaProcessor
+     */
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
-        $this->keyword = new DynamicRefKeyword();
         $this->uri = new Uri('https://example.com');
         $this->pointer = new JsonPointer();
-
-        $processor = new SchemaProcessor(['$dynamicRef' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-
-        $this->context = new SchemaContext($processor, $this->pointer, $identifier, []);
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $this->keyword = new DynamicRefKeyword();
+        $this->processor = new SchemaProcessor(['$dynamicRef' => $this->keyword]);
     }
 
     /**
@@ -67,14 +69,20 @@ final class DynamicRefKeywordTest extends TestCase
      */
     public function testProcess(string $value): void
     {
+        $context = new SchemaContext(
+            $this->processor,
+            ['$dynamicRef' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
         $uri = UriResolver::resolve($this->uri, new Uri($value));
-        $path = $this->pointer->addTokens('$dynamicRef');
-        $expectedReferences = [new SchemaReference($uri, $path)];
+        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens('$dynamicRef'))];
         $expectedValidators = [new DynamicRefKeywordValidator($uri)];
-        $this->keyword->process(['$dynamicRef' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedReferences, $this->context->getReferences());
-        $this->assertEquals($expectedValidators, $this->context->getKeywordValidators());
+        $this->assertEquals($expectedReferences, $context->getReferences());
+        $this->assertEquals($expectedValidators, $context->getKeywordValidators());
     }
 
     /**
@@ -95,8 +103,17 @@ final class DynamicRefKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['$dynamicRef' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$dynamicRef' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

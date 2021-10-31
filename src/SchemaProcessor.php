@@ -26,7 +26,7 @@ final class SchemaProcessor
     }
 
     /**
-     * @param mixed $schema
+     * @param list<mixed>|null|object|scalar $schema
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      * @param JsonPointer $path
@@ -62,6 +62,9 @@ final class SchemaProcessor
         array $nonCanonicalIdentifiers,
         JsonPointer $path
     ): array {
+        /**
+         * @var array<string, list<mixed>|null|object|scalar> $properties
+         */
         $properties = get_object_vars($schema);
 
         if (!$properties) {
@@ -70,17 +73,14 @@ final class SchemaProcessor
             return [new ProcessedSchema($validator, $identifier, $nonCanonicalIdentifiers, [], [])];
         }
 
-        $context = new SchemaContext($this, $path, $identifier, $nonCanonicalIdentifiers);
+        $context = new SchemaContext($this, $properties, $path, $identifier, $nonCanonicalIdentifiers);
 
-        foreach (array_intersect_key($this->keywords, $properties) as $keyword) {
-            $keyword->process($properties, $context);
+        foreach (array_intersect_key($this->keywords, $properties) as $name => $keyword) {
+            $keyword->process($properties[$name], $context);
         }
 
         $keywordValidators = $context->getKeywordValidators();
 
-        /**
-         * @var scalar|object|list<mixed>|null $value
-         */
         foreach (array_diff_key($properties, $this->keywords) as $name => $value) {
             $keywordValidators[] = new UnknownKeywordValidator($name, $value);
         }

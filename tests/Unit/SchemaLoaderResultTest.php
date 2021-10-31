@@ -14,7 +14,7 @@ final class SchemaLoaderResultTest extends TestCase
 {
     public function testGetSchema(): void
     {
-        $expected = (object)[];
+        $expected = null;
         $result = new SchemaLoaderResult($expected);
 
         $this->assertSame($expected, $result->getSchema());

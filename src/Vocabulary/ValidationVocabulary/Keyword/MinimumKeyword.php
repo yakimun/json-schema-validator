@@ -14,16 +14,11 @@ final class MinimumKeyword implements Keyword
     public const NAME = 'minimum';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        /**
-         * @var scalar|object|list<mixed>|null $property
-         */
-        $property = $properties[self::NAME];
-
         if (is_int($property)) {
             $context->addKeywordValidator(new IntMinimumKeywordValidator($property));
 

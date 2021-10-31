@@ -15,13 +15,13 @@ final class UnknownKeywordValidator implements KeywordValidator
     private string $name;
 
     /**
-     * @var mixed
+     * @var list<mixed>|null|object|scalar
      */
     private $value;
 
     /**
      * @param string $name
-     * @param scalar|object|list<mixed>|null $value
+     * @param list<mixed>|null|object|scalar $value
      */
     public function __construct(string $name, $value)
     {

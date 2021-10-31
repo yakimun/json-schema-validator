@@ -26,46 +26,78 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class MinPropertiesKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var MinPropertiesKeyword
      */
     private MinPropertiesKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MinPropertiesKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['minProperties' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['minProperties' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new MinPropertiesKeywordValidator(0)];
-        $this->keyword->process(['minProperties' => 0], $this->context);
+        $value = 0;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $expected = [new MinPropertiesKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['minProperties' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNegativeValue(): void
     {
+        $value = -1;
+        $context = new SchemaContext(
+            $this->processor,
+            ['minProperties' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['minProperties' => -1], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

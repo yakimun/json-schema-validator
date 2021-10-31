@@ -28,25 +28,31 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 final class TypeKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var TypeKeyword
      */
     private TypeKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new TypeKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['type' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['type' => $this->keyword]);
     }
 
     /**
@@ -55,10 +61,11 @@ final class TypeKeywordTest extends TestCase
      */
     public function testProcessWithStringValue(string $value): void
     {
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
         $expected = [new StringTypeKeywordValidator($value)];
-        $this->keyword->process(['type' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     /**
@@ -83,10 +90,11 @@ final class TypeKeywordTest extends TestCase
      */
     public function testProcessWithArrayValue(array $value): void
     {
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
         $expected = [new ArrayTypeKeywordValidator($value)];
-        $this->keyword->process(['type' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     /**
@@ -108,36 +116,51 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['type' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidStringType(): void
     {
+        $value = 'a';
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['type' => 'a'], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidArrayItem(): void
     {
+        $value = [null];
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['type' => [null]], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithInvalidArrayItemType(): void
     {
+        $value = ['a'];
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['type' => ['a']], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
+        $value = ['null', 'null'];
+        $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['type' => ['null', 'null']], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

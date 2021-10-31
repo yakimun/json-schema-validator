@@ -13,14 +13,14 @@ final class ElseKeyword implements Keyword
     public const NAME = 'else';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($properties[self::NAME], self::NAME);
+        $validator = $context->createValidator($property, self::NAME);
 
-        if (array_key_exists(IfKeyword::NAME, $properties)) {
+        if (array_key_exists(IfKeyword::NAME, $context->getProperties())) {
             $context->addKeywordValidator(new ElseKeywordValidator($validator));
         }
     }

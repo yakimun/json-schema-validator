@@ -23,33 +23,17 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class ConstKeywordTest extends TestCase
 {
-    /**
-     * @var ConstKeyword
-     */
-    private ConstKeyword $keyword;
-
-    /**
-     * @var SchemaContext
-     */
-    private SchemaContext $context;
-
-    protected function setUp(): void
-    {
-        $this->keyword = new ConstKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['const' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
-    }
-
     public function testProcess(): void
     {
-        $expected = [new ConstKeywordValidator(null)];
-        $this->keyword->process(['const' => null], $this->context);
+        $pointer = new JsonPointer();
+        $keyword = new ConstKeyword();
+        $processor = new SchemaProcessor(['const' => $keyword]);
+        $value = null;
+        $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
+        $context = new SchemaContext($processor, ['const' => $value], $pointer, $identifier, []);
+        $expected = [new ConstKeywordValidator($value)];
+        $keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 }

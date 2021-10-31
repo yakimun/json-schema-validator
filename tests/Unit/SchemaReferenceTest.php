@@ -34,7 +34,7 @@ final class SchemaReferenceTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer('a');
+        $this->pointer = new JsonPointer();
         $this->reference = new SchemaReference($this->uri, $this->pointer);
     }
 
@@ -42,13 +42,13 @@ final class SchemaReferenceTest extends TestCase
     {
         $expected = $this->uri;
 
-        $this->assertEquals($expected, $this->reference->getUri());
+        $this->assertSame($expected, $this->reference->getUri());
     }
 
     public function testGetPath(): void
     {
         $expected = $this->pointer;
 
-        $this->assertEquals($expected, $this->reference->getPath());
+        $this->assertSame($expected, $this->reference->getPath());
     }
 }

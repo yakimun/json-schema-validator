@@ -17,17 +17,15 @@ final class SchemaKeyword implements Keyword
     public const NAME = '$schema';
 
     /**
-     * @param non-empty-array<string, mixed> $properties
+     * @param list<mixed>|null|object|scalar $property
      * @param SchemaContext $context
      */
-    public function process(array $properties, SchemaContext $context): void
+    public function process($property, SchemaContext $context): void
     {
         if (!$context->getIdentifier()->getFragment()->isEmpty()) {
             $message = 'The keyword must not appear in non-resource root schema objects.';
             throw $context->createException($message, self::NAME);
         }
-
-        $property = $properties[self::NAME];
 
         if (!is_string($property)) {
             throw $context->createException('The value must be a string.', self::NAME);

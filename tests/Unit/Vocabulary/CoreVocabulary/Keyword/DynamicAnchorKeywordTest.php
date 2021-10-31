@@ -30,11 +30,6 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
 final class DynamicAnchorKeywordTest extends TestCase
 {
     /**
-     * @var DynamicAnchorKeyword
-     */
-    private DynamicAnchorKeyword $keyword;
-
-    /**
      * @var UriInterface
      */
     private UriInterface $uri;
@@ -45,20 +40,27 @@ final class DynamicAnchorKeywordTest extends TestCase
     private JsonPointer $pointer;
 
     /**
-     * @var SchemaContext
+     * @var SchemaIdentifier
      */
-    private SchemaContext $context;
+    private SchemaIdentifier $identifier;
+
+    /**
+     * @var DynamicAnchorKeyword
+     */
+    private DynamicAnchorKeyword $keyword;
+
+    /**
+     * @var SchemaProcessor
+     */
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
-        $this->keyword = new DynamicAnchorKeyword();
         $this->uri = new Uri('https://example.com');
         $this->pointer = new JsonPointer();
-
-        $processor = new SchemaProcessor(['$dynamicAnchor' => $this->keyword]);
-        $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-
-        $this->context = new SchemaContext($processor, $this->pointer, $identifier, []);
+        $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
+        $this->keyword = new DynamicAnchorKeyword();
+        $this->processor = new SchemaProcessor(['$dynamicAnchor' => $this->keyword]);
     }
 
     /**
@@ -67,14 +69,21 @@ final class DynamicAnchorKeywordTest extends TestCase
      */
     public function testProcess(string $value): void
     {
+        $context = new SchemaContext(
+            $this->processor,
+            ['$dynamicAnchor' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
         $uri = $this->uri->withFragment($value);
         $path = $this->pointer->addTokens('$dynamicAnchor');
         $expectedAnchors = [new SchemaAnchor($uri, true, $path)];
         $expectedValidators = [new DynamicAnchorKeywordValidator($value)];
-        $this->keyword->process(['$dynamicAnchor' => $value], $this->context);
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expectedAnchors, $this->context->getAnchors());
-        $this->assertEquals($expectedValidators, $this->context->getKeywordValidators());
+        $this->assertEquals($expectedAnchors, $context->getAnchors());
+        $this->assertEquals($expectedValidators, $context->getKeywordValidators());
     }
 
     /**
@@ -102,9 +111,17 @@ final class DynamicAnchorKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?string $value): void
     {
+        $context = new SchemaContext(
+            $this->processor,
+            ['$dynamicAnchor' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['$dynamicAnchor' => $value], $this->context);
+        $this->keyword->process($value, $context);
     }
 
     /**

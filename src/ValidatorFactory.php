@@ -60,7 +60,7 @@ final class ValidatorFactory
     }
 
     /**
-     * @param mixed $schema
+     * @param list<mixed>|null|object|scalar $schema
      * @param UriInterface $uri
      * @return Validator
      */
@@ -108,7 +108,7 @@ final class ValidatorFactory
     }
 
     /**
-     * @param mixed $schema
+     * @param list<mixed>|null|object|scalar $schema
      * @param UriInterface $uri
      * @param array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}> $validators
      * @param array<string, array{UriInterface, UriInterface, JsonPointer}> $references

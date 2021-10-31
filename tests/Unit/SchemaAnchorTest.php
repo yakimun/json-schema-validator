@@ -34,7 +34,7 @@ final class SchemaAnchorTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer('a');
+        $this->pointer = new JsonPointer();
         $this->anchor = new SchemaAnchor($this->uri, true, $this->pointer);
     }
 
@@ -42,7 +42,7 @@ final class SchemaAnchorTest extends TestCase
     {
         $expected = $this->uri;
 
-        $this->assertEquals($expected, $this->anchor->getUri());
+        $this->assertSame($expected, $this->anchor->getUri());
     }
 
     public function testIsDynamic(): void
@@ -54,6 +54,6 @@ final class SchemaAnchorTest extends TestCase
     {
         $expected = $this->pointer;
 
-        $this->assertEquals($expected, $this->anchor->getPath());
+        $this->assertSame($expected, $this->anchor->getPath());
     }
 }

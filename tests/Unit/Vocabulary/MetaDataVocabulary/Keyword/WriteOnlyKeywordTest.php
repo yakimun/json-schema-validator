@@ -26,39 +26,50 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\W
 final class WriteOnlyKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var WriteOnlyKeyword
      */
     private WriteOnlyKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new WriteOnlyKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['writeOnly' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['writeOnly' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new WriteOnlyKeywordValidator(true)];
-        $this->keyword->process(['writeOnly' => true], $this->context);
+        $value = true;
+        $context = new SchemaContext($this->processor, ['writeOnly' => $value], $this->pointer, $this->identifier, []);
+        $expected = [new WriteOnlyKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext($this->processor, ['writeOnly' => $value], $this->pointer, $this->identifier, []);
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['writeOnly' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }

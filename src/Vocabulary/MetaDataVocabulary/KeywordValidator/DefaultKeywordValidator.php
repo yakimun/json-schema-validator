@@ -12,12 +12,12 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class DefaultKeywordValidator implements KeywordValidator
 {
     /**
-     * @var mixed
+     * @var list<mixed>|null|object|scalar
      */
     private $default;
 
     /**
-     * @param scalar|object|list<mixed>|null $default
+     * @param list<mixed>|null|object|scalar $default
      */
     public function __construct($default)
     {

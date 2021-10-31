@@ -26,39 +26,62 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\Co
 final class ContentMediaTypeKeywordTest extends TestCase
 {
     /**
+     * @var JsonPointer
+     */
+    private JsonPointer $pointer;
+
+    /**
+     * @var SchemaIdentifier
+     */
+    private SchemaIdentifier $identifier;
+
+    /**
      * @var ContentMediaTypeKeyword
      */
     private ContentMediaTypeKeyword $keyword;
 
     /**
-     * @var SchemaContext
+     * @var SchemaProcessor
      */
-    private SchemaContext $context;
+    private SchemaProcessor $processor;
 
     protected function setUp(): void
     {
+        $this->pointer = new JsonPointer();
+        $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ContentMediaTypeKeyword();
-
-        $uri = new Uri('https://example.com');
-        $pointer = new JsonPointer();
-        $processor = new SchemaProcessor(['contentMediaType' => $this->keyword]);
-        $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
-
-        $this->context = new SchemaContext($processor, $pointer, $identifier, []);
+        $this->processor = new SchemaProcessor(['contentMediaType' => $this->keyword]);
     }
 
     public function testProcess(): void
     {
-        $expected = [new ContentMediaTypeKeywordValidator('a')];
-        $this->keyword->process(['contentMediaType' => 'a'], $this->context);
+        $value = 'a';
+        $context = new SchemaContext(
+            $this->processor,
+            ['contentMediaType' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+        $expected = [new ContentMediaTypeKeywordValidator($value)];
+        $this->keyword->process($value, $context);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
+        $value = null;
+        $context = new SchemaContext(
+            $this->processor,
+            ['contentMediaType' => $value],
+            $this->pointer,
+            $this->identifier,
+            [],
+        );
+
         $this->expectException(SchemaException::class);
 
-        $this->keyword->process(['contentMediaType' => null], $this->context);
+        $this->keyword->process($value, $context);
     }
 }
