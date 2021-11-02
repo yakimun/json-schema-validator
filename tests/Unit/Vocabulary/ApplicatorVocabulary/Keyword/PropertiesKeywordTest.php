@@ -51,7 +51,7 @@ final class PropertiesKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new PropertiesKeyword();
         $this->processor = new SchemaProcessor(['properties' => $this->keyword]);
@@ -96,8 +96,8 @@ final class PropertiesKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('properties', 'a');
-        $pointer2 = new JsonPointer('properties', 'b');
+        $pointer1 = new JsonPointer(['properties', 'a']);
+        $pointer2 = new JsonPointer(['properties', 'b']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

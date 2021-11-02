@@ -58,7 +58,7 @@ final class AdditionalPropertiesKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new AdditionalPropertiesKeyword();
         $this->processor = new SchemaProcessor(['additionalProperties' => $this->keyword]);
@@ -74,7 +74,7 @@ final class AdditionalPropertiesKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $pointer = $this->pointer->addTokens('additionalProperties');
+        $pointer = $this->pointer->addTokens(['additionalProperties']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new AdditionalPropertiesKeywordValidator($validator)];

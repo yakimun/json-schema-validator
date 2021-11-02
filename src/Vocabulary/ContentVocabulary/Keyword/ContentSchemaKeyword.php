@@ -18,7 +18,7 @@ final class ContentSchemaKeyword implements Keyword
      */
     public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($property, self::NAME);
+        $validator = $context->createValidator($property, [self::NAME]);
 
         if (array_key_exists(ContentMediaTypeKeyword::NAME, $context->getProperties())) {
             $context->addKeywordValidator(new ContentSchemaKeywordValidator($validator));

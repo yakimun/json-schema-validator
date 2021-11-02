@@ -25,7 +25,7 @@ final class DefsKeyword implements Keyword
          * @var list<mixed>|null|object|scalar $value
          */
         foreach (get_object_vars($property) as $key => $value) {
-            $context->createValidator($value, self::NAME, $key);
+            $context->createValidator($value, [self::NAME, $key]);
         }
     }
 }

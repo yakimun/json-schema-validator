@@ -34,7 +34,7 @@ final class SchemaAnchorTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->anchor = new SchemaAnchor($this->uri, true, $this->pointer);
     }
 

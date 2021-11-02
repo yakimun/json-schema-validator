@@ -15,22 +15,20 @@ final class JsonPointer
     private array $tokens;
 
     /**
-     * @param string ...$tokens
-     * @no-named-arguments
+     * @param list<string> $tokens
      */
-    public function __construct(string ...$tokens)
+    public function __construct(array $tokens)
     {
         $this->tokens = $tokens;
     }
 
     /**
-     * @param string ...$tokens
+     * @param list<string> $tokens
      * @return self
-     * @no-named-arguments
      */
-    public function addTokens(string ...$tokens): self
+    public function addTokens(array $tokens): self
     {
-        return new self(...$this->tokens, ...$tokens);
+        return new self([...$this->tokens, ...$tokens]);
     }
 
     /**
@@ -38,7 +36,7 @@ final class JsonPointer
      */
     public function isEmpty(): bool
     {
-        return empty($this->tokens);
+        return !$this->tokens;
     }
 
     /**

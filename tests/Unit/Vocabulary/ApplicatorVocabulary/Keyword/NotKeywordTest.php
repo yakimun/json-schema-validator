@@ -58,7 +58,7 @@ final class NotKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new NotKeyword();
         $this->processor = new SchemaProcessor(['not' => $this->keyword]);
@@ -68,7 +68,7 @@ final class NotKeywordTest extends TestCase
     {
         $value = (object)[];
         $context = new SchemaContext($this->processor, ['not' => $value], $this->pointer, $this->identifier, []);
-        $pointer = $this->pointer->addTokens('not');
+        $pointer = $this->pointer->addTokens(['not']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new NotKeywordValidator($validator)];

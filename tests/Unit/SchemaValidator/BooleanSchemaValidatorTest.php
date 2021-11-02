@@ -39,7 +39,7 @@ final class BooleanSchemaValidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->fragment = new JsonPointer();
+        $this->fragment = new JsonPointer([]);
         $this->value = true;
         $this->validator = new BooleanSchemaValidator($this->uri, $this->fragment, $this->value);
     }

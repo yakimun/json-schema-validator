@@ -25,7 +25,7 @@ final class DefaultKeywordTest extends TestCase
 {
     public function testProcess(): void
     {
-        $pointer = new JsonPointer();
+        $pointer = new JsonPointer([]);
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
         $keyword = new DefaultKeyword();
         $processor = new SchemaProcessor(['default' => $keyword]);

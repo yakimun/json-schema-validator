@@ -57,7 +57,7 @@ final class DynamicAnchorKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new DynamicAnchorKeyword();
         $this->processor = new SchemaProcessor(['$dynamicAnchor' => $this->keyword]);
@@ -77,7 +77,7 @@ final class DynamicAnchorKeywordTest extends TestCase
             [],
         );
         $uri = $this->uri->withFragment($value);
-        $path = $this->pointer->addTokens('$dynamicAnchor');
+        $path = $this->pointer->addTokens(['$dynamicAnchor']);
         $expectedAnchors = [new SchemaAnchor($uri, true, $path)];
         $expectedValidators = [new DynamicAnchorKeywordValidator($value)];
         $this->keyword->process($value, $context);

@@ -51,7 +51,7 @@ final class DependentSchemasKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new DependentSchemasKeyword();
         $this->processor = new SchemaProcessor(['dependentSchemas' => $this->keyword]);
@@ -96,8 +96,8 @@ final class DependentSchemasKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('dependentSchemas', 'a');
-        $pointer2 = new JsonPointer('dependentSchemas', 'b');
+        $pointer1 = new JsonPointer(['dependentSchemas', 'a']);
+        $pointer2 = new JsonPointer(['dependentSchemas', 'b']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

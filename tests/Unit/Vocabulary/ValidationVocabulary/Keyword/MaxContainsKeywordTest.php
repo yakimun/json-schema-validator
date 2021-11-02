@@ -47,7 +47,7 @@ final class MaxContainsKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MaxContainsKeyword();
         $this->processor = new SchemaProcessor(['maxContains' => $this->keyword]);

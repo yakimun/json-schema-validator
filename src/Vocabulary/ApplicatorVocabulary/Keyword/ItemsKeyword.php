@@ -18,7 +18,7 @@ final class ItemsKeyword implements Keyword
      */
     public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($property, self::NAME);
+        $validator = $context->createValidator($property, [self::NAME]);
         $context->addKeywordValidator(new ItemsKeywordValidator($validator));
     }
 }

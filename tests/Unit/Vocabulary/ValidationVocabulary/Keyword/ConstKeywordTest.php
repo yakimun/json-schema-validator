@@ -25,7 +25,7 @@ final class ConstKeywordTest extends TestCase
 {
     public function testProcess(): void
     {
-        $pointer = new JsonPointer();
+        $pointer = new JsonPointer([]);
         $keyword = new ConstKeyword();
         $processor = new SchemaProcessor(['const' => $keyword]);
         $value = null;

@@ -49,7 +49,7 @@ final class ExclusiveMaximumKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ExclusiveMaximumKeyword();
         $this->processor = new SchemaProcessor(['exclusiveMaximum' => $this->keyword]);

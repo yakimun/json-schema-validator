@@ -47,7 +47,7 @@ final class ContentMediaTypeKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ContentMediaTypeKeyword();
         $this->processor = new SchemaProcessor(['contentMediaType' => $this->keyword]);

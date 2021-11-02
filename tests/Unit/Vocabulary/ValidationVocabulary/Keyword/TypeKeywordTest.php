@@ -49,7 +49,7 @@ final class TypeKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new TypeKeyword();
         $this->processor = new SchemaProcessor(['type' => $this->keyword]);

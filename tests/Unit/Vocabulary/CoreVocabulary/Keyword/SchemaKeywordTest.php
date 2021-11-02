@@ -47,7 +47,7 @@ final class SchemaKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->keyword = new SchemaKeyword();
         $this->processor = new SchemaProcessor(['$schema' => $this->keyword]);
     }
@@ -88,7 +88,7 @@ final class SchemaKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?string $value, array $tokens): void
     {
-        $pointer = $this->pointer->addTokens(...$tokens);
+        $pointer = $this->pointer->addTokens($tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $context = new SchemaContext($this->processor, ['$schema' => $value], $pointer, $identifier, []);
 

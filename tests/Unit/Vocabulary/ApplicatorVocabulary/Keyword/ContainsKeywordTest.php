@@ -58,7 +58,7 @@ final class ContainsKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new ContainsKeyword();
         $this->processor = new SchemaProcessor(['contains' => $this->keyword]);
@@ -68,7 +68,7 @@ final class ContainsKeywordTest extends TestCase
     {
         $value = (object)[];
         $context = new SchemaContext($this->processor, ['contains' => $value], $this->pointer, $this->identifier, []);
-        $pointer = $this->pointer->addTokens('contains');
+        $pointer = $this->pointer->addTokens(['contains']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ContainsKeywordValidator($validator)];

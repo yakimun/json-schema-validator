@@ -58,7 +58,7 @@ final class ContentSchemaKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new ContentSchemaKeyword();
         $this->processor = new SchemaProcessor(['contentSchema' => $this->keyword]);
@@ -74,7 +74,7 @@ final class ContentSchemaKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $pointer = $this->pointer->addTokens('contentSchema');
+        $pointer = $this->pointer->addTokens(['contentSchema']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ContentSchemaKeywordValidator($validator)];
@@ -95,7 +95,7 @@ final class ContentSchemaKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $pointer = $this->pointer->addTokens('contentSchema');
+        $pointer = $this->pointer->addTokens(['contentSchema']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];

@@ -58,7 +58,7 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new UnevaluatedPropertiesKeyword();
         $this->processor = new SchemaProcessor(['unevaluatedProperties' => $this->keyword]);
@@ -74,7 +74,7 @@ final class UnevaluatedPropertiesKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $pointer = $this->pointer->addTokens('unevaluatedProperties');
+        $pointer = $this->pointer->addTokens(['unevaluatedProperties']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new UnevaluatedPropertiesKeywordValidator($validator)];

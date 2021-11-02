@@ -51,7 +51,7 @@ final class PatternPropertiesKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new PatternPropertiesKeyword();
         $this->processor = new SchemaProcessor(['patternProperties' => $this->keyword]);
@@ -96,8 +96,8 @@ final class PatternPropertiesKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('patternProperties', 'a');
-        $pointer2 = new JsonPointer('patternProperties', 'b');
+        $pointer1 = new JsonPointer(['patternProperties', 'a']);
+        $pointer2 = new JsonPointer(['patternProperties', 'b']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

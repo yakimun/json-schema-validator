@@ -51,7 +51,7 @@ final class PrefixItemsKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new PrefixItemsKeyword();
         $this->processor = new SchemaProcessor(['prefixItems' => $this->keyword]);
@@ -95,8 +95,8 @@ final class PrefixItemsKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('prefixItems', '0');
-        $pointer2 = new JsonPointer('prefixItems', '1');
+        $pointer1 = new JsonPointer(['prefixItems', '0']);
+        $pointer2 = new JsonPointer(['prefixItems', '1']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

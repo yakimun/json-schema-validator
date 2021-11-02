@@ -49,7 +49,7 @@ final class ExclusiveMinimumKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new ExclusiveMinimumKeyword();
         $this->processor = new SchemaProcessor(['exclusiveMinimum' => $this->keyword]);

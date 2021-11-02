@@ -119,7 +119,7 @@ final class ValidatorFactory
      */
     private function processSchema($schema, UriInterface $uri, array $validators, array $references): array
     {
-        $pointer = new JsonPointer();
+        $pointer = new JsonPointer([]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
         try {

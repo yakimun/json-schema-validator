@@ -28,7 +28,7 @@ final class PropertiesKeyword implements Keyword
          * @var list<mixed>|null|object|scalar $value
          */
         foreach (get_object_vars($property) as $key => $value) {
-            $validators[$key] = $context->createValidator($value, self::NAME, $key);
+            $validators[$key] = $context->createValidator($value, [self::NAME, $key]);
         }
 
         $context->addKeywordValidator(new PropertiesKeywordValidator($validators));

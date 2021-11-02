@@ -113,7 +113,7 @@ final class SchemaContext
      */
     public function setIdentifier(UriInterface $identifier, string $token): void
     {
-        $schemaIdentifier = new SchemaIdentifier($identifier, new JsonPointer(), $this->path->addTokens($token));
+        $schemaIdentifier = new SchemaIdentifier($identifier, new JsonPointer([]), $this->path->addTokens([$token]));
 
         if (UriNormalizer::isEquivalent($this->identifier->getUri(), $identifier)) {
             $this->identifier = $schemaIdentifier;
@@ -150,7 +150,7 @@ final class SchemaContext
      */
     public function addAnchor(UriInterface $anchor, bool $dynamic, string $token): void
     {
-        $this->anchors[] = new SchemaAnchor($anchor, $dynamic, $this->path->addTokens($token));
+        $this->anchors[] = new SchemaAnchor($anchor, $dynamic, $this->path->addTokens([$token]));
     }
 
     /**
@@ -168,7 +168,7 @@ final class SchemaContext
      */
     public function addReference(UriInterface $reference, string $token): void
     {
-        $this->references[] = new SchemaReference($reference, $this->path->addTokens($token));
+        $this->references[] = new SchemaReference($reference, $this->path->addTokens([$token]));
     }
 
     /**
@@ -199,21 +199,20 @@ final class SchemaContext
 
     /**
      * @param list<mixed>|null|object|scalar $schema
-     * @param string ...$tokens
+     * @param list<string> $tokens
      * @return SchemaValidator
-     * @no-named-arguments
      */
-    public function createValidator($schema, string ...$tokens): SchemaValidator
+    public function createValidator($schema, array $tokens): SchemaValidator
     {
-        $identifier = $this->advanceIdentifier($this->identifier, ...$tokens);
+        $identifier = $this->advanceIdentifier($this->identifier, $tokens);
 
         $nonCanonicalIdentifiers = [];
 
         foreach ($this->nonCanonicalIdentifiers as $nonCanonicalIdentifier) {
-            $nonCanonicalIdentifiers[] = $this->advanceIdentifier($nonCanonicalIdentifier, ...$tokens);
+            $nonCanonicalIdentifiers[] = $this->advanceIdentifier($nonCanonicalIdentifier, $tokens);
         }
 
-        $path = $this->path->addTokens(...$tokens);
+        $path = $this->path->addTokens($tokens);
 
         $processedSchemas = $this->processor->process($schema, $identifier, $nonCanonicalIdentifiers, $path);
         $this->processedSchemas = [...$this->processedSchemas, ...$processedSchemas];
@@ -223,16 +222,15 @@ final class SchemaContext
 
     /**
      * @param SchemaIdentifier $identifier
-     * @param string ...$tokens
+     * @param list<string> $tokens
      * @return SchemaIdentifier
-     * @no-named-arguments
      * @psalm-mutation-free
      */
-    private function advanceIdentifier(SchemaIdentifier $identifier, string ...$tokens): SchemaIdentifier
+    private function advanceIdentifier(SchemaIdentifier $identifier, array $tokens): SchemaIdentifier
     {
         $identifierUri = $identifier->getUri();
-        $identifierFragment = $identifier->getFragment()->addTokens(...$tokens);
-        $identifierPath = $identifier->getPath()->addTokens(...$tokens);
+        $identifierFragment = $identifier->getFragment()->addTokens($tokens);
+        $identifierPath = $identifier->getPath()->addTokens($tokens);
 
         return new SchemaIdentifier($identifierUri, $identifierFragment, $identifierPath);
     }
@@ -245,6 +243,6 @@ final class SchemaContext
      */
     public function createException(string $message, string $token): SchemaException
     {
-        return new SchemaException(sprintf('%s Path: "%s".', $message, (string)$this->path->addTokens($token)));
+        return new SchemaException(sprintf('%s Path: "%s".', $message, (string)$this->path->addTokens([$token])));
     }
 }

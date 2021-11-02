@@ -47,7 +47,7 @@ final class MaxItemsKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new MaxItemsKeyword();
         $this->processor = new SchemaProcessor(['maxItems' => $this->keyword]);

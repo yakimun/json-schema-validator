@@ -58,7 +58,7 @@ final class ItemsKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new ItemsKeyword();
         $this->processor = new SchemaProcessor(['items' => $this->keyword]);
@@ -68,7 +68,7 @@ final class ItemsKeywordTest extends TestCase
     {
         $value = (object)[];
         $context = new SchemaContext($this->processor, ['items' => $value], $this->pointer, $this->identifier, []);
-        $pointer = $this->pointer->addTokens('items');
+        $pointer = $this->pointer->addTokens(['items']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ItemsKeywordValidator($validator)];

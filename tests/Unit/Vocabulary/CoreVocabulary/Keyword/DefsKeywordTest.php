@@ -49,7 +49,7 @@ final class DefsKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new DefsKeyword();
         $this->processor = new SchemaProcessor(['$defs' => $this->keyword]);
@@ -84,8 +84,8 @@ final class DefsKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('$defs', 'a');
-        $pointer2 = new JsonPointer('$defs', 'b');
+        $pointer1 = new JsonPointer(['$defs', 'a']);
+        $pointer2 = new JsonPointer(['$defs', 'b']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

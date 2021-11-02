@@ -32,7 +32,7 @@ final class PrefixItemsKeyword implements Keyword
          * @var list<mixed>|null|object|scalar $item
          */
         foreach (array_values($property) as $index => $item) {
-            $validators[] = $context->createValidator($item, self::NAME, (string)$index);
+            $validators[] = $context->createValidator($item, [self::NAME, (string)$index]);
         }
 
         $context->addKeywordValidator(new PrefixItemsKeywordValidator($validators));

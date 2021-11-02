@@ -51,7 +51,7 @@ final class OneOfKeywordTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier(new Uri('https://example.com'), $this->pointer, $this->pointer);
         $this->keyword = new OneOfKeyword();
         $this->processor = new SchemaProcessor(['oneOf' => $this->keyword]);
@@ -89,8 +89,8 @@ final class OneOfKeywordTest extends TestCase
 
         $uri = new Uri('https://example.com');
 
-        $pointer1 = new JsonPointer('oneOf', '0');
-        $pointer2 = new JsonPointer('oneOf', '1');
+        $pointer1 = new JsonPointer(['oneOf', '0']);
+        $pointer2 = new JsonPointer(['oneOf', '1']);
 
         $validator1 = new ObjectSchemaValidator($uri, $pointer1, []);
         $validator2 = new ObjectSchemaValidator($uri, $pointer2, []);

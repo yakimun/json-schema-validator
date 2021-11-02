@@ -55,7 +55,7 @@ final class AnchorKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new AnchorKeyword();
         $this->processor = new SchemaProcessor(['$anchor' => $this->keyword]);
@@ -68,7 +68,7 @@ final class AnchorKeywordTest extends TestCase
     public function testProcess(string $value): void
     {
         $context = new SchemaContext($this->processor, ['$anchor' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new SchemaAnchor($this->uri->withFragment($value), false, $this->pointer->addTokens('$anchor'))];
+        $expected = [new SchemaAnchor($this->uri->withFragment($value), false, $this->pointer->addTokens(['$anchor']))];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getAnchors());

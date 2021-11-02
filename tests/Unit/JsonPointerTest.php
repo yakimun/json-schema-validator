@@ -19,11 +19,11 @@ final class JsonPointerTest extends TestCase
      */
     public function testAddTokens(array $initialTokens, array $tokens): void
     {
-        $pointer = new JsonPointer(...$initialTokens);
-        $expectedPointer = new JsonPointer(...$initialTokens, ...$tokens);
-        $expectedInitialPointer = new JsonPointer(...$initialTokens);
+        $pointer = new JsonPointer($initialTokens);
+        $expectedPointer = new JsonPointer([...$initialTokens, ...$tokens]);
+        $expectedInitialPointer = new JsonPointer($initialTokens);
 
-        $this->assertEquals($expectedPointer, $pointer->addTokens(...$tokens));
+        $this->assertEquals($expectedPointer, $pointer->addTokens($tokens));
         $this->assertEquals($expectedInitialPointer, $pointer);
     }
 
@@ -51,8 +51,8 @@ final class JsonPointerTest extends TestCase
      */
     public function testIsEmpty(array $tokens): void
     {
-        $pointer = new JsonPointer(...$tokens);
-        $expected = empty($tokens);
+        $pointer = new JsonPointer($tokens);
+        $expected = !$tokens;
 
         $this->assertSame($expected, $pointer->isEmpty());
     }
@@ -75,7 +75,7 @@ final class JsonPointerTest extends TestCase
      */
     public function testToString(array $tokens, string $expected): void
     {
-        $this->assertSame($expected, (string)new JsonPointer(...$tokens));
+        $this->assertSame($expected, (string)new JsonPointer($tokens));
     }
 
     /**

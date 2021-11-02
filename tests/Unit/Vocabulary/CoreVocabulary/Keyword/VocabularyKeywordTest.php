@@ -47,7 +47,7 @@ final class VocabularyKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->keyword = new VocabularyKeyword();
         $this->processor = new SchemaProcessor(['$vocabulary' => $this->keyword]);
     }
@@ -102,7 +102,7 @@ final class VocabularyKeywordTest extends TestCase
      */
     public function testProcessWithInvalidValue(?object $value, array $tokens): void
     {
-        $pointer = $this->pointer->addTokens(...$tokens);
+        $pointer = $this->pointer->addTokens($tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $context = new SchemaContext($this->processor, ['$vocabulary' => $value], $pointer, $identifier, []);
 

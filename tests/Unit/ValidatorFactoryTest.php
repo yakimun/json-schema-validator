@@ -122,7 +122,7 @@ final class ValidatorFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->factory = new ValidatorFactory();
     }
 
@@ -207,7 +207,7 @@ final class ValidatorFactoryTest extends TestCase
 
     public function testCreateValidatorWithReference(): void
     {
-        $pointer = $this->pointer->addTokens('$defs', 'a');
+        $pointer = $this->pointer->addTokens(['$defs', 'a']);
         $schema = (object)['$ref' => '#' . $pointer, '$defs' => (object)['a' => (object)[]]];
         $uri = $this->uri->withFragment((string)$pointer);
         $schemaValidator1 = new ObjectSchemaValidator($this->uri, $this->pointer, [new RefKeywordValidator($uri)]);
@@ -219,7 +219,7 @@ final class ValidatorFactoryTest extends TestCase
 
     public function testCreateValidatorWithEqualReferences(): void
     {
-        $pointer = $this->pointer->addTokens('$defs', 'a');
+        $pointer = $this->pointer->addTokens(['$defs', 'a']);
         $schema = (object)[
             '$ref' => '#' . $pointer,
             '$dynamicRef' => '#' . $pointer,

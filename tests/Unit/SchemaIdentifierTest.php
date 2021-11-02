@@ -34,7 +34,7 @@ final class SchemaIdentifierTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
     }
 

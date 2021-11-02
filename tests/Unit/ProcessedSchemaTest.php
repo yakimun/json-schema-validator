@@ -56,7 +56,7 @@ final class ProcessedSchemaTest extends TestCase
     {
         $uri = new Uri('https://example1.com');
         $nonCanonicalIdentifier = new Uri('https://example2.com');
-        $pointer = new JsonPointer();
+        $pointer = new JsonPointer([]);
 
         $this->validator = $this->createStub(SchemaValidator::class);
         $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);

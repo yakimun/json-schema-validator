@@ -74,7 +74,7 @@ final class SchemaContextTest extends TestCase
         $this->uri = new Uri('https://example1.com');
         $this->nonCanonicalUri = new Uri('https://example2.com');
         $this->properties = [$keywordName => null];
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->nonCanonicalIdentifier = new SchemaIdentifier($this->nonCanonicalUri, $this->pointer, $this->pointer);
         $this->context = new SchemaContext(
@@ -111,7 +111,7 @@ final class SchemaContextTest extends TestCase
     {
         $uri = new Uri('https://example1.org');
         $token = 'a';
-        $expectedIdentifier = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens($token));
+        $expectedIdentifier = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens([$token]));
         $expectedNonCanonicalIdentifiers = [$this->nonCanonicalIdentifier, $this->identifier];
         $this->context->setIdentifier($uri, $token);
 
@@ -122,7 +122,7 @@ final class SchemaContextTest extends TestCase
     public function testSetIdentifierWithCurrentUri(): void
     {
         $token = 'a';
-        $expectedIdentifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer->addTokens($token));
+        $expectedIdentifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer->addTokens([$token]));
         $expectedNonCanonicalIdentifiers = [$this->nonCanonicalIdentifier];
         $this->context->setIdentifier($this->uri, $token);
 
@@ -147,7 +147,7 @@ final class SchemaContextTest extends TestCase
         $uri = $this->uri->withFragment('a');
         $dynamic = true;
         $token = 'a';
-        $expected = [new SchemaAnchor($uri, $dynamic, $this->pointer->addTokens($token))];
+        $expected = [new SchemaAnchor($uri, $dynamic, $this->pointer->addTokens([$token]))];
         $this->context->addAnchor($uri, $dynamic, $token);
 
         $this->assertEquals($expected, $this->context->getAnchors());
@@ -161,7 +161,7 @@ final class SchemaContextTest extends TestCase
     public function testAddReference(): void
     {
         $token = 'a';
-        $expected = [new SchemaReference($this->uri, $this->pointer->addTokens($token))];
+        $expected = [new SchemaReference($this->uri, $this->pointer->addTokens([$token]))];
         $this->context->addReference($this->uri, $token);
 
         $this->assertEquals($expected, $this->context->getReferences());
@@ -189,14 +189,14 @@ final class SchemaContextTest extends TestCase
     public function testCreateValidator(): void
     {
         $token = 'a';
-        $pointer = $this->pointer->addTokens($token);
+        $pointer = $this->pointer->addTokens([$token]);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $nonCanonicalIdentifier = new SchemaIdentifier($this->nonCanonicalUri, $pointer, $pointer);
         $expectedValidator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $processedSchema = new ProcessedSchema($expectedValidator, $identifier, [$nonCanonicalIdentifier], [], []);
         $expectedProcessedSchemas = [$processedSchema];
 
-        $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], $token));
+        $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], [$token]));
         $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
     }
 

@@ -57,7 +57,7 @@ final class RefKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new RefKeyword();
         $this->processor = new SchemaProcessor(['$ref' => $this->keyword]);
@@ -71,7 +71,7 @@ final class RefKeywordTest extends TestCase
     {
         $context = new SchemaContext($this->processor, ['$ref' => $value], $this->pointer, $this->identifier, []);
         $uri = UriResolver::resolve($this->uri, new Uri($value));
-        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens('$ref'))];
+        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens(['$ref']))];
         $expectedValidators = [new RefKeywordValidator($uri)];
         $this->keyword->process($value, $context);
 

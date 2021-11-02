@@ -58,7 +58,7 @@ final class ElseKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new ElseKeyword();
         $this->processor = new SchemaProcessor(['else' => $this->keyword]);
@@ -74,7 +74,7 @@ final class ElseKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $pointer = $this->pointer->addTokens('else');
+        $pointer = $this->pointer->addTokens(['else']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedKeywordValidators = [new ElseKeywordValidator($validator)];
@@ -89,7 +89,7 @@ final class ElseKeywordTest extends TestCase
     {
         $value = (object)[];
         $context = new SchemaContext($this->processor, ['else' => $value], $this->pointer, $this->identifier, []);
-        $pointer = $this->pointer->addTokens('else');
+        $pointer = $this->pointer->addTokens(['else']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
         $validator = new ObjectSchemaValidator($this->uri, $pointer, []);
         $expectedProcessedSchemas = [new ProcessedSchema($validator, $identifier, [], [], [])];

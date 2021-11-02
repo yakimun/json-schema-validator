@@ -53,7 +53,7 @@ final class IdKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new IdKeyword();
         $this->processor = new SchemaProcessor(['$id' => $this->keyword]);
@@ -68,7 +68,7 @@ final class IdKeywordTest extends TestCase
         $context = new SchemaContext($this->processor, ['$id' => $value], $this->pointer, $this->identifier, []);
         $uri = UriResolver::resolve($this->uri, new Uri($value));
         $_ = (string)$uri;
-        $expectedIdentifier = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens('$id'));
+        $expectedIdentifier = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens(['$id']));
         $expectedNonCanonicalIdentifiers = [$this->identifier];
         $this->keyword->process($value, $context);
 
@@ -98,7 +98,7 @@ final class IdKeywordTest extends TestCase
         $context = new SchemaContext($this->processor, ['$id' => $value], $this->pointer, $this->identifier, []);
         $uri = UriResolver::resolve($this->uri, new Uri($value));
         $_ = (string)$uri;
-        $expected = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens('$id'));
+        $expected = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens(['$id']));
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getIdentifier());

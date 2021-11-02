@@ -40,7 +40,7 @@ final class ObjectSchemaValidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->fragment = new JsonPointer();
+        $this->fragment = new JsonPointer([]);
         $this->keywordValidator = $this->createStub(KeywordValidator::class);
         $this->validator = new ObjectSchemaValidator($this->uri, $this->fragment, [$this->keywordValidator]);
     }

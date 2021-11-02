@@ -57,7 +57,7 @@ final class DynamicRefKeywordTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example.com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->keyword = new DynamicRefKeyword();
         $this->processor = new SchemaProcessor(['$dynamicRef' => $this->keyword]);
@@ -77,7 +77,7 @@ final class DynamicRefKeywordTest extends TestCase
             [],
         );
         $uri = UriResolver::resolve($this->uri, new Uri($value));
-        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens('$dynamicRef'))];
+        $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens(['$dynamicRef']))];
         $expectedValidators = [new DynamicRefKeywordValidator($uri)];
         $this->keyword->process($value, $context);
 

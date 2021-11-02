@@ -18,7 +18,7 @@ final class ElseKeyword implements Keyword
      */
     public function process($property, SchemaContext $context): void
     {
-        $validator = $context->createValidator($property, self::NAME);
+        $validator = $context->createValidator($property, [self::NAME]);
 
         if (array_key_exists(IfKeyword::NAME, $context->getProperties())) {
             $context->addKeywordValidator(new ElseKeywordValidator($validator));

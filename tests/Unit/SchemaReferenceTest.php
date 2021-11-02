@@ -34,7 +34,7 @@ final class SchemaReferenceTest extends TestCase
     protected function setUp(): void
     {
         $this->uri = new Uri('https://example/com');
-        $this->pointer = new JsonPointer();
+        $this->pointer = new JsonPointer([]);
         $this->reference = new SchemaReference($this->uri, $this->pointer);
     }
 
