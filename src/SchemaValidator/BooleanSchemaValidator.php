@@ -38,4 +38,28 @@ final class BooleanSchemaValidator implements SchemaValidator
         $this->fragment = $fragment;
         $this->value = $value;
     }
+
+    /**
+     * @return UriInterface
+     */
+    public function getUri(): UriInterface
+    {
+        return $this->uri;
+    }
+
+    /**
+     * @return JsonPointer
+     */
+    public function getFragment(): JsonPointer
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValue(): bool
+    {
+        return $this->value;
+    }
 }

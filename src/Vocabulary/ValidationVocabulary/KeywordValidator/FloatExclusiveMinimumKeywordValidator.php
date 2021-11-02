@@ -23,4 +23,12 @@ final class FloatExclusiveMinimumKeywordValidator implements KeywordValidator
     {
         $this->exclusiveMinimum = $exclusiveMinimum;
     }
+
+    /**
+     * @return float
+     */
+    public function getExclusiveMinimum(): float
+    {
+        return $this->exclusiveMinimum;
+    }
 }

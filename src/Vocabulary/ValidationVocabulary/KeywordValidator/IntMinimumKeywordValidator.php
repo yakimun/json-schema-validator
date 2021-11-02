@@ -23,4 +23,12 @@ final class IntMinimumKeywordValidator implements KeywordValidator
     {
         $this->minimum = $minimum;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinimum(): int
+    {
+        return $this->minimum;
+    }
 }

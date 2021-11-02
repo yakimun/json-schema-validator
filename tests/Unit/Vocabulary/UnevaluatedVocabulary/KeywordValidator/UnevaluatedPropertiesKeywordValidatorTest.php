@@ -13,11 +13,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\UnevaluatedVocabulary\KeywordValidato
  */
 final class UnevaluatedPropertiesKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $validator = new UnevaluatedPropertiesKeywordValidator($this->createStub(SchemaValidator::class));
-        $expected = UnevaluatedPropertiesKeywordValidator::class;
+    /**
+     * @var SchemaValidator
+     */
+    private SchemaValidator $schemaValidator;
 
-        $this->assertInstanceOf($expected, $validator);
+    /**
+     * @var UnevaluatedPropertiesKeywordValidator
+     */
+    private UnevaluatedPropertiesKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->schemaValidator = $this->createStub(SchemaValidator::class);
+        $this->validator = new UnevaluatedPropertiesKeywordValidator($this->schemaValidator);
+    }
+
+    public function testGetSchemaValidator(): void
+    {
+        $expected = $this->schemaValidator;
+
+        $this->assertSame($expected, $this->validator->getSchemaValidator());
     }
 }

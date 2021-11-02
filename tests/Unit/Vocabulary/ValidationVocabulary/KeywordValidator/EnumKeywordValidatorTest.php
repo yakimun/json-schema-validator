@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class EnumKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = EnumKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $element;
 
-        $this->assertInstanceOf($expected, new EnumKeywordValidator([]));
+    /**
+     * @var EnumKeywordValidator
+     */
+    private EnumKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->element = 'a';
+        $this->validator = new EnumKeywordValidator([$this->element]);
+    }
+
+    public function testGetElements(): void
+    {
+        $expected = [$this->element];
+
+        $this->assertSame($expected, $this->validator->getElements());
     }
 }

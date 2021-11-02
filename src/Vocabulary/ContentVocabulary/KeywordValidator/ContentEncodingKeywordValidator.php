@@ -23,4 +23,12 @@ final class ContentEncodingKeywordValidator implements KeywordValidator
     {
         $this->contentEncoding = $contentEncoding;
     }
+
+    /**
+     * @return string
+     */
+    public function getContentEncoding(): string
+    {
+        return $this->contentEncoding;
+    }
 }

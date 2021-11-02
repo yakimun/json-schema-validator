@@ -23,4 +23,12 @@ final class EnumKeywordValidator implements KeywordValidator
     {
         $this->elements = $elements;
     }
+
+    /**
+     * @return list<list<mixed>|null|object|scalar>
+     */
+    public function getElements(): array
+    {
+        return $this->elements;
+    }
 }

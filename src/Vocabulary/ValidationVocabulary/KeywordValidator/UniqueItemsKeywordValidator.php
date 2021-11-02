@@ -23,4 +23,12 @@ final class UniqueItemsKeywordValidator implements KeywordValidator
     {
         $this->uniqueItems = $uniqueItems;
     }
+
+    /**
+     * @return bool
+     */
+    public function isUniqueItems(): bool
+    {
+        return $this->uniqueItems;
+    }
 }

@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\E
  */
 final class ExamplesKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = ExamplesKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $example;
 
-        $this->assertInstanceOf($expected, new ExamplesKeywordValidator([null]));
+    /**
+     * @var ExamplesKeywordValidator
+     */
+    private ExamplesKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->example = 'a';
+        $this->validator = new ExamplesKeywordValidator([$this->example]);
+    }
+
+    public function testGetExamples(): void
+    {
+        $expected = [$this->example];
+
+        $this->assertSame($expected, $this->validator->getExamples());
     }
 }

@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class ArrayTypeKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = ArrayTypeKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $type;
 
-        $this->assertInstanceOf($expected, new ArrayTypeKeywordValidator([]));
+    /**
+     * @var ArrayTypeKeywordValidator
+     */
+    private ArrayTypeKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->type = 'null';
+        $this->validator = new ArrayTypeKeywordValidator([$this->type]);
+    }
+
+    public function testGetTypes(): void
+    {
+        $expected = [$this->type];
+
+        $this->assertSame($expected, $this->validator->getTypes());
     }
 }

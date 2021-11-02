@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\W
  */
 final class WriteOnlyKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = WriteOnlyKeywordValidator::class;
+    /**
+     * @var bool
+     */
+    private bool $writeOnly;
 
-        $this->assertInstanceOf($expected, new WriteOnlyKeywordValidator(true));
+    /**
+     * @var WriteOnlyKeywordValidator
+     */
+    private WriteOnlyKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->writeOnly = true;
+        $this->validator = new WriteOnlyKeywordValidator($this->writeOnly);
+    }
+
+    public function testIsWriteOnly(): void
+    {
+        $expected = $this->writeOnly;
+
+        $this->assertSame($expected, $this->validator->isWriteOnly());
     }
 }

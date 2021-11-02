@@ -23,4 +23,12 @@ final class DefaultKeywordValidator implements KeywordValidator
     {
         $this->default = $default;
     }
+
+    /**
+     * @return list<mixed>|null|object|scalar
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
 }

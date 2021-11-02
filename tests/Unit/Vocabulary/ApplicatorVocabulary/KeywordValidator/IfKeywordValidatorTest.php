@@ -13,10 +13,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
  */
 final class IfKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = IfKeywordValidator::class;
+    /**
+     * @var SchemaValidator
+     */
+    private SchemaValidator $schemaValidator;
 
-        $this->assertInstanceOf($expected, new IfKeywordValidator($this->createStub(SchemaValidator::class)));
+    /**
+     * @var IfKeywordValidator
+     */
+    private IfKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->schemaValidator = $this->createStub(SchemaValidator::class);
+        $this->validator = new IfKeywordValidator($this->schemaValidator);
+    }
+
+    public function testGetSchemaValidator(): void
+    {
+        $expected = $this->schemaValidator;
+
+        $this->assertSame($expected, $this->validator->getSchemaValidator());
     }
 }

@@ -39,4 +39,28 @@ final class ObjectSchemaValidator implements SchemaValidator
         $this->fragment = $fragment;
         $this->keywordValidators = $keywordValidators;
     }
+
+    /**
+     * @return UriInterface
+     */
+    public function getUri(): UriInterface
+    {
+        return $this->uri;
+    }
+
+    /**
+     * @return JsonPointer
+     */
+    public function getFragment(): JsonPointer
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @return list<KeywordValidator>
+     */
+    public function getKeywordValidators(): array
+    {
+        return $this->keywordValidators;
+    }
 }

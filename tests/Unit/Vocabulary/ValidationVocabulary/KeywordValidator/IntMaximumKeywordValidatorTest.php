@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class IntMaximumKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = IntMaximumKeywordValidator::class;
+    /**
+     * @var int
+     */
+    private int $maximum;
 
-        $this->assertInstanceOf($expected, new IntMaximumKeywordValidator(0));
+    /**
+     * @var IntMaximumKeywordValidator
+     */
+    private IntMaximumKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->maximum = 0;
+        $this->validator = new IntMaximumKeywordValidator($this->maximum);
+    }
+
+    public function testGetMaximum(): void
+    {
+        $expected = $this->maximum;
+
+        $this->assertSame($expected, $this->validator->getMaximum());
     }
 }

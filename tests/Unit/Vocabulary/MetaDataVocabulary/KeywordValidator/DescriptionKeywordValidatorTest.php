@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
  */
 final class DescriptionKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = DescriptionKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $description;
 
-        $this->assertInstanceOf($expected, new DescriptionKeywordValidator('a'));
+    /**
+     * @var DescriptionKeywordValidator
+     */
+    private DescriptionKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->description = 'a';
+        $this->validator = new DescriptionKeywordValidator($this->description);
+    }
+
+    public function testGetDescription(): void
+    {
+        $expected = $this->description;
+
+        $this->assertSame($expected, $this->validator->getDescription());
     }
 }

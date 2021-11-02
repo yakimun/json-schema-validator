@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
  */
 final class DeprecatedKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = DeprecatedKeywordValidator::class;
+    /**
+     * @var bool
+     */
+    private bool $deprecated;
 
-        $this->assertInstanceOf($expected, new DeprecatedKeywordValidator(true));
+    /**
+     * @var DeprecatedKeywordValidator
+     */
+    private DeprecatedKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->deprecated = true;
+        $this->validator = new DeprecatedKeywordValidator($this->deprecated);
+    }
+
+    public function testIsDeprecated(): void
+    {
+        $expected = $this->deprecated;
+
+        $this->assertSame($expected, $this->validator->isDeprecated());
     }
 }

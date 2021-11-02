@@ -23,4 +23,12 @@ final class DynamicAnchorKeywordValidator implements KeywordValidator
     {
         $this->dynamicAnchor = $dynamicAnchor;
     }
+
+    /**
+     * @return string
+     */
+    public function getDynamicAnchor(): string
+    {
+        return $this->dynamicAnchor;
+    }
 }

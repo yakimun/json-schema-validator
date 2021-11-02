@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class MinLengthKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = MinLengthKeywordValidator::class;
+    /**
+     * @var int
+     */
+    private int $minLength;
 
-        $this->assertInstanceOf($expected, new MinLengthKeywordValidator(0));
+    /**
+     * @var MinLengthKeywordValidator
+     */
+    private MinLengthKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->minLength = 0;
+        $this->validator = new MinLengthKeywordValidator($this->minLength);
+    }
+
+    public function testGetMinLength(): void
+    {
+        $expected = $this->minLength;
+
+        $this->assertSame($expected, $this->validator->getMinLength());
     }
 }

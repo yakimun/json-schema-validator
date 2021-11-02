@@ -23,4 +23,12 @@ final class StringTypeKeywordValidator implements KeywordValidator
     {
         $this->type = $type;
     }
+
+    /**
+     * @return 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
 }

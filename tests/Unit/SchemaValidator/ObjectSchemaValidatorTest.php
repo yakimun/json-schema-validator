@@ -6,8 +6,10 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\SchemaValidator;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
@@ -15,11 +17,52 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
  */
 final class ObjectSchemaValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $validator = new ObjectSchemaValidator(new Uri('https://example.com'), new JsonPointer(), []);
-        $expected = ObjectSchemaValidator::class;
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
 
-        $this->assertInstanceOf($expected, $validator);
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $fragment;
+
+    /**
+     * @var KeywordValidator
+     */
+    private KeywordValidator $keywordValidator;
+
+    /**
+     * @var ObjectSchemaValidator
+     */
+    private ObjectSchemaValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->uri = new Uri('https://example.com');
+        $this->fragment = new JsonPointer();
+        $this->keywordValidator = $this->createStub(KeywordValidator::class);
+        $this->validator = new ObjectSchemaValidator($this->uri, $this->fragment, [$this->keywordValidator]);
+    }
+
+    public function testGetUri(): void
+    {
+        $expected = $this->uri;
+
+        $this->assertSame($expected, $this->validator->getUri());
+    }
+
+    public function testGetFragment(): void
+    {
+        $expected = $this->fragment;
+
+        $this->assertSame($expected, $this->validator->getFragment());
+    }
+
+    public function testGetKeywordValidators(): void
+    {
+        $expected = [$this->keywordValidator];
+
+        $this->assertSame($expected, $this->validator->getKeywordValidators());
     }
 }

@@ -24,4 +24,12 @@ final class DependentSchemasKeywordValidator implements KeywordValidator
     {
         $this->schemaValidators = $schemaValidators;
     }
+
+    /**
+     * @return array<string, SchemaValidator>
+     */
+    public function getSchemaValidators(): array
+    {
+        return $this->schemaValidators;
+    }
 }

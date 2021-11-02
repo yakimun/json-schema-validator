@@ -23,4 +23,12 @@ final class MaxItemsKeywordValidator implements KeywordValidator
     {
         $this->maxItems = $maxItems;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxItems(): int
+    {
+        return $this->maxItems;
+    }
 }

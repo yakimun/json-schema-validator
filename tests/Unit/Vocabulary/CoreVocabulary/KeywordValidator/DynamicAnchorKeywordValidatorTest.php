@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
  */
 final class DynamicAnchorKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = DynamicAnchorKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $dynamicAnchor;
 
-        $this->assertInstanceOf($expected, new DynamicAnchorKeywordValidator('a'));
+    /**
+     * @var DynamicAnchorKeywordValidator
+     */
+    private DynamicAnchorKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->dynamicAnchor = 'a';
+        $this->validator = new DynamicAnchorKeywordValidator($this->dynamicAnchor);
+    }
+
+    public function testGetDynamicAnchor(): void
+    {
+        $expected = $this->dynamicAnchor;
+
+        $this->assertSame($expected, $this->validator->getDynamicAnchor());
     }
 }

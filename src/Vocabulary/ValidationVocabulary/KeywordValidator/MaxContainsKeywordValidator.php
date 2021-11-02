@@ -23,4 +23,12 @@ final class MaxContainsKeywordValidator implements KeywordValidator
     {
         $this->maxContains = $maxContains;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxContains(): int
+    {
+        return $this->maxContains;
+    }
 }

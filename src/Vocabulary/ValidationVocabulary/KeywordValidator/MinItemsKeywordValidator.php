@@ -23,4 +23,12 @@ final class MinItemsKeywordValidator implements KeywordValidator
     {
         $this->minItems = $minItems;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinItems(): int
+    {
+        return $this->minItems;
+    }
 }

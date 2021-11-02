@@ -23,4 +23,12 @@ final class MinLengthKeywordValidator implements KeywordValidator
     {
         $this->minLength = $minLength;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinLength(): int
+    {
+        return $this->minLength;
+    }
 }

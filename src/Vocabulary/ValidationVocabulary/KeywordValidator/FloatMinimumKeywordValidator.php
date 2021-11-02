@@ -23,4 +23,12 @@ final class FloatMinimumKeywordValidator implements KeywordValidator
     {
         $this->minimum = $minimum;
     }
+
+    /**
+     * @return float
+     */
+    public function getMinimum(): float
+    {
+        return $this->minimum;
+    }
 }

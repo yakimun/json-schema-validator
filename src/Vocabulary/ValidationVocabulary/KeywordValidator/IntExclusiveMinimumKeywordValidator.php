@@ -23,4 +23,12 @@ final class IntExclusiveMinimumKeywordValidator implements KeywordValidator
     {
         $this->exclusiveMinimum = $exclusiveMinimum;
     }
+
+    /**
+     * @return int
+     */
+    public function getExclusiveMinimum(): int
+    {
+        return $this->exclusiveMinimum;
+    }
 }

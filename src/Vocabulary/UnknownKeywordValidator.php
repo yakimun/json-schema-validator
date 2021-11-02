@@ -28,4 +28,20 @@ final class UnknownKeywordValidator implements KeywordValidator
         $this->name = $name;
         $this->value = $value;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return list<mixed>|null|object|scalar
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 }

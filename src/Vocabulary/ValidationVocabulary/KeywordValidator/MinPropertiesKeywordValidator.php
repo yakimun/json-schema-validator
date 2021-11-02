@@ -23,4 +23,12 @@ final class MinPropertiesKeywordValidator implements KeywordValidator
     {
         $this->minProperties = $minProperties;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinProperties(): int
+    {
+        return $this->minProperties;
+    }
 }

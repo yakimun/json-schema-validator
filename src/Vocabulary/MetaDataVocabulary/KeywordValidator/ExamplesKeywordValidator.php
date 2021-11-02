@@ -23,4 +23,12 @@ final class ExamplesKeywordValidator implements KeywordValidator
     {
         $this->examples = $examples;
     }
+
+    /**
+     * @return list<list<mixed>|null|object|scalar>
+     */
+    public function getExamples(): array
+    {
+        return $this->examples;
+    }
 }

@@ -23,4 +23,12 @@ final class ConstKeywordValidator implements KeywordValidator
     {
         $this->const = $const;
     }
+
+    /**
+     * @return list<mixed>|null|object|scalar
+     */
+    public function getConst()
+    {
+        return $this->const;
+    }
 }

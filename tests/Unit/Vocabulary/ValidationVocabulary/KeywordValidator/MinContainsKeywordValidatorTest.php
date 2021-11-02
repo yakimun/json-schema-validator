@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class MinContainsKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = MinContainsKeywordValidator::class;
+    /**
+     * @var int
+     */
+    private int $minContains;
 
-        $this->assertInstanceOf($expected, new MinContainsKeywordValidator(0));
+    /**
+     * @var MinContainsKeywordValidator
+     */
+    private MinContainsKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->minContains = 0;
+        $this->validator = new MinContainsKeywordValidator($this->minContains);
+    }
+
+    public function testGetMinContains(): void
+    {
+        $expected = $this->minContains;
+
+        $this->assertSame($expected, $this->validator->getMinContains());
     }
 }

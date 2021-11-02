@@ -23,4 +23,12 @@ final class RequiredKeywordValidator implements KeywordValidator
     {
         $this->requiredProperties = $requiredProperties;
     }
+
+    /**
+     * @return list<string>
+     */
+    public function getRequiredProperties(): array
+    {
+        return $this->requiredProperties;
+    }
 }

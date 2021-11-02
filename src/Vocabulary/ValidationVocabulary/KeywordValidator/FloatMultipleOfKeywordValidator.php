@@ -23,4 +23,12 @@ final class FloatMultipleOfKeywordValidator implements KeywordValidator
     {
         $this->multipleOf = $multipleOf;
     }
+
+    /**
+     * @return float
+     */
+    public function getMultipleOf(): float
+    {
+        return $this->multipleOf;
+    }
 }

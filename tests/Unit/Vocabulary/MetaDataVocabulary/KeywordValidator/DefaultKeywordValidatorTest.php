@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
  */
 final class DefaultKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = DefaultKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $default;
 
-        $this->assertInstanceOf($expected, new DefaultKeywordValidator(null));
+    /**
+     * @var DefaultKeywordValidator
+     */
+    private DefaultKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->default = 'a';
+        $this->validator = new DefaultKeywordValidator($this->default);
+    }
+
+    public function testGetDefault(): void
+    {
+        $expected = $this->default;
+
+        $this->assertSame($expected, $this->validator->getDefault());
     }
 }

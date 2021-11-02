@@ -24,4 +24,12 @@ final class ItemsKeywordValidator implements KeywordValidator
     {
         $this->schemaValidator = $schemaValidator;
     }
+
+    /**
+     * @return SchemaValidator
+     */
+    public function getSchemaValidator(): SchemaValidator
+    {
+        return $this->schemaValidator;
+    }
 }

@@ -23,4 +23,12 @@ final class FloatMaximumKeywordValidator implements KeywordValidator
     {
         $this->maximum = $maximum;
     }
+
+    /**
+     * @return float
+     */
+    public function getMaximum(): float
+    {
+        return $this->maximum;
+    }
 }

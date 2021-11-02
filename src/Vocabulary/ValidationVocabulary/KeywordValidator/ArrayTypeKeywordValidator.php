@@ -23,4 +23,12 @@ final class ArrayTypeKeywordValidator implements KeywordValidator
     {
         $this->types = $types;
     }
+
+    /**
+     * @return list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'>
+     */
+    public function getTypes(): array
+    {
+        return $this->types;
+    }
 }

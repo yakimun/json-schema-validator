@@ -24,4 +24,12 @@ final class DynamicRefKeywordValidator implements KeywordValidator
     {
         $this->dynamicRef = $dynamicRef;
     }
+
+    /**
+     * @return UriInterface
+     */
+    public function getDynamicRef(): UriInterface
+    {
+        return $this->dynamicRef;
+    }
 }

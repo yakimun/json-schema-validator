@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class PatternKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = PatternKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $pattern;
 
-        $this->assertInstanceOf($expected, new PatternKeywordValidator('/.*/'));
+    /**
+     * @var PatternKeywordValidator
+     */
+    private PatternKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->pattern = '/a/';
+        $this->validator = new PatternKeywordValidator($this->pattern);
+    }
+
+    public function testGetPattern(): void
+    {
+        $expected = $this->pattern;
+
+        $this->assertSame($expected, $this->validator->getPattern());
     }
 }

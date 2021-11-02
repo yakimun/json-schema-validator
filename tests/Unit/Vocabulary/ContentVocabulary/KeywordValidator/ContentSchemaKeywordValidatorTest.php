@@ -13,11 +13,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\Co
  */
 final class ContentSchemaKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $validator = new ContentSchemaKeywordValidator($this->createStub(SchemaValidator::class));
-        $expected = ContentSchemaKeywordValidator::class;
+    /**
+     * @var SchemaValidator
+     */
+    private SchemaValidator $schemaValidator;
 
-        $this->assertInstanceOf($expected, $validator);
+    /**
+     * @var ContentSchemaKeywordValidator
+     */
+    private ContentSchemaKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->schemaValidator = $this->createStub(SchemaValidator::class);
+        $this->validator = new ContentSchemaKeywordValidator($this->schemaValidator);
+    }
+
+    public function testGetSchemaValidator(): void
+    {
+        $expected = $this->schemaValidator;
+
+        $this->assertSame($expected, $this->validator->getSchemaValidator());
     }
 }

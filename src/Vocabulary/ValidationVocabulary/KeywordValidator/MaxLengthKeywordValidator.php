@@ -23,4 +23,12 @@ final class MaxLengthKeywordValidator implements KeywordValidator
     {
         $this->maxLength = $maxLength;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxLength(): int
+    {
+        return $this->maxLength;
+    }
 }

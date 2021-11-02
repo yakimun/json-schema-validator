@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class ConstKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = ConstKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $const;
 
-        $this->assertInstanceOf($expected, new ConstKeywordValidator(null));
+    /**
+     * @var ConstKeywordValidator
+     */
+    private ConstKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->const = 'a';
+        $this->validator = new ConstKeywordValidator($this->const);
+    }
+
+    public function testGetConst(): void
+    {
+        $expected = $this->const;
+
+        $this->assertSame($expected, $this->validator->getConst());
     }
 }

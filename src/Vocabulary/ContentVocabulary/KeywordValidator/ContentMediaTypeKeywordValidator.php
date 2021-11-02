@@ -23,4 +23,12 @@ final class ContentMediaTypeKeywordValidator implements KeywordValidator
     {
         $this->contentMediaType = $contentMediaType;
     }
+
+    /**
+     * @return string
+     */
+    public function getContentMediaType(): string
+    {
+        return $this->contentMediaType;
+    }
 }

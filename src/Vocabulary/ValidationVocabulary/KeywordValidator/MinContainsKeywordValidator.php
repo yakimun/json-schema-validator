@@ -23,4 +23,12 @@ final class MinContainsKeywordValidator implements KeywordValidator
     {
         $this->minContains = $minContains;
     }
+
+    /**
+     * @return int
+     */
+    public function getMinContains(): int
+    {
+        return $this->minContains;
+    }
 }

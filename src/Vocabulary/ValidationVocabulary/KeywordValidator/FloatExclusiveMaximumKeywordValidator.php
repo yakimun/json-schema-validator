@@ -23,4 +23,12 @@ final class FloatExclusiveMaximumKeywordValidator implements KeywordValidator
     {
         $this->exclusiveMaximum = $exclusiveMaximum;
     }
+
+    /**
+     * @return float
+     */
+    public function getExclusiveMaximum(): float
+    {
+        return $this->exclusiveMaximum;
+    }
 }

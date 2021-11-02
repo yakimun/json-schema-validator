@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\CoreVocabulary\Keywo
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\RefKeywordValidator;
 
 /**
@@ -13,10 +14,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\RefKe
  */
 final class RefKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = RefKeywordValidator::class;
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $ref;
 
-        $this->assertInstanceOf($expected, new RefKeywordValidator(new Uri('https://example.com')));
+    /**
+     * @var RefKeywordValidator
+     */
+    private RefKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->ref = new Uri('https://example.com');
+        $this->validator = new RefKeywordValidator($this->ref);
+    }
+
+    public function testGetRef(): void
+    {
+        $expected = $this->ref;
+
+        $this->assertSame($expected, $this->validator->getRef());
     }
 }

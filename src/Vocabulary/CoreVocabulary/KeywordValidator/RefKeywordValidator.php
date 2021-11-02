@@ -24,4 +24,12 @@ final class RefKeywordValidator implements KeywordValidator
     {
         $this->ref = $ref;
     }
+
+    /**
+     * @return UriInterface
+     */
+    public function getRef(): UriInterface
+    {
+        return $this->ref;
+    }
 }

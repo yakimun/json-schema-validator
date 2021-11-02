@@ -23,4 +23,12 @@ final class IntExclusiveMaximumKeywordValidator implements KeywordValidator
     {
         $this->exclusiveMaximum = $exclusiveMaximum;
     }
+
+    /**
+     * @return int
+     */
+    public function getExclusiveMaximum(): int
+    {
+        return $this->exclusiveMaximum;
+    }
 }

@@ -23,4 +23,12 @@ final class PatternKeywordValidator implements KeywordValidator
     {
         $this->pattern = $pattern;
     }
+
+    /**
+     * @return string
+     */
+    public function getPattern(): string
+    {
+        return $this->pattern;
+    }
 }

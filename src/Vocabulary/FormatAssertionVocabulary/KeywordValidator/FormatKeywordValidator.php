@@ -23,4 +23,12 @@ final class FormatKeywordValidator implements KeywordValidator
     {
         $this->format = $format;
     }
+
+    /**
+     * @return string
+     */
+    public function getFormat(): string
+    {
+        return $this->format;
+    }
 }

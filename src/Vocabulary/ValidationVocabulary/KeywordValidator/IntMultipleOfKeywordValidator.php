@@ -23,4 +23,12 @@ final class IntMultipleOfKeywordValidator implements KeywordValidator
     {
         $this->multipleOf = $multipleOf;
     }
+
+    /**
+     * @return int
+     */
+    public function getMultipleOf(): int
+    {
+        return $this->multipleOf;
+    }
 }

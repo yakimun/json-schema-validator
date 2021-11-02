@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\Co
  */
 final class ContentEncodingKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = ContentEncodingKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $contentEncoding;
 
-        $this->assertInstanceOf($expected, new ContentEncodingKeywordValidator('a'));
+    /**
+     * @var ContentEncodingKeywordValidator
+     */
+    private ContentEncodingKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->contentEncoding = 'a';
+        $this->validator = new ContentEncodingKeywordValidator($this->contentEncoding);
+    }
+
+    public function testGetContentEncoding(): void
+    {
+        $expected = $this->contentEncoding;
+
+        $this->assertSame($expected, $this->validator->getContentEncoding());
     }
 }

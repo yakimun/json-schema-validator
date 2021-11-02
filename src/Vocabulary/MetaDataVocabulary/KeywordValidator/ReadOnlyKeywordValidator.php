@@ -23,4 +23,12 @@ final class ReadOnlyKeywordValidator implements KeywordValidator
     {
         $this->readOnly = $readOnly;
     }
+
+    /**
+     * @return bool
+     */
+    public function isReadOnly(): bool
+    {
+        return $this->readOnly;
+    }
 }

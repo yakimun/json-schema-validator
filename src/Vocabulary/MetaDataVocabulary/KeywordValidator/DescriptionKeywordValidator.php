@@ -23,4 +23,12 @@ final class DescriptionKeywordValidator implements KeywordValidator
     {
         $this->description = $description;
     }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
 }

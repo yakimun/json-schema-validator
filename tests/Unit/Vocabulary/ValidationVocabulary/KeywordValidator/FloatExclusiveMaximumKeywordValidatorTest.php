@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class FloatExclusiveMaximumKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = FloatExclusiveMaximumKeywordValidator::class;
+    /**
+     * @var float
+     */
+    private float $exclusiveMaximum;
 
-        $this->assertInstanceOf($expected, new FloatExclusiveMaximumKeywordValidator(0));
+    /**
+     * @var FloatExclusiveMaximumKeywordValidator
+     */
+    private FloatExclusiveMaximumKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->exclusiveMaximum = 0.0;
+        $this->validator = new FloatExclusiveMaximumKeywordValidator($this->exclusiveMaximum);
+    }
+
+    public function testGetExclusiveMaximum(): void
+    {
+        $expected = $this->exclusiveMaximum;
+
+        $this->assertSame($expected, $this->validator->getExclusiveMaximum());
     }
 }

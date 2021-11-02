@@ -23,4 +23,12 @@ final class MaxPropertiesKeywordValidator implements KeywordValidator
     {
         $this->maxProperties = $maxProperties;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxProperties(): int
+    {
+        return $this->maxProperties;
+    }
 }

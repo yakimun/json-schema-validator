@@ -24,4 +24,12 @@ final class AnyOfKeywordValidator implements KeywordValidator
     {
         $this->schemaValidators = $schemaValidators;
     }
+
+    /**
+     * @return list<SchemaValidator>
+     */
+    public function getSchemaValidators(): array
+    {
+        return $this->schemaValidators;
+    }
 }

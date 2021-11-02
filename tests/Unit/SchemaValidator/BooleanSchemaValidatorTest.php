@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\SchemaValidator;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 
@@ -15,11 +16,52 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
  */
 final class BooleanSchemaValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $validator = new BooleanSchemaValidator(new Uri('https://example.com'), new JsonPointer(), true);
-        $expected = BooleanSchemaValidator::class;
+    /**
+     * @var UriInterface
+     */
+    private UriInterface $uri;
 
-        $this->assertInstanceOf($expected, $validator);
+    /**
+     * @var JsonPointer
+     */
+    private JsonPointer $fragment;
+
+    /**
+     * @var bool
+     */
+    private bool $value;
+
+    /**
+     * @var BooleanSchemaValidator
+     */
+    private BooleanSchemaValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->uri = new Uri('https://example.com');
+        $this->fragment = new JsonPointer();
+        $this->value = true;
+        $this->validator = new BooleanSchemaValidator($this->uri, $this->fragment, $this->value);
+    }
+
+    public function testGetUri(): void
+    {
+        $expected = $this->uri;
+
+        $this->assertSame($expected, $this->validator->getUri());
+    }
+
+    public function testGetFragment(): void
+    {
+        $expected = $this->fragment;
+
+        $this->assertSame($expected, $this->validator->getFragment());
+    }
+
+    public function testIsValue(): void
+    {
+        $expected = $this->value;
+
+        $this->assertSame($expected, $this->validator->isValue());
     }
 }

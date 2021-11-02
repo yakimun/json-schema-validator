@@ -34,4 +34,28 @@ final class Validator
         $this->schemaValidators = $schemaValidators;
         $this->dynamicUris = $dynamicUris;
     }
+
+    /**
+     * @return SchemaValidator
+     */
+    public function getSchemaValidator(): SchemaValidator
+    {
+        return $this->schemaValidator;
+    }
+
+    /**
+     * @return array<string, SchemaValidator>
+     */
+    public function getSchemaValidators(): array
+    {
+        return $this->schemaValidators;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getDynamicUris(): array
+    {
+        return $this->dynamicUris;
+    }
 }

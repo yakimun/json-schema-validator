@@ -23,4 +23,12 @@ final class DependentRequiredKeywordValidator implements KeywordValidator
     {
         $this->dependentRequiredProperties = $dependentRequiredProperties;
     }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    public function getDependentRequiredProperties(): array
+    {
+        return $this->dependentRequiredProperties;
+    }
 }

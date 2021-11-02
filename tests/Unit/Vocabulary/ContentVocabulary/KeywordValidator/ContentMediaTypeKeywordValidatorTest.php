@@ -12,10 +12,26 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\Co
  */
 final class ContentMediaTypeKeywordValidatorTest extends TestCase
 {
-    public function testConstruct(): void
-    {
-        $expected = ContentMediaTypeKeywordValidator::class;
+    /**
+     * @var string
+     */
+    private string $contentMediaType;
 
-        $this->assertInstanceOf($expected, new ContentMediaTypeKeywordValidator('a'));
+    /**
+     * @var ContentMediaTypeKeywordValidator
+     */
+    private ContentMediaTypeKeywordValidator $validator;
+
+    protected function setUp(): void
+    {
+        $this->contentMediaType = 'a';
+        $this->validator = new ContentMediaTypeKeywordValidator($this->contentMediaType);
+    }
+
+    public function testGetContentMediaType(): void
+    {
+        $expected = $this->contentMediaType;
+
+        $this->assertSame($expected, $this->validator->getContentMediaType());
     }
 }
