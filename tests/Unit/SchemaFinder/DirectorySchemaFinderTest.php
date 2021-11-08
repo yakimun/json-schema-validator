@@ -2,20 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Yakimun\JsonSchemaValidator\Tests\Unit\SchemaLoader;
+namespace Yakimun\JsonSchemaValidator\Tests\Unit\SchemaFinder;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
-use Yakimun\JsonSchemaValidator\Exception\SchemaLoaderException;
-use Yakimun\JsonSchemaValidator\SchemaLoader\DirectorySchemaLoader;
-use Yakimun\JsonSchemaValidator\SchemaLoaderResult;
+use Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader;
+use Yakimun\JsonSchemaValidator\SchemaFinder\DirectorySchemaFinder;
 
 /**
- * @covers \Yakimun\JsonSchemaValidator\SchemaLoader\DirectorySchemaLoader
- * @uses \Yakimun\JsonSchemaValidator\SchemaLoaderResult
+ * @covers \Yakimun\JsonSchemaValidator\SchemaFinder\DirectorySchemaFinder
+ * @uses \Yakimun\JsonSchemaValidator\JsonLoader\FileJsonLoader
  */
-final class DirectorySchemaLoaderTest extends TestCase
+final class DirectorySchemaFinderTest extends TestCase
 {
     /**
      * @var UriInterface
@@ -33,9 +32,9 @@ final class DirectorySchemaLoaderTest extends TestCase
     private string $filename;
 
     /**
-     * @var DirectorySchemaLoader
+     * @var DirectorySchemaFinder
      */
-    private DirectorySchemaLoader $loader;
+    private DirectorySchemaFinder $finder;
 
     protected function setUp(): void
     {
@@ -60,7 +59,7 @@ final class DirectorySchemaLoaderTest extends TestCase
         $this->uri = $uri->withPath('/schema');
         $this->directory = $fullDirectory . '/';
         $this->filename = $fullFilename;
-        $this->loader = new DirectorySchemaLoader($uri, $fullDirectory);
+        $this->finder = new DirectorySchemaFinder($uri, $fullDirectory);
     }
 
     protected function tearDown(): void
@@ -69,28 +68,20 @@ final class DirectorySchemaLoaderTest extends TestCase
         rmdir($this->directory);
     }
 
-    public function testLoad(): void
+    public function testFind(): void
     {
-        file_put_contents($this->filename, '{}');
-        $expected = new SchemaLoaderResult((object)[]);
+        $expected = new FileJsonLoader($this->filename);
 
-        $this->assertEquals($expected, $this->loader->load($this->uri));
+        $this->assertEquals($expected, $this->finder->find($this->uri));
     }
 
-    public function testLoadWithInvalidUri(): void
+    public function testFindWithInvalidUri(): void
     {
-        $this->assertNull($this->loader->load(new Uri('https://example.org')));
+        $this->assertNull($this->finder->find(new Uri('https://example.org')));
     }
 
-    public function testLoadWithNonExistingUri(): void
+    public function testFindWithNonExistingUri(): void
     {
-        $this->assertNull($this->loader->load($this->uri->withPath('/schema2')));
-    }
-
-    public function testLoadWithInvalidJson(): void
-    {
-        $this->expectException(SchemaLoaderException::class);
-
-        $this->loader->load($this->uri);
+        $this->assertNull($this->finder->find($this->uri->withPath('/schema2')));
     }
 }

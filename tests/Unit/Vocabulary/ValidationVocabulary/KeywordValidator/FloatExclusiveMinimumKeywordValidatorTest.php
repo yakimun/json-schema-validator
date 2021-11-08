@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class FloatExclusiveMinimumKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var float
-     */
-    private float $exclusiveMinimum;
-
-    /**
-     * @var FloatExclusiveMinimumKeywordValidator
-     */
-    private FloatExclusiveMinimumKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->exclusiveMinimum = 0.0;
-        $this->validator = new FloatExclusiveMinimumKeywordValidator($this->exclusiveMinimum);
-    }
-
     public function testGetExclusiveMinimum(): void
     {
-        $expected = $this->exclusiveMinimum;
+        $expected = 0.0;
+        $validator = new FloatExclusiveMinimumKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getExclusiveMinimum());
+        $this->assertSame($expected, $validator->getExclusiveMinimum());
     }
 }

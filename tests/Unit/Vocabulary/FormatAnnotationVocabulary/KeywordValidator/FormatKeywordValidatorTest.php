@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\FormatAnnotationVocabulary\KeywordVal
  */
 final class FormatKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private string $format;
-
-    /**
-     * @var FormatKeywordValidator
-     */
-    private FormatKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->format = 'a';
-        $this->validator = new FormatKeywordValidator($this->format);
-    }
-
     public function testGetFormat(): void
     {
-        $expected = $this->format;
+        $expected = 'a';
+        $validator = new FormatKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getFormat());
+        $this->assertSame($expected, $validator->getFormat());
     }
 }

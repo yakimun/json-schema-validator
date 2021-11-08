@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\T
  */
 final class TitleKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private string $title;
-
-    /**
-     * @var TitleKeywordValidator
-     */
-    private TitleKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->title = 'a';
-        $this->validator = new TitleKeywordValidator($this->title);
-    }
-
     public function testGetTitle(): void
     {
-        $expected = $this->title;
+        $expected = 'a';
+        $validator = new TitleKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getTitle());
+        $this->assertSame($expected, $validator->getTitle());
     }
 }

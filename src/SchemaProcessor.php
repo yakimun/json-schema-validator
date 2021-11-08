@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator;
 
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaValidator\BooleanSchemaValidator;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
@@ -26,23 +29,23 @@ final class SchemaProcessor
     }
 
     /**
-     * @param list<mixed>|null|object|scalar $schema
+     * @param JsonValue $schema
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
     public function process(
-        $schema,
+        JsonValue $schema,
         SchemaIdentifier $identifier,
         array $nonCanonicalIdentifiers,
         JsonPointer $path
     ): array {
-        if (is_object($schema)) {
+        if ($schema instanceof JsonObject) {
             return $this->processObject($schema, $identifier, $nonCanonicalIdentifiers, $path);
         }
 
-        if (is_bool($schema)) {
+        if ($schema instanceof JsonBoolean) {
             return $this->processBoolean($schema, $identifier, $nonCanonicalIdentifiers);
         }
 
@@ -50,22 +53,19 @@ final class SchemaProcessor
     }
 
     /**
-     * @param object $schema
+     * @param JsonObject $schema
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      * @param JsonPointer $path
      * @return non-empty-list<ProcessedSchema>
      */
     public function processObject(
-        object $schema,
+        JsonObject $schema,
         SchemaIdentifier $identifier,
         array $nonCanonicalIdentifiers,
         JsonPointer $path
     ): array {
-        /**
-         * @var array<string, list<mixed>|null|object|scalar> $properties
-         */
-        $properties = get_object_vars($schema);
+        $properties = $schema->getProperties();
 
         if (!$properties) {
             $validator = new ObjectSchemaValidator($identifier->getUri(), $identifier->getFragment(), []);
@@ -106,17 +106,20 @@ final class SchemaProcessor
     }
 
     /**
-     * @param bool $schema
+     * @param JsonBoolean $schema
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
      * @return non-empty-list<ProcessedSchema>
      */
-    private function processBoolean(bool $schema, SchemaIdentifier $identifier, array $nonCanonicalIdentifiers): array
-    {
+    private function processBoolean(
+        JsonBoolean $schema,
+        SchemaIdentifier $identifier,
+        array $nonCanonicalIdentifiers
+    ): array {
         $uri = $identifier->getUri();
         $fragment = $identifier->getFragment();
 
-        $validator = new BooleanSchemaValidator($uri, $fragment, $schema);
+        $validator = new BooleanSchemaValidator($uri, $fragment, $schema->getValue());
 
         return [new ProcessedSchema($validator, $identifier, $nonCanonicalIdentifiers, [], [])];
     }

@@ -7,6 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\FormatAnnotationVoca
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +19,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\FormatAnnotationVocabulary\KeywordVal
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\FormatAnnotationVocabulary\Keyword\FormatKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,9 +58,10 @@ final class FormatKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 'a';
+        $format = 'a';
+        $value = new JsonString($format);
         $context = new SchemaContext($this->processor, ['format' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new FormatKeywordValidator($value)];
+        $expected = [new FormatKeywordValidator($format)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -65,7 +69,7 @@ final class FormatKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['format' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

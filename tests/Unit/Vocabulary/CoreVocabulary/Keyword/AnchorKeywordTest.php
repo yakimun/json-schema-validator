@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -18,6 +21,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword;
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\AnchorKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -62,13 +66,15 @@ final class AnchorKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
-     * @dataProvider valueProvider
+     * @param string $anchor
+     * @dataProvider anchorProvider
      */
-    public function testProcess(string $value): void
+    public function testProcess(string $anchor): void
     {
+        $value = new JsonString($anchor);
         $context = new SchemaContext($this->processor, ['$anchor' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new SchemaAnchor($this->uri->withFragment($value), false, $this->pointer->addTokens(['$anchor']))];
+        $uri = $this->uri->withFragment($anchor);
+        $expected = [new SchemaAnchor($uri, false, $this->pointer->addTokens(['$anchor']))];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getAnchors());
@@ -77,7 +83,7 @@ final class AnchorKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{string}>
      */
-    public function valueProvider(): array
+    public function anchorProvider(): array
     {
         return [
             ['A'],
@@ -94,10 +100,10 @@ final class AnchorKeywordTest extends TestCase
     }
 
     /**
-     * @param string|null $value
+     * @param JsonValue $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?string $value): void
+    public function testProcessWithInvalidValue(JsonValue $value): void
     {
         $context = new SchemaContext($this->processor, ['$anchor' => $value], $this->pointer, $this->identifier, []);
 
@@ -107,18 +113,18 @@ final class AnchorKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{string|null}>
+     * @return non-empty-list<array{JsonValue}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [''],
-            ['0'],
-            ['-'],
-            ['.'],
-            ['*'],
-            ['A*'],
-            [null],
+            [new JsonString('')],
+            [new JsonString('0')],
+            [new JsonString('-')],
+            [new JsonString('.')],
+            [new JsonString('*')],
+            [new JsonString('A*')],
+            [new JsonNull()],
         ];
     }
 }

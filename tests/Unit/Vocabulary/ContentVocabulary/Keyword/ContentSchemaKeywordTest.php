@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -20,6 +23,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\KeywordValidator\Co
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\Keyword\ContentSchemaKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -66,10 +71,10 @@ final class ContentSchemaKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext(
             $this->processor,
-            ['contentMediaType' => 'a', 'contentSchema' => $value],
+            ['contentMediaType' => new JsonString('a'), 'contentSchema' => $value],
             $this->pointer,
             $this->identifier,
             [],
@@ -87,7 +92,7 @@ final class ContentSchemaKeywordTest extends TestCase
 
     public function testProcessWithoutContentMediaType(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext(
             $this->processor,
             ['contentSchema' => $value],
@@ -107,7 +112,7 @@ final class ContentSchemaKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['contentSchema' => $value],

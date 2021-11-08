@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -19,6 +22,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DynamicAnchorKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -64,11 +68,12 @@ final class DynamicAnchorKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
-     * @dataProvider valueProvider
+     * @param string $dynamicAnchor
+     * @dataProvider dynamicAnchorProvider
      */
-    public function testProcess(string $value): void
+    public function testProcess(string $dynamicAnchor): void
     {
+        $value = new JsonString($dynamicAnchor);
         $context = new SchemaContext(
             $this->processor,
             ['$dynamicAnchor' => $value],
@@ -76,10 +81,10 @@ final class DynamicAnchorKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $uri = $this->uri->withFragment($value);
+        $uri = $this->uri->withFragment($dynamicAnchor);
         $path = $this->pointer->addTokens(['$dynamicAnchor']);
         $expectedAnchors = [new SchemaAnchor($uri, true, $path)];
-        $expectedValidators = [new DynamicAnchorKeywordValidator($value)];
+        $expectedValidators = [new DynamicAnchorKeywordValidator($dynamicAnchor)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expectedAnchors, $context->getAnchors());
@@ -89,7 +94,7 @@ final class DynamicAnchorKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{string}>
      */
-    public function valueProvider(): array
+    public function dynamicAnchorProvider(): array
     {
         return [
             ['A'],
@@ -106,10 +111,10 @@ final class DynamicAnchorKeywordTest extends TestCase
     }
 
     /**
-     * @param string|null $value
+     * @param JsonValue $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?string $value): void
+    public function testProcessWithInvalidValue(JsonValue $value): void
     {
         $context = new SchemaContext(
             $this->processor,
@@ -125,18 +130,18 @@ final class DynamicAnchorKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{string|null}>
+     * @return non-empty-list<array{JsonValue}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [''],
-            ['0'],
-            ['-'],
-            ['.'],
-            ['*'],
-            ['A*'],
-            [null],
+            [new JsonString('')],
+            [new JsonString('0')],
+            [new JsonString('-')],
+            [new JsonString('.')],
+            [new JsonString('*')],
+            [new JsonString('A*')],
+            [new JsonNull()],
         ];
     }
 }

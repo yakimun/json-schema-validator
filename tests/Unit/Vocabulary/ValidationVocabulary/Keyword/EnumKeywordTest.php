@@ -7,6 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +19,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\EnumKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,7 +58,7 @@ final class EnumKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = [];
+        $value = new JsonArray([]);
         $context = new SchemaContext($this->processor, ['enum' => $value], $this->pointer, $this->identifier, []);
         $expected = [new EnumKeywordValidator([])];
         $this->keyword->process($value, $context);
@@ -65,7 +68,7 @@ final class EnumKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['enum' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

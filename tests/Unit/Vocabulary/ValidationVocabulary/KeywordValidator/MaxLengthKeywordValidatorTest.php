@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class MaxLengthKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var int
-     */
-    private int $maxLength;
-
-    /**
-     * @var MaxLengthKeywordValidator
-     */
-    private MaxLengthKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->maxLength = 0;
-        $this->validator = new MaxLengthKeywordValidator($this->maxLength);
-    }
-
     public function testGetMaxLength(): void
     {
-        $expected = $this->maxLength;
+        $expected = 0;
+        $validator = new MaxLengthKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getMaxLength());
+        $this->assertSame($expected, $validator->getMaxLength());
     }
 }

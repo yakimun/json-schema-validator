@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
+use Yakimun\JsonSchemaValidator\Json\JsonFloat;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatMultipleOfKeywordValidator;
@@ -14,27 +17,27 @@ final class MultipleOfKeyword implements Keyword
     public const NAME = 'multipleOf';
 
     /**
-     * @param list<mixed>|null|object|scalar $property
+     * @param JsonValue $property
      * @param SchemaContext $context
      */
-    public function process($property, SchemaContext $context): void
+    public function process(JsonValue $property, SchemaContext $context): void
     {
-        if (is_int($property)) {
-            if ($property <= 0) {
+        if ($property instanceof JsonInteger) {
+            if ($property->getValue() <= 0) {
                 throw $context->createException('The value must be strictly greater than 0.', self::NAME);
             }
 
-            $context->addKeywordValidator(new IntMultipleOfKeywordValidator($property));
+            $context->addKeywordValidator(new IntMultipleOfKeywordValidator($property->getValue()));
 
             return;
         }
 
-        if (is_float($property)) {
-            if ($property <= 0) {
+        if ($property instanceof JsonFloat) {
+            if ($property->getValue() <= 0) {
                 throw $context->createException('The value must be strictly greater than 0.', self::NAME);
             }
 
-            $context->addKeywordValidator(new FloatMultipleOfKeywordValidator($property));
+            $context->addKeywordValidator(new FloatMultipleOfKeywordValidator($property->getValue()));
 
             return;
         }

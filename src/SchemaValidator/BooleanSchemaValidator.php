@@ -58,7 +58,7 @@ final class BooleanSchemaValidator implements SchemaValidator
     /**
      * @return bool
      */
-    public function isValue(): bool
+    public function getValue(): bool
     {
         return $this->value;
     }

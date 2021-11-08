@@ -27,7 +27,7 @@ final class UniqueItemsKeywordValidator implements KeywordValidator
     /**
      * @return bool
      */
-    public function isUniqueItems(): bool
+    public function getUniqueItems(): bool
     {
         return $this->uniqueItems;
     }

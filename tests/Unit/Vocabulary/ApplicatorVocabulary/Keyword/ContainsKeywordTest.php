@@ -8,6 +8,8 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -20,6 +22,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\ContainsKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -66,7 +69,7 @@ final class ContainsKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext($this->processor, ['contains' => $value], $this->pointer, $this->identifier, []);
         $pointer = $this->pointer->addTokens(['contains']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
@@ -81,7 +84,7 @@ final class ContainsKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['contains' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +20,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\SchemaKeyword;
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\SchemaKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -53,7 +57,7 @@ final class SchemaKeywordTest extends TestCase
     }
 
     /**
-     * @param non-empty-array<string, string> $properties
+     * @param non-empty-array<string, JsonString> $properties
      * @dataProvider propertiesProvider
      */
     public function testProcess(array $properties): void
@@ -61,32 +65,28 @@ final class SchemaKeywordTest extends TestCase
         $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $context = new SchemaContext($this->processor, $properties, $this->pointer, $identifier, []);
         $expected = new SchemaContext($this->processor, $properties, $this->pointer, $identifier, []);
-
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
         $this->keyword->process($properties['$schema'], $context);
 
         $this->assertEquals($expected, $context);
     }
 
     /**
-     * @return non-empty-list<array{non-empty-array<string, string>}>
+     * @return non-empty-list<array{non-empty-array<string, JsonString>}>
      */
     public function propertiesProvider(): array
     {
         return [
-            [['$schema' => 'https://example.org/a']],
-            [['$schema' => 'https://example.org/a', '$id' => 'b']],
+            [['$schema' => new JsonString('https://example.org/a')]],
+            [['$schema' => new JsonString('https://example.org/a'), '$id' => new JsonString('b')]],
         ];
     }
 
     /**
-     * @param string|null $value
+     * @param JsonValue $value
      * @param list<string> $tokens
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?string $value, array $tokens): void
+    public function testProcessWithInvalidValue(JsonValue $value, array $tokens): void
     {
         $pointer = $this->pointer->addTokens($tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
@@ -94,22 +94,19 @@ final class SchemaKeywordTest extends TestCase
 
         $this->expectException(SchemaException::class);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
         $this->keyword->process($value, $context);
     }
 
     /**
-     * @return non-empty-list<array{string|null, list<string>}>
+     * @return non-empty-list<array{JsonValue, list<string>}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [null, []],
-            ['/a', []],
-            ['https://example.com/a/../b', []],
-            ['https://example.com/a', ['b']],
+            [new JsonNull(), []],
+            [new JsonString('/a'), []],
+            [new JsonString('https://example.com/a/../b'), []],
+            [new JsonString('https://example.com/a'), ['b']],
         ];
     }
 }

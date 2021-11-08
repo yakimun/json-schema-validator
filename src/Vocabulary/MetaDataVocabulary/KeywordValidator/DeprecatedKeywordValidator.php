@@ -27,7 +27,7 @@ final class DeprecatedKeywordValidator implements KeywordValidator
     /**
      * @return bool
      */
-    public function isDeprecated(): bool
+    public function getDeprecated(): bool
     {
         return $this->deprecated;
     }

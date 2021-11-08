@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\R
  */
 final class ReadOnlyKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var bool
-     */
-    private bool $readOnly;
-
-    /**
-     * @var ReadOnlyKeywordValidator
-     */
-    private ReadOnlyKeywordValidator $validator;
-
-    protected function setUp(): void
+    public function testGetReadOnly(): void
     {
-        $this->readOnly = true;
-        $this->validator = new ReadOnlyKeywordValidator($this->readOnly);
-    }
+        $expected = true;
+        $validator = new ReadOnlyKeywordValidator($expected);
 
-    public function testIsReadOnly(): void
-    {
-        $expected = $this->readOnly;
-
-        $this->assertSame($expected, $this->validator->isReadOnly());
+        $this->assertSame($expected, $validator->getReadOnly());
     }
 }

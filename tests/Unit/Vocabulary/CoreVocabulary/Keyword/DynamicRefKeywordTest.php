@@ -9,6 +9,8 @@ use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -20,6 +22,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DynamicRefKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -64,11 +67,12 @@ final class DynamicRefKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
-     * @dataProvider valueProvider
+     * @param string $dynamicRef
+     * @dataProvider dynamicRefProvider
      */
-    public function testProcess(string $value): void
+    public function testProcess(string $dynamicRef): void
     {
+        $value = new JsonString($dynamicRef);
         $context = new SchemaContext(
             $this->processor,
             ['$dynamicRef' => $value],
@@ -76,7 +80,7 @@ final class DynamicRefKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $uri = UriResolver::resolve($this->uri, new Uri($dynamicRef));
         $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens(['$dynamicRef']))];
         $expectedValidators = [new DynamicRefKeywordValidator($uri)];
         $this->keyword->process($value, $context);
@@ -88,7 +92,7 @@ final class DynamicRefKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{string}>
      */
-    public function valueProvider(): array
+    public function dynamicRefProvider(): array
     {
         return [
             [''],
@@ -103,7 +107,7 @@ final class DynamicRefKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['$dynamicRef' => $value],

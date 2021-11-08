@@ -27,7 +27,7 @@ final class WriteOnlyKeywordValidator implements KeywordValidator
     /**
      * @return bool
      */
-    public function isWriteOnly(): bool
+    public function getWriteOnly(): bool
     {
         return $this->writeOnly;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator;
 
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
@@ -12,22 +13,22 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class ConstKeywordValidator implements KeywordValidator
 {
     /**
-     * @var list<mixed>|null|object|scalar
+     * @var JsonValue
      */
-    private $const;
+    private JsonValue $const;
 
     /**
-     * @param list<mixed>|null|object|scalar $const
+     * @param JsonValue $const
      */
-    public function __construct($const)
+    public function __construct(JsonValue $const)
     {
         $this->const = $const;
     }
 
     /**
-     * @return list<mixed>|null|object|scalar
+     * @return JsonValue
      */
-    public function getConst()
+    public function getConst(): JsonValue
     {
         return $this->const;
     }

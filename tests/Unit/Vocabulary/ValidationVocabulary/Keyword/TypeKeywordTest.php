@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -18,6 +21,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\TypeKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -56,13 +61,14 @@ final class TypeKeywordTest extends TestCase
     }
 
     /**
-     * @param 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer' $value
+     * @param 'null'|'boolean'|'object'|'array'|'number'|'string'|'integer' $type
      * @dataProvider stringTypeProvider
      */
-    public function testProcessWithStringValue(string $value): void
+    public function testProcessWithStringValue(string $type): void
     {
+        $value = new JsonString($type);
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new StringTypeKeywordValidator($value)];
+        $expected = [new StringTypeKeywordValidator($type)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -85,20 +91,27 @@ final class TypeKeywordTest extends TestCase
     }
 
     /**
-     * @param list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'> $value
+     * @param non-empty-list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'> $types
      * @dataProvider arrayTypeProvider
      */
-    public function testProcessWithArrayValue(array $value): void
+    public function testProcessWithArrayValue(array $types): void
     {
+        $elements = [];
+
+        foreach ($types as $type) {
+            $elements[] = new JsonString($type);
+        }
+
+        $value = new JsonArray($elements);
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new ArrayTypeKeywordValidator($value)];
+        $expected = [new ArrayTypeKeywordValidator($types)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     /**
-     * @return non-empty-list<array{list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'>}>
+     * @return non-empty-list<array{non-empty-list<'null'|'boolean'|'object'|'array'|'number'|'string'|'integer'>}>
      */
     public function arrayTypeProvider(): array
     {
@@ -116,7 +129,7 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -126,7 +139,7 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidStringType(): void
     {
-        $value = 'a';
+        $value = new JsonString('a');
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -136,7 +149,7 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $value = [null];
+        $value = new JsonArray([new JsonNull()]);
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -146,7 +159,7 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithInvalidArrayItemType(): void
     {
-        $value = ['a'];
+        $value = new JsonArray([new JsonString('a')]);
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -156,7 +169,7 @@ final class TypeKeywordTest extends TestCase
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $value = ['null', 'null'];
+        $value = new JsonArray([new JsonString('null'), new JsonString('null')]);
         $context = new SchemaContext($this->processor, ['type' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

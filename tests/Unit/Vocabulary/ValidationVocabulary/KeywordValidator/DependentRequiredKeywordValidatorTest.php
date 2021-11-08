@@ -12,32 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class DependentRequiredKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private string $key;
-
-    /**
-     * @var list<string>
-     */
-    private array $properties;
-
-    /**
-     * @var DependentRequiredKeywordValidator
-     */
-    private DependentRequiredKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->key = 'a';
-        $this->properties = ['b'];
-        $this->validator = new DependentRequiredKeywordValidator([$this->key => $this->properties]);
-    }
-
     public function testGetDependentRequiredProperties(): void
     {
-        $expected = [$this->key => $this->properties];
+        $expected = ['a' => ['b']];
+        $validator = new DependentRequiredKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getDependentRequiredProperties());
+        $this->assertSame($expected, $validator->getDependentRequiredProperties());
     }
 }

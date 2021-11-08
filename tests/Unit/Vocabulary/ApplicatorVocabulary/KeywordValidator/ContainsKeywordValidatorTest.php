@@ -4,35 +4,24 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ApplicatorVocabulary\KeywordValidator;
 
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
+use Yakimun\JsonSchemaValidator\JsonPointer;
+use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator\ContainsKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator\ContainsKeywordValidator
+ * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
  */
 final class ContainsKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var SchemaValidator
-     */
-    private SchemaValidator $schemaValidator;
-
-    /**
-     * @var ContainsKeywordValidator
-     */
-    private ContainsKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->schemaValidator = $this->createStub(SchemaValidator::class);
-        $this->validator = new ContainsKeywordValidator($this->schemaValidator);
-    }
-
     public function testGetSchemaValidator(): void
     {
-        $expected = $this->schemaValidator;
+        $expected = new ObjectSchemaValidator(new Uri('https://example.com'), new JsonPointer([]), []);
+        $validator = new ContainsKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getSchemaValidator());
+        $this->assertSame($expected, $validator->getSchemaValidator());
     }
 }

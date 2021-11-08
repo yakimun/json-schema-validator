@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class FloatMultipleOfKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var float
-     */
-    private float $multipleOf;
-
-    /**
-     * @var FloatMultipleOfKeywordValidator
-     */
-    private FloatMultipleOfKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->multipleOf = 0.0;
-        $this->validator = new FloatMultipleOfKeywordValidator($this->multipleOf);
-    }
-
     public function testGetMultipleOf(): void
     {
-        $expected = $this->multipleOf;
+        $expected = 0.0;
+        $validator = new FloatMultipleOfKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getMultipleOf());
+        $this->assertSame($expected, $validator->getMultipleOf());
     }
 }

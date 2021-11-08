@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class IntMultipleOfKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var int
-     */
-    private int $multipleOf;
-
-    /**
-     * @var IntMultipleOfKeywordValidator
-     */
-    private IntMultipleOfKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->multipleOf = 0;
-        $this->validator = new IntMultipleOfKeywordValidator($this->multipleOf);
-    }
-
     public function testGetMultipleOf(): void
     {
-        $expected = $this->multipleOf;
+        $expected = 0;
+        $validator = new IntMultipleOfKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getMultipleOf());
+        $this->assertSame($expected, $validator->getMultipleOf());
     }
 }

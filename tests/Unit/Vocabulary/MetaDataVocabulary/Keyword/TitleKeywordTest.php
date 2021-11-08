@@ -7,6 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\MetaDataVocabulary\K
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +19,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\T
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\Keyword\TitleKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,9 +58,10 @@ final class TitleKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 'a';
+        $title = 'a';
+        $value = new JsonString($title);
         $context = new SchemaContext($this->processor, ['title' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new TitleKeywordValidator($value)];
+        $expected = [new TitleKeywordValidator($title)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -65,7 +69,7 @@ final class TitleKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['title' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

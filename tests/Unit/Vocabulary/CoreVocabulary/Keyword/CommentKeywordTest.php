@@ -7,6 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\CoreVocabulary\Keywo
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -16,6 +18,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\CommentKeyword
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\CommentKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -53,13 +56,10 @@ final class CommentKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 'a';
+        $value = new JsonString('a');
         $context = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
         $expected = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context);
@@ -67,14 +67,11 @@ final class CommentKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['$comment' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
         $this->keyword->process($value, $context);
     }
 }

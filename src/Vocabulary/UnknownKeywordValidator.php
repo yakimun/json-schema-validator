@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary;
 
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
+
 /**
  * @psalm-immutable
  */
@@ -15,15 +17,15 @@ final class UnknownKeywordValidator implements KeywordValidator
     private string $name;
 
     /**
-     * @var list<mixed>|null|object|scalar
+     * @var JsonValue
      */
-    private $value;
+    private JsonValue $value;
 
     /**
      * @param string $name
-     * @param list<mixed>|null|object|scalar $value
+     * @param JsonValue $value
      */
-    public function __construct(string $name, $value)
+    public function __construct(string $name, JsonValue $value)
     {
         $this->name = $name;
         $this->value = $value;
@@ -38,9 +40,9 @@ final class UnknownKeywordValidator implements KeywordValidator
     }
 
     /**
-     * @return list<mixed>|null|object|scalar
+     * @return JsonValue
      */
-    public function getValue()
+    public function getValue(): JsonValue
     {
         return $this->value;
     }

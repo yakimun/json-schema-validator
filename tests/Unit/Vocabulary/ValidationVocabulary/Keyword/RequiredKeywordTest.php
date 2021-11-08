@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +20,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\RequiredKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,9 +60,9 @@ final class RequiredKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = ['a'];
+        $value = new JsonArray([new JsonString('a')]);
         $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
-        $expected = [new RequiredKeywordValidator($value)];
+        $expected = [new RequiredKeywordValidator(['a'])];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -65,7 +70,7 @@ final class RequiredKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -75,7 +80,7 @@ final class RequiredKeywordTest extends TestCase
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $value = [null];
+        $value = new JsonArray([new JsonNull()]);
         $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);
@@ -85,7 +90,7 @@ final class RequiredKeywordTest extends TestCase
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $value = ['a', 'a'];
+        $value = new JsonArray([new JsonString('a'), new JsonString('a')]);
         $context = new SchemaContext($this->processor, ['required' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

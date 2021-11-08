@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +20,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\MaxContainsKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,15 +60,16 @@ final class MaxContainsKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 0;
+        $maxContains = 0;
+        $value = new JsonInteger($maxContains);
         $context = new SchemaContext(
             $this->processor,
-            ['contains' => true, 'maxContains' => $value],
+            ['contains' => new JsonBoolean(true), 'maxContains' => $value],
             $this->pointer,
             $this->identifier,
             [],
         );
-        $expected = [new MaxContainsKeywordValidator($value)];
+        $expected = [new MaxContainsKeywordValidator($maxContains)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -71,7 +77,7 @@ final class MaxContainsKeywordTest extends TestCase
 
     public function testProcessWithoutContains(): void
     {
-        $value = 0;
+        $value = new JsonInteger(0);
         $context = new SchemaContext(
             $this->processor,
             ['maxContains' => $value],
@@ -79,7 +85,6 @@ final class MaxContainsKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-
         $this->keyword->process($value, $context);
 
         $this->assertEmpty($context->getKeywordValidators());
@@ -87,7 +92,7 @@ final class MaxContainsKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['maxContains' => $value],
@@ -103,7 +108,7 @@ final class MaxContainsKeywordTest extends TestCase
 
     public function testProcessWithNegativeValue(): void
     {
-        $value = -1;
+        $value = new JsonInteger(-1);
         $context = new SchemaContext(
             $this->processor,
             ['maxContains' => $value],

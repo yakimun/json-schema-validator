@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class MinPropertiesKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var int
-     */
-    private int $minProperties;
-
-    /**
-     * @var MinPropertiesKeywordValidator
-     */
-    private MinPropertiesKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->minProperties = 0;
-        $this->validator = new MinPropertiesKeywordValidator($this->minProperties);
-    }
-
     public function testGetMinProperties(): void
     {
-        $expected = $this->minProperties;
+        $expected = 0;
+        $validator = new MinPropertiesKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getMinProperties());
+        $this->assertSame($expected, $validator->getMinProperties());
     }
 }

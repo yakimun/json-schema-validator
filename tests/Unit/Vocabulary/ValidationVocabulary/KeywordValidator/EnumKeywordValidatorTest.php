@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary\KeywordValidator;
 
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\EnumKeywordValidator;
 
 /**
@@ -12,26 +13,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class EnumKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private string $element;
-
-    /**
-     * @var EnumKeywordValidator
-     */
-    private EnumKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->element = 'a';
-        $this->validator = new EnumKeywordValidator([$this->element]);
-    }
-
     public function testGetElements(): void
     {
-        $expected = [$this->element];
+        $expected = [new JsonNull()];
+        $validator = new EnumKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getElements());
+        $this->assertSame($expected, $validator->getElements());
     }
 }

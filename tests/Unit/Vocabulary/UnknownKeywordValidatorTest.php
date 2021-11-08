@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary;
 
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\Vocabulary\UnknownKeywordValidator;
 
 /**
@@ -18,9 +20,9 @@ final class UnknownKeywordValidatorTest extends TestCase
     private string $name;
 
     /**
-     * @var string
+     * @var JsonValue
      */
-    private string $value;
+    private JsonValue $value;
 
     /**
      * @var UnknownKeywordValidator
@@ -30,7 +32,7 @@ final class UnknownKeywordValidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->name = 'a';
-        $this->value = 'b';
+        $this->value = new JsonNull();
         $this->validator = new UnknownKeywordValidator($this->name, $this->value);
     }
 

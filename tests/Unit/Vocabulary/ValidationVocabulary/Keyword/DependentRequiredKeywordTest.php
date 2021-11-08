@@ -7,6 +7,10 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +21,9 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\DependentRequiredKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,7 +62,7 @@ final class DependentRequiredKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext(
             $this->processor,
             ['dependentRequired' => $value],
@@ -71,23 +78,23 @@ final class DependentRequiredKeywordTest extends TestCase
 
     public function testProcessWithNonEmptyObject(): void
     {
-        $value = ['a' => []];
+        $value = new JsonObject(['a' => new JsonArray([])]);
         $context = new SchemaContext(
             $this->processor,
-            ['dependentRequired' => (object)$value],
+            ['dependentRequired' => $value],
             $this->pointer,
             $this->identifier,
             [],
         );
-        $expected = [new DependentRequiredKeywordValidator($value)];
-        $this->keyword->process((object)$value, $context);
+        $expected = [new DependentRequiredKeywordValidator(['a' => []])];
+        $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
     }
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['dependentRequired' => $value],
@@ -103,7 +110,7 @@ final class DependentRequiredKeywordTest extends TestCase
 
     public function testProcessWithInvalidObjectProperty(): void
     {
-        $value = (object)['a' => null];
+        $value = new JsonObject(['a' => new JsonNull()]);
         $context = new SchemaContext(
             $this->processor,
             ['dependentRequired' => $value],
@@ -119,7 +126,7 @@ final class DependentRequiredKeywordTest extends TestCase
 
     public function testProcessWithInvalidArrayItem(): void
     {
-        $value = (object)['a' => [null]];
+        $value = new JsonObject(['a' => new JsonArray([new JsonNull()])]);
         $context = new SchemaContext(
             $this->processor,
             ['dependentRequired' => $value],
@@ -135,7 +142,7 @@ final class DependentRequiredKeywordTest extends TestCase
 
     public function testProcessWithNotUniqueArrayItems(): void
     {
-        $value = (object)['a' => ['b', 'b']];
+        $value = new JsonObject(['a' => new JsonArray([new JsonString('b'), new JsonString('b')])]);
         $context = new SchemaContext(
             $this->processor,
             ['dependentRequired' => $value],

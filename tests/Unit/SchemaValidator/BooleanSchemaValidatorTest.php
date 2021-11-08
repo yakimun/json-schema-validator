@@ -58,10 +58,10 @@ final class BooleanSchemaValidatorTest extends TestCase
         $this->assertSame($expected, $this->validator->getFragment());
     }
 
-    public function testIsValue(): void
+    public function testGetValue(): void
     {
         $expected = $this->value;
 
-        $this->assertSame($expected, $this->validator->isValue());
+        $this->assertSame($expected, $this->validator->getValue());
     }
 }

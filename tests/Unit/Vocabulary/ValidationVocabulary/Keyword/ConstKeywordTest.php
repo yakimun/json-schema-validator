@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -28,7 +29,7 @@ final class ConstKeywordTest extends TestCase
         $pointer = new JsonPointer([]);
         $keyword = new ConstKeyword();
         $processor = new SchemaProcessor(['const' => $keyword]);
-        $value = null;
+        $value = new JsonNull();
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
         $context = new SchemaContext($processor, ['const' => $value], $pointer, $identifier, []);
         $expected = [new ConstKeywordValidator($value)];

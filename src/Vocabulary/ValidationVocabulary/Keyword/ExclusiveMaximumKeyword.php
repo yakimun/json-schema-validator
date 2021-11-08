@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
+use Yakimun\JsonSchemaValidator\Json\JsonFloat;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\FloatExclusiveMaximumKeywordValidator;
@@ -14,19 +17,19 @@ final class ExclusiveMaximumKeyword implements Keyword
     public const NAME = 'exclusiveMaximum';
 
     /**
-     * @param list<mixed>|null|object|scalar $property
+     * @param JsonValue $property
      * @param SchemaContext $context
      */
-    public function process($property, SchemaContext $context): void
+    public function process(JsonValue $property, SchemaContext $context): void
     {
-        if (is_int($property)) {
-            $context->addKeywordValidator(new IntExclusiveMaximumKeywordValidator($property));
+        if ($property instanceof JsonInteger) {
+            $context->addKeywordValidator(new IntExclusiveMaximumKeywordValidator($property->getValue()));
 
             return;
         }
 
-        if (is_float($property)) {
-            $context->addKeywordValidator(new FloatExclusiveMaximumKeywordValidator($property));
+        if ($property instanceof JsonFloat) {
+            $context->addKeywordValidator(new FloatExclusiveMaximumKeywordValidator($property->getValue()));
 
             return;
         }

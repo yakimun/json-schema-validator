@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\MetaDataVocabulary\KeywordValidator;
 
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\DefaultKeywordValidator;
 
 /**
@@ -12,26 +13,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator\D
  */
 final class DefaultKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    private string $default;
-
-    /**
-     * @var DefaultKeywordValidator
-     */
-    private DefaultKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->default = 'a';
-        $this->validator = new DefaultKeywordValidator($this->default);
-    }
-
     public function testGetDefault(): void
     {
-        $expected = $this->default;
+        $expected = new JsonNull();
+        $validator = new DefaultKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getDefault());
+        $this->assertSame($expected, $validator->getDefault());
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator;
 
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
@@ -12,12 +13,12 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class EnumKeywordValidator implements KeywordValidator
 {
     /**
-     * @var list<list<mixed>|null|object|scalar>
+     * @var list<JsonValue>
      */
     private array $elements;
 
     /**
-     * @param list<list<mixed>|null|object|scalar> $elements
+     * @param list<JsonValue> $elements
      */
     public function __construct(array $elements)
     {
@@ -25,7 +26,7 @@ final class EnumKeywordValidator implements KeywordValidator
     }
 
     /**
-     * @return list<list<mixed>|null|object|scalar>
+     * @return list<JsonValue>
      */
     public function getElements(): array
     {

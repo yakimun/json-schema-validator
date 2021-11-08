@@ -7,6 +7,7 @@ namespace Yakimun\JsonSchemaValidator;
 use GuzzleHttp\Psr7\UriNormalizer;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
@@ -19,7 +20,7 @@ final class SchemaContext
     private SchemaProcessor $processor;
 
     /**
-     * @var non-empty-array<string, list<mixed>|null|object|scalar>
+     * @var non-empty-array<string, JsonValue>
      * @readonly
      */
     private array $properties;
@@ -62,7 +63,7 @@ final class SchemaContext
 
     /**
      * @param SchemaProcessor $processor
-     * @param non-empty-array<string, list<mixed>|null|object|scalar> $properties
+     * @param non-empty-array<string, JsonValue> $properties
      * @param JsonPointer $path
      * @param SchemaIdentifier $identifier
      * @param list<SchemaIdentifier> $nonCanonicalIdentifiers
@@ -82,7 +83,8 @@ final class SchemaContext
     }
 
     /**
-     * @return non-empty-array<string, list<mixed>|null|object|scalar>
+     * @return non-empty-array<string, JsonValue>
+     * @psalm-mutation-free
      */
     public function getProperties(): array
     {
@@ -198,11 +200,11 @@ final class SchemaContext
     }
 
     /**
-     * @param list<mixed>|null|object|scalar $schema
+     * @param JsonValue $schema
      * @param list<string> $tokens
      * @return SchemaValidator
      */
-    public function createValidator($schema, array $tokens): SchemaValidator
+    public function createValidator(JsonValue $schema, array $tokens): SchemaValidator
     {
         $identifier = $this->advanceIdentifier($this->identifier, $tokens);
 

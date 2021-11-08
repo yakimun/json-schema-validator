@@ -6,7 +6,6 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\CoreVocabulary\Keywo
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\DynamicRefKeywordValidator;
 
 /**
@@ -14,26 +13,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\Dynam
  */
 final class DynamicRefKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var UriInterface
-     */
-    private UriInterface $dynamicRef;
-
-    /**
-     * @var DynamicRefKeywordValidator
-     */
-    private DynamicRefKeywordValidator $validator;
-
-    protected function setUp(): void
-    {
-        $this->dynamicRef = new Uri('https://example.com');
-        $this->validator = new DynamicRefKeywordValidator($this->dynamicRef);
-    }
-
     public function testGetDynamicRef(): void
     {
-        $expected = $this->dynamicRef;
+        $expected = new Uri('https://example.com');
+        $validator = new DynamicRefKeywordValidator($expected);
 
-        $this->assertSame($expected, $this->validator->getDynamicRef());
+        $this->assertSame($expected, $validator->getDynamicRef());
     }
 }

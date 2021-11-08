@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword;
 
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\ArrayTypeKeywordValidator;
@@ -14,38 +17,42 @@ final class TypeKeyword implements Keyword
     public const NAME = 'type';
 
     /**
-     * @param list<mixed>|null|object|scalar $property
+     * @param JsonValue $property
      * @param SchemaContext $context
      */
-    public function process($property, SchemaContext $context): void
+    public function process(JsonValue $property, SchemaContext $context): void
     {
-        if (is_string($property)) {
-            if (!in_array($property, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
+        if ($property instanceof JsonString) {
+            $value = $property->getValue();
+
+            if (!in_array($value, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
                 $message = 'The value must be equal to "null", "boolean", "object", "array", "number", "string", or '
                     . '"integer".';
                 throw $context->createException($message, self::NAME);
             }
 
-            $context->addKeywordValidator(new StringTypeKeywordValidator($property));
+            $context->addKeywordValidator(new StringTypeKeywordValidator($value));
 
             return;
         }
 
-        if (is_array($property)) {
+        if ($property instanceof JsonArray) {
             $types = [];
 
-            foreach (array_values($property) as $item) {
-                if (!is_string($item)) {
+            foreach ($property->getElements() as $element) {
+                if (!$element instanceof JsonString) {
                     throw $context->createException('Array elements must be strings.', self::NAME);
                 }
 
-                if (!in_array($item, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
+                $value = $element->getValue();
+
+                if (!in_array($value, ['null', 'boolean', 'object', 'array', 'number', 'string', 'integer'], true)) {
                     $message = 'The array elements must be equal to "null", "boolean", "object", "array", "number", '
                         . '"string", or "integer".';
                     throw $context->createException($message, self::NAME);
                 }
 
-                $types[] = $item;
+                $types[] = $value;
             }
 
             if (array_unique($types) !== $types) {

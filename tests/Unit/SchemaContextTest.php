@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaAnchor;
@@ -16,12 +19,14 @@ use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaProcessor;
 use Yakimun\JsonSchemaValidator\SchemaReference;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
-use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
-use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\TypeKeyword;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
@@ -29,6 +34,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
  * @uses \Yakimun\JsonSchemaValidator\SchemaProcessor
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
  * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator
  */
 final class SchemaContextTest extends TestCase
 {
@@ -43,7 +49,7 @@ final class SchemaContextTest extends TestCase
     private UriInterface $nonCanonicalUri;
 
     /**
-     * @var non-empty-array<string, null> $properties
+     * @var non-empty-array<string, JsonValue> $properties
      */
     private array $properties;
 
@@ -69,16 +75,16 @@ final class SchemaContextTest extends TestCase
 
     protected function setUp(): void
     {
-        $keywordName = 'a';
+        $keywordName = 'type';
 
         $this->uri = new Uri('https://example1.com');
         $this->nonCanonicalUri = new Uri('https://example2.com');
-        $this->properties = [$keywordName => null];
+        $this->properties = [$keywordName => new JsonString('null')];
         $this->pointer = new JsonPointer([]);
         $this->identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
         $this->nonCanonicalIdentifier = new SchemaIdentifier($this->nonCanonicalUri, $this->pointer, $this->pointer);
         $this->context = new SchemaContext(
-            new SchemaProcessor([$keywordName => $this->createStub(Keyword::class)]),
+            new SchemaProcessor([$keywordName => new TypeKeyword()]),
             $this->properties,
             $this->pointer,
             $this->identifier,
@@ -174,11 +180,11 @@ final class SchemaContextTest extends TestCase
 
     public function testAddKeywordValidator(): void
     {
-        $validator = $this->createStub(KeywordValidator::class);
+        $validator = new StringTypeKeywordValidator('null');
         $expected = [$validator];
         $this->context->addKeywordValidator($validator);
 
-        $this->assertEquals($expected, $this->context->getKeywordValidators());
+        $this->assertSame($expected, $this->context->getKeywordValidators());
     }
 
     public function testGetProcessedSchemas(): void
@@ -196,7 +202,7 @@ final class SchemaContextTest extends TestCase
         $processedSchema = new ProcessedSchema($expectedValidator, $identifier, [$nonCanonicalIdentifier], [], []);
         $expectedProcessedSchemas = [$processedSchema];
 
-        $this->assertEquals($expectedValidator, $this->context->createValidator((object)[], [$token]));
+        $this->assertEquals($expectedValidator, $this->context->createValidator(new JsonObject([]), [$token]));
         $this->assertEquals($expectedProcessedSchemas, $this->context->getProcessedSchemas());
     }
 

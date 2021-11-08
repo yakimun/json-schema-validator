@@ -6,7 +6,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Functional;
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
-use Yakimun\JsonSchemaValidator\SchemaLoader\DirectorySchemaLoader;
+use Yakimun\JsonSchemaValidator\JsonLoader\MixedJsonLoader;
+use Yakimun\JsonSchemaValidator\SchemaFinder\DirectorySchemaFinder;
 use Yakimun\JsonSchemaValidator\Validator;
 use Yakimun\JsonSchemaValidator\ValidatorFactory;
 
@@ -27,11 +28,12 @@ final class JsonSchemaTestSuiteTest extends TestCase
         $schemaDirectory = __DIR__ . '/../../schema/';
         $remotesDirectory = __DIR__ . '/../../JSON-Schema-Test-Suite/remotes/';
 
-        $schemaDirectoryLoader = new DirectorySchemaLoader($schemaUri, $schemaDirectory);
-        $remotesDirectoryLoader = new DirectorySchemaLoader($remotesUri, $remotesDirectory);
+        $schemaDirectoryLoader = new DirectorySchemaFinder($schemaUri, $schemaDirectory);
+        $remotesDirectoryLoader = new DirectorySchemaFinder($remotesUri, $remotesDirectory);
 
         $factory = new ValidatorFactory([$schemaDirectoryLoader, $remotesDirectoryLoader]);
-        $validator = $factory->createValidator($schema, new Uri('https://example.com'));
+        $validator = $factory->createValidator(new MixedJsonLoader($schema), new Uri('https://example.com'));
+
         $expected = Validator::class;
 
         $this->assertInstanceOf($expected, $validator);
@@ -67,9 +69,11 @@ final class JsonSchemaTestSuiteTest extends TestCase
             }
 
             /**
-             * @var \stdClass $testCase
+             * @var list<\stdClass> $testCases
              */
-            foreach (json_decode($json, false, 512, JSON_THROW_ON_ERROR) as $testCase) {
+            $testCases = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+
+            foreach ($testCases as $testCase) {
                 /**
                  * @var string $description
                  */

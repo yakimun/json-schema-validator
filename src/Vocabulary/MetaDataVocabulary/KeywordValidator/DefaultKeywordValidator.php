@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\MetaDataVocabulary\KeywordValidator;
 
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 
 /**
@@ -12,22 +13,22 @@ use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
 final class DefaultKeywordValidator implements KeywordValidator
 {
     /**
-     * @var list<mixed>|null|object|scalar
+     * @var JsonValue
      */
-    private $default;
+    private JsonValue $default;
 
     /**
-     * @param list<mixed>|null|object|scalar $default
+     * @param JsonValue $default
      */
-    public function __construct($default)
+    public function __construct(JsonValue $default)
     {
         $this->default = $default;
     }
 
     /**
-     * @return list<mixed>|null|object|scalar
+     * @return JsonValue
      */
-    public function getDefault()
+    public function getDefault(): JsonValue
     {
         return $this->default;
     }

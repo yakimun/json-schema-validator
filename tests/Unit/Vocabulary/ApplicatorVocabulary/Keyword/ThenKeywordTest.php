@@ -8,6 +8,8 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -20,6 +22,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\ThenKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -66,10 +69,10 @@ final class ThenKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext(
             $this->processor,
-            ['if' => (object)[], 'then' => $value],
+            ['if' => new JsonObject([]), 'then' => $value],
             $this->pointer,
             $this->identifier,
             [],
@@ -87,7 +90,7 @@ final class ThenKeywordTest extends TestCase
 
     public function testProcessWithoutIf(): void
     {
-        $value = (object)[];
+        $value = new JsonObject([]);
         $context = new SchemaContext($this->processor, ['then' => $value], $this->pointer, $this->identifier, []);
         $pointer = $this->pointer->addTokens(['then']);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
@@ -101,7 +104,7 @@ final class ThenKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['then' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

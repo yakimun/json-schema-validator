@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\CoreVocabulary\Keywo
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -18,6 +21,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DefsKeyword;
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\DefsKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -56,31 +60,26 @@ final class DefsKeywordTest extends TestCase
     }
 
     /**
-     * @param array<string, object> $value
+     * @param array<string, JsonObject> $properties
      * @param list<ProcessedSchema> $expected
-     * @dataProvider valueProvider
+     * @dataProvider propertiesProvider
      */
-    public function testProcess(array $value, array $expected): void
+    public function testProcess(array $properties, array $expected): void
     {
-        $context = new SchemaContext(
-            $this->processor,
-            ['$defs' => (object)$value],
-            $this->pointer,
-            $this->identifier,
-            [],
-        );
-        $this->keyword->process((object)$value, $context);
+        $value = new JsonObject($properties);
+        $context = new SchemaContext($this->processor, ['$defs' => $value], $this->pointer, $this->identifier, []);
+        $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getProcessedSchemas());
     }
 
     /**
-     * @return non-empty-list<array{array<string, object>, list<ProcessedSchema>}>
+     * @return non-empty-list<array{array<string, JsonObject>, list<ProcessedSchema>}>
      */
-    public function valueProvider(): array
+    public function propertiesProvider(): array
     {
-        $object1 = (object)[];
-        $object2 = (object)[];
+        $object1 = new JsonObject([]);
+        $object2 = new JsonObject([]);
 
         $uri = new Uri('https://example.com');
 
@@ -105,10 +104,10 @@ final class DefsKeywordTest extends TestCase
     }
 
     /**
-     * @param object|null $value
+     * @param JsonValue $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?object $value): void
+    public function testProcessWithInvalidValue(JsonValue $value): void
     {
         $context = new SchemaContext($this->processor, ['$defs' => $value], $this->pointer, $this->identifier, []);
 
@@ -118,13 +117,13 @@ final class DefsKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{object|null}>
+     * @return non-empty-list<array{JsonValue}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [null],
-            [(object)['a' => null]],
+            [new JsonNull()],
+            [new JsonObject(['a' => new JsonNull()])],
         ];
     }
 }

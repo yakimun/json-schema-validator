@@ -7,6 +7,8 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +19,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\MinPropertiesKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,7 +58,8 @@ final class MinPropertiesKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 0;
+        $minProperties = 0;
+        $value = new JsonInteger($minProperties);
         $context = new SchemaContext(
             $this->processor,
             ['minProperties' => $value],
@@ -63,7 +67,7 @@ final class MinPropertiesKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $expected = [new MinPropertiesKeywordValidator($value)];
+        $expected = [new MinPropertiesKeywordValidator($minProperties)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -71,7 +75,7 @@ final class MinPropertiesKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['minProperties' => $value],
@@ -87,7 +91,7 @@ final class MinPropertiesKeywordTest extends TestCase
 
     public function testProcessWithNegativeValue(): void
     {
-        $value = -1;
+        $value = new JsonInteger(-1);
         $context = new SchemaContext(
             $this->processor,
             ['minProperties' => $value],

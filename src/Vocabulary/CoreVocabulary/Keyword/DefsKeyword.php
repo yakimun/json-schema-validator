@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword;
 
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\Vocabulary\Keyword;
 
@@ -12,19 +14,16 @@ final class DefsKeyword implements Keyword
     public const NAME = '$defs';
 
     /**
-     * @param list<mixed>|null|object|scalar $property
+     * @param JsonValue $property
      * @param SchemaContext $context
      */
-    public function process($property, SchemaContext $context): void
+    public function process(JsonValue $property, SchemaContext $context): void
     {
-        if (!is_object($property)) {
+        if (!$property instanceof JsonObject) {
             throw $context->createException('The value must be an object.', self::NAME);
         }
 
-        /**
-         * @var list<mixed>|null|object|scalar $value
-         */
-        foreach (get_object_vars($property) as $key => $value) {
+        foreach ($property->getProperties() as $key => $value) {
             $context->createValidator($value, [self::NAME, $key]);
         }
     }

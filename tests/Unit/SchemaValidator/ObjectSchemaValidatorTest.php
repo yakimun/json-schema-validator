@@ -10,10 +10,12 @@ use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\KeywordValidator;
+use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator;
 
 /**
  * @covers \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
+ * @uses \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator\StringTypeKeywordValidator
  */
 final class ObjectSchemaValidatorTest extends TestCase
 {
@@ -41,7 +43,7 @@ final class ObjectSchemaValidatorTest extends TestCase
     {
         $this->uri = new Uri('https://example.com');
         $this->fragment = new JsonPointer([]);
-        $this->keywordValidator = $this->createStub(KeywordValidator::class);
+        $this->keywordValidator = new StringTypeKeywordValidator('null');
         $this->validator = new ObjectSchemaValidator($this->uri, $this->fragment, [$this->keywordValidator]);
     }
 

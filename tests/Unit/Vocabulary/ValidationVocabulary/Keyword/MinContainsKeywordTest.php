@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +20,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\MinContainsKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonBoolean
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -55,15 +60,16 @@ final class MinContainsKeywordTest extends TestCase
 
     public function testProcess(): void
     {
-        $value = 0;
+        $minContains = 0;
+        $value = new JsonInteger($minContains);
         $context = new SchemaContext(
             $this->processor,
-            ['contains' => true, 'minContains' => $value],
+            ['contains' => new JsonBoolean(true), 'minContains' => $value],
             $this->pointer,
             $this->identifier,
             [],
         );
-        $expected = [new MinContainsKeywordValidator($value)];
+        $expected = [new MinContainsKeywordValidator($minContains)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -71,7 +77,7 @@ final class MinContainsKeywordTest extends TestCase
 
     public function testProcessWithoutContains(): void
     {
-        $value = 0;
+        $value = new JsonInteger(0);
         $context = new SchemaContext(
             $this->processor,
             ['minContains' => $value],
@@ -87,7 +93,7 @@ final class MinContainsKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['minContains' => $value],
@@ -103,7 +109,7 @@ final class MinContainsKeywordTest extends TestCase
 
     public function testProcessWithNegativeValue(): void
     {
-        $value = -1;
+        $value = new JsonInteger(-1);
         $context = new SchemaContext(
             $this->processor,
             ['minContains' => $value],

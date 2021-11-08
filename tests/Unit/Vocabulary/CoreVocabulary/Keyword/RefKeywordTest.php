@@ -9,6 +9,8 @@ use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -20,6 +22,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\KeywordValidator\RefKe
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\RefKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -64,13 +67,14 @@ final class RefKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
+     * @param string $ref
      * @dataProvider valueProvider
      */
-    public function testProcess(string $value): void
+    public function testProcess(string $ref): void
     {
+        $value = new JsonString($ref);
         $context = new SchemaContext($this->processor, ['$ref' => $value], $this->pointer, $this->identifier, []);
-        $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $uri = UriResolver::resolve($this->uri, new Uri($ref));
         $expectedReferences = [new SchemaReference($uri, $this->pointer->addTokens(['$ref']))];
         $expectedValidators = [new RefKeywordValidator($uri)];
         $this->keyword->process($value, $context);
@@ -97,7 +101,7 @@ final class RefKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($this->processor, ['$ref' => $value], $this->pointer, $this->identifier, []);
 
         $this->expectException(SchemaException::class);

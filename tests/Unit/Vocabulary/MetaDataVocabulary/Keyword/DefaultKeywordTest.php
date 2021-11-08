@@ -6,6 +6,7 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\MetaDataVocabulary\K
 
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -29,7 +30,7 @@ final class DefaultKeywordTest extends TestCase
         $identifier = new SchemaIdentifier(new Uri('https://example.com'), $pointer, $pointer);
         $keyword = new DefaultKeyword();
         $processor = new SchemaProcessor(['default' => $keyword]);
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext($processor, ['default' => $value], $pointer, $identifier, []);
         $expected = [new DefaultKeywordValidator($value)];
         $keyword->process($value, $context);

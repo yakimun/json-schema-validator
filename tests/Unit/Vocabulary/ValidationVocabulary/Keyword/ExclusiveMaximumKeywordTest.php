@@ -7,6 +7,9 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ValidationVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonFloat;
+use Yakimun\JsonSchemaValidator\Json\JsonInteger;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -18,6 +21,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\Keyword\ExclusiveMaximumKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonFloat
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonInteger
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -57,7 +62,8 @@ final class ExclusiveMaximumKeywordTest extends TestCase
 
     public function testProcessWithIntValue(): void
     {
-        $value = 0;
+        $exclusiveMaximum = 0;
+        $value = new JsonInteger($exclusiveMaximum);
         $context = new SchemaContext(
             $this->processor,
             ['exclusiveMaximum' => $value],
@@ -65,7 +71,7 @@ final class ExclusiveMaximumKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $expected = [new IntExclusiveMaximumKeywordValidator($value)];
+        $expected = [new IntExclusiveMaximumKeywordValidator($exclusiveMaximum)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -73,7 +79,8 @@ final class ExclusiveMaximumKeywordTest extends TestCase
 
     public function testProcessWithFloatValue(): void
     {
-        $value = 0.0;
+        $exclusiveMaximum = 0.0;
+        $value = new JsonFloat($exclusiveMaximum);
         $context = new SchemaContext(
             $this->processor,
             ['exclusiveMaximum' => $value],
@@ -81,7 +88,7 @@ final class ExclusiveMaximumKeywordTest extends TestCase
             $this->identifier,
             [],
         );
-        $expected = [new FloatExclusiveMaximumKeywordValidator($value)];
+        $expected = [new FloatExclusiveMaximumKeywordValidator($exclusiveMaximum)];
         $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context->getKeywordValidators());
@@ -89,7 +96,7 @@ final class ExclusiveMaximumKeywordTest extends TestCase
 
     public function testProcessWithInvalidValue(): void
     {
-        $value = null;
+        $value = new JsonNull();
         $context = new SchemaContext(
             $this->processor,
             ['exclusiveMaximum' => $value],

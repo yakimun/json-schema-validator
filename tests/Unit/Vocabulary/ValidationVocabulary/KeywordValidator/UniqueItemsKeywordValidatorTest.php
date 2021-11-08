@@ -12,26 +12,11 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ValidationVocabulary\KeywordValidator
  */
 final class UniqueItemsKeywordValidatorTest extends TestCase
 {
-    /**
-     * @var bool
-     */
-    private bool $uniqueItems;
-
-    /**
-     * @var UniqueItemsKeywordValidator
-     */
-    private UniqueItemsKeywordValidator $validator;
-
-    protected function setUp(): void
+    public function testGetUniqueItems(): void
     {
-        $this->uniqueItems = true;
-        $this->validator = new UniqueItemsKeywordValidator($this->uniqueItems);
-    }
+        $expected = true;
+        $validator = new UniqueItemsKeywordValidator($expected);
 
-    public function testIsUniqueItems(): void
-    {
-        $expected = $this->uniqueItems;
-
-        $this->assertSame($expected, $this->validator->isUniqueItems());
+        $this->assertSame($expected, $validator->getUniqueItems());
     }
 }

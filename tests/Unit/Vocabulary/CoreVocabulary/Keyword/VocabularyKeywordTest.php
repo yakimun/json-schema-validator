@@ -8,6 +8,10 @@ use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonBoolean;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -17,6 +21,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\VocabularyKeyw
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\VocabularyKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -53,54 +58,40 @@ final class VocabularyKeywordTest extends TestCase
     }
 
     /**
-     * @param array<string, bool> $value
+     * @param array<string, JsonBoolean> $properties
      * @dataProvider valueProvider
      */
-    public function testProcess(array $value): void
+    public function testProcess(array $properties): void
     {
+        $value = new JsonObject($properties);
         $identifier = new SchemaIdentifier($this->uri, $this->pointer, $this->pointer);
-        $context = new SchemaContext(
-            $this->processor,
-            ['$vocabulary' => (object)$value],
-            $this->pointer,
-            $identifier,
-            [],
-        );
-        $expected = new SchemaContext(
-            $this->processor,
-            ['$vocabulary' => (object)$value],
-            $this->pointer,
-            $identifier,
-            [],
-        );
+        $context = new SchemaContext($this->processor, ['$vocabulary' => $value], $this->pointer, $identifier, []);
+        $expected = new SchemaContext($this->processor, ['$vocabulary' => $value], $this->pointer, $identifier, []);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
-        $this->keyword->process((object)$value, $context);
+        $this->keyword->process($value, $context);
 
         $this->assertEquals($expected, $context);
     }
 
     /**
-     * @return non-empty-list<array{array<string, bool>}>
+     * @return non-empty-list<array{array<string, JsonBoolean>}>
      */
     public function valueProvider(): array
     {
         return [
             [[]],
-            [['https://example.com/a' => true]],
-            [['https://example.com/a' => false]],
-            [['https://example.com/a' => true, 'https://example.com/b' => false]],
+            [['https://example.com/a' => new JsonBoolean(true)]],
+            [['https://example.com/a' => new JsonBoolean(false)]],
+            [['https://example.com/a' => new JsonBoolean(true), 'https://example.com/b' => new JsonBoolean(false)]],
         ];
     }
 
     /**
-     * @param object|null $value
+     * @param JsonValue $value
      * @param list<string> $tokens
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?object $value, array $tokens): void
+    public function testProcessWithInvalidValue(JsonValue $value, array $tokens): void
     {
         $pointer = $this->pointer->addTokens($tokens);
         $identifier = new SchemaIdentifier($this->uri, $pointer, $pointer);
@@ -108,23 +99,20 @@ final class VocabularyKeywordTest extends TestCase
 
         $this->expectException(SchemaException::class);
 
-        /**
-         * @psalm-suppress UnusedMethodCall
-         */
         $this->keyword->process($value, $context);
     }
 
     /**
-     * @return non-empty-list<array{object|null, list<string>}>
+     * @return non-empty-list<array{JsonValue, list<string>}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [null, []],
-            [(object)['a' => true], []],
-            [(object)['https://example.com/a/../b' => true], []],
-            [(object)['https://example.com/a' => null], []],
-            [(object)[], ['a']],
+            [new JsonNull(), []],
+            [new JsonObject(['a' => new JsonBoolean(true)]), []],
+            [new JsonObject(['https://example.com/a/../b' => new JsonBoolean(true)]), []],
+            [new JsonObject(['https://example.com/a' => new JsonNull()]), []],
+            [new JsonObject([]), ['a']],
         ];
     }
 }

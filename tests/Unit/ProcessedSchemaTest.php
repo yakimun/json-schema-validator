@@ -11,6 +11,7 @@ use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaAnchor;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
 use Yakimun\JsonSchemaValidator\SchemaReference;
+use Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 
 /**
@@ -19,6 +20,7 @@ use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
  * @uses \Yakimun\JsonSchemaValidator\SchemaAnchor
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
  * @uses \Yakimun\JsonSchemaValidator\SchemaReference
+ * @uses \Yakimun\JsonSchemaValidator\SchemaValidator\ObjectSchemaValidator
  */
 final class ProcessedSchemaTest extends TestCase
 {
@@ -58,7 +60,7 @@ final class ProcessedSchemaTest extends TestCase
         $nonCanonicalIdentifier = new Uri('https://example2.com');
         $pointer = new JsonPointer([]);
 
-        $this->validator = $this->createStub(SchemaValidator::class);
+        $this->validator = new ObjectSchemaValidator(new Uri('https://example.com'), $pointer, []);
         $this->identifier = new SchemaIdentifier($uri, $pointer, $pointer);
         $this->nonCanonicalIdentifier = new SchemaIdentifier($nonCanonicalIdentifier, $pointer, $pointer);
         $this->anchor = new SchemaAnchor($uri, true, $pointer);

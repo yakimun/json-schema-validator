@@ -9,6 +9,9 @@ use GuzzleHttp\Psr7\UriResolver;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonString;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\SchemaContext;
 use Yakimun\JsonSchemaValidator\SchemaIdentifier;
@@ -18,6 +21,7 @@ use Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\IdKeyword;
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\CoreVocabulary\Keyword\IdKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonString
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
  * @uses \Yakimun\JsonSchemaValidator\SchemaIdentifier
@@ -60,13 +64,14 @@ final class IdKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
-     * @dataProvider valueProvider
+     * @param string $id
+     * @dataProvider idProvider
      */
-    public function testProcess(string $value): void
+    public function testProcess(string $id): void
     {
+        $value = new JsonString($id);
         $context = new SchemaContext($this->processor, ['$id' => $value], $this->pointer, $this->identifier, []);
-        $uri = UriResolver::resolve($this->uri, new Uri($value));
+        $uri = UriResolver::resolve($this->uri, new Uri($id));
         $_ = (string)$uri;
         $expectedIdentifier = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens(['$id']));
         $expectedNonCanonicalIdentifiers = [$this->identifier];
@@ -79,7 +84,7 @@ final class IdKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{string}>
      */
-    public function valueProvider(): array
+    public function idProvider(): array
     {
         return [
             ['https://example.org'],
@@ -90,14 +95,14 @@ final class IdKeywordTest extends TestCase
     }
 
     /**
-     * @param string $value
-     * @dataProvider currentUriValueProvider
+     * @param string $id
+     * @dataProvider currentUriIdProvider
      */
-    public function testProcessWithCurrentUri(string $value): void
+    public function testProcessWithCurrentUri(string $id): void
     {
+        $value = new JsonString($id);
         $context = new SchemaContext($this->processor, ['$id' => $value], $this->pointer, $this->identifier, []);
-        $uri = UriResolver::resolve($this->uri, new Uri($value));
-        $_ = (string)$uri;
+        $uri = UriResolver::resolve($this->uri, new Uri($id));
         $expected = new SchemaIdentifier($uri, $this->pointer, $this->pointer->addTokens(['$id']));
         $this->keyword->process($value, $context);
 
@@ -108,7 +113,7 @@ final class IdKeywordTest extends TestCase
     /**
      * @return non-empty-list<array{string}>
      */
-    public function currentUriValueProvider(): array
+    public function currentUriIdProvider(): array
     {
         return [
             [''],
@@ -117,10 +122,10 @@ final class IdKeywordTest extends TestCase
     }
 
     /**
-     * @param string|null $value
+     * @param JsonValue $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?string $value): void
+    public function testProcessWithInvalidValue(JsonValue $value): void
     {
         $context = new SchemaContext($this->processor, ['$id' => $value], $this->pointer, $this->identifier, []);
 
@@ -130,13 +135,13 @@ final class IdKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{string|null}>
+     * @return non-empty-list<array{JsonValue}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            ['#a'],
-            [null],
+            [new JsonString('#a')],
+            [new JsonNull()],
         ];
     }
 }

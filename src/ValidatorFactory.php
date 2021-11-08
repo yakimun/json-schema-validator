@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Yakimun\JsonSchemaValidator;
 
 use Psr\Http\Message\UriInterface;
+use Yakimun\JsonSchemaValidator\Exception\JsonLoaderException;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
-use Yakimun\JsonSchemaValidator\Exception\SchemaLoaderException;
 use Yakimun\JsonSchemaValidator\Exception\ValidatorFactoryException;
-use Yakimun\JsonSchemaValidator\SchemaLoader\SchemaLoader;
+use Yakimun\JsonSchemaValidator\JsonLoader\JsonLoader;
+use Yakimun\JsonSchemaValidator\SchemaFinder\SchemaFinder;
 use Yakimun\JsonSchemaValidator\SchemaValidator\SchemaValidator;
 use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\ApplicatorVocabulary;
 use Yakimun\JsonSchemaValidator\Vocabulary\ContentVocabulary\ContentVocabulary;
@@ -27,15 +28,15 @@ final class ValidatorFactory
     private SchemaProcessor $processor;
 
     /**
-     * @var list<SchemaLoader>
+     * @var list<SchemaFinder>
      * @readonly
      */
-    private array $loaders;
+    private array $finders;
 
     /**
-     * @param list<SchemaLoader> $loaders
+     * @param list<SchemaFinder> $finders
      */
-    public function __construct(array $loaders = [])
+    public function __construct(array $finders = [])
     {
         $vocabularies = [
             new CoreVocabulary(),
@@ -56,17 +57,17 @@ final class ValidatorFactory
         }
 
         $this->processor = new SchemaProcessor($keywords);
-        $this->loaders = $loaders;
+        $this->finders = $finders;
     }
 
     /**
-     * @param list<mixed>|null|object|scalar $schema
+     * @param JsonLoader $loader
      * @param UriInterface $uri
      * @return Validator
      */
-    public function createValidator($schema, UriInterface $uri): Validator
+    public function createValidator(JsonLoader $loader, UriInterface $uri): Validator
     {
-        [$validators, $references] = $this->processSchema($schema, $uri, [], []);
+        [$validators, $references] = $this->processSchema($loader, $uri, [], []);
 
         $processedUris = [(string)$uri];
 
@@ -74,15 +75,13 @@ final class ValidatorFactory
             $processedUris[] = array_key_first($unprocessedReferences);
             $schemaUri = reset($unprocessedReferences)[0]->withFragment('');
 
-            $result = $this->findLoader($schemaUri);
+            $loader = $this->findLoader($schemaUri);
 
-            if (!$result) {
+            if (!$loader) {
                 continue;
             }
 
-            $schema = $result->getSchema();
-
-            [$validators, $references] = $this->processSchema($schema, $schemaUri, $validators, $references);
+            [$validators, $references] = $this->processSchema($loader, $schemaUri, $validators, $references);
         }
 
         if ($unresolvedReferences = array_diff_key($references, $validators)) {
@@ -108,7 +107,7 @@ final class ValidatorFactory
     }
 
     /**
-     * @param list<mixed>|null|object|scalar $schema
+     * @param JsonLoader $loader
      * @param UriInterface $uri
      * @param array<string, array{SchemaValidator, bool, UriInterface, JsonPointer}> $validators
      * @param array<string, array{UriInterface, UriInterface, JsonPointer}> $references
@@ -117,8 +116,15 @@ final class ValidatorFactory
      *     array<string, array{UriInterface, UriInterface, JsonPointer}>
      * }
      */
-    private function processSchema($schema, UriInterface $uri, array $validators, array $references): array
+    private function processSchema(JsonLoader $loader, UriInterface $uri, array $validators, array $references): array
     {
+        try {
+            $schema = $loader->load();
+        } catch (JsonLoaderException $e) {
+            $message = sprintf('The "%s" schema must be loadable. %s', (string)$uri, $e->getMessage());
+            throw new ValidatorFactoryException($message, 0, $e);
+        }
+
         $pointer = new JsonPointer([]);
         $identifier = new SchemaIdentifier($uri, $pointer, $pointer);
 
@@ -210,20 +216,15 @@ final class ValidatorFactory
 
     /**
      * @param UriInterface $uri
-     * @return SchemaLoaderResult|null
+     * @return JsonLoader|null
      */
-    private function findLoader(UriInterface $uri): ?SchemaLoaderResult
+    private function findLoader(UriInterface $uri): ?JsonLoader
     {
-        foreach ($this->loaders as $loader) {
-            try {
-                $result = $loader->load($uri);
-            } catch (SchemaLoaderException $e) {
-                $message = sprintf('The "%s" schema must be loadable. %s', (string)$uri, $e->getMessage());
-                throw new ValidatorFactoryException($message, 0, $e);
-            }
+        foreach ($this->finders as $finder) {
+            $loader = $finder->find($uri);
 
-            if ($result !== null) {
-                return $result;
+            if ($loader !== null) {
+                return $loader;
             }
         }
 

@@ -7,6 +7,10 @@ namespace Yakimun\JsonSchemaValidator\Tests\Unit\Vocabulary\ApplicatorVocabulary
 use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\TestCase;
 use Yakimun\JsonSchemaValidator\Exception\SchemaException;
+use Yakimun\JsonSchemaValidator\Json\JsonArray;
+use Yakimun\JsonSchemaValidator\Json\JsonNull;
+use Yakimun\JsonSchemaValidator\Json\JsonObject;
+use Yakimun\JsonSchemaValidator\Json\JsonValue;
 use Yakimun\JsonSchemaValidator\JsonPointer;
 use Yakimun\JsonSchemaValidator\ProcessedSchema;
 use Yakimun\JsonSchemaValidator\SchemaContext;
@@ -19,6 +23,8 @@ use Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\KeywordValidator
 /**
  * @covers \Yakimun\JsonSchemaValidator\Vocabulary\ApplicatorVocabulary\Keyword\AnyOfKeyword
  * @uses \Yakimun\JsonSchemaValidator\Exception\SchemaException
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonArray
+ * @uses \Yakimun\JsonSchemaValidator\Json\JsonObject
  * @uses \Yakimun\JsonSchemaValidator\JsonPointer
  * @uses \Yakimun\JsonSchemaValidator\ProcessedSchema
  * @uses \Yakimun\JsonSchemaValidator\SchemaContext
@@ -58,12 +64,13 @@ final class AnyOfKeywordTest extends TestCase
     }
 
     /**
-     * @param non-empty-list<object> $value
+     * @param non-empty-list<JsonObject> $elements
      * @param non-empty-list<ProcessedSchema> $expectedProcessedSchemas
-     * @dataProvider valueProvider
+     * @dataProvider elementsProvider
      */
-    public function testProcess(array $value, array $expectedProcessedSchemas): void
+    public function testProcess(array $elements, array $expectedProcessedSchemas): void
     {
+        $value = new JsonArray($elements);
         $context = new SchemaContext($this->processor, ['anyOf' => $value], $this->pointer, $this->identifier, []);
 
         $validators = [];
@@ -80,12 +87,12 @@ final class AnyOfKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{non-empty-list<object>, non-empty-list<ProcessedSchema>}>
+     * @return non-empty-list<array{non-empty-list<JsonObject>, non-empty-list<ProcessedSchema>}>
      */
-    public function valueProvider(): array
+    public function elementsProvider(): array
     {
-        $object1 = (object)[];
-        $object2 = (object)[];
+        $object1 = new JsonObject([]);
+        $object2 = new JsonObject([]);
 
         $uri = new Uri('https://example.com');
 
@@ -108,10 +115,10 @@ final class AnyOfKeywordTest extends TestCase
     }
 
     /**
-     * @param list<null>|null $value
+     * @param JsonValue $value
      * @dataProvider invalidValueProvider
      */
-    public function testProcessWithInvalidValue(?array $value): void
+    public function testProcessWithInvalidValue(JsonValue $value): void
     {
         $context = new SchemaContext($this->processor, ['anyOf' => $value], $this->pointer, $this->identifier, []);
 
@@ -121,14 +128,14 @@ final class AnyOfKeywordTest extends TestCase
     }
 
     /**
-     * @return non-empty-list<array{list<null>|null}>
+     * @return non-empty-list<array{JsonValue}>
      */
     public function invalidValueProvider(): array
     {
         return [
-            [null],
-            [[]],
-            [[null]],
+            [new JsonNull()],
+            [new JsonArray([])],
+            [new JsonArray([new JsonNull()])],
         ];
     }
 }
