@@ -90,7 +90,8 @@ final class FileJsonLoaderTest extends TestCase
             ['[]', new JsonArray([])],
             ['[null]', new JsonArray([new JsonNull()])],
             ['1', new JsonInteger(1)],
-            ['1.0', new JsonFloat(1.0)],
+            ['1.0', new JsonInteger(1)],
+            ['1.5', new JsonFloat(1.5)],
             ['"a"', new JsonString('a')],
         ];
     }

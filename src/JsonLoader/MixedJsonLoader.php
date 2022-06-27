@@ -86,6 +86,10 @@ final class MixedJsonLoader implements JsonLoader
         }
 
         if (is_float($value)) {
+            if (fmod($value, 1) === 0.0) {
+                return new JsonInteger((int)$value);
+            }
+
             return new JsonFloat($value);
         }
 
